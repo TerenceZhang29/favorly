@@ -3,7 +3,7 @@
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md` and `docs/PLAN-PHASE-3.md`, and continue from the first unchecked item.
 
 **Current phase:** Phase 3 (Kindness score, profiles, chat and reviews). 3A–3D are done and 3E is done except for the steps that need a person on a Mac. Phase 2 is complete (`v0.2.0-ui`), Phase 1 is complete (`v0.1.0-prototype`)
-**Next task:** The owner works through "Needs the owner's review" below: fast-forward `main` to `claude/brave-cray-shr7y8`, run the Phase 3 demo by hand, check the Phase 3 screenshots, then tag `v0.3.0-profiles`. Still open for a person: run the demo script in the README by hand once, in light and in dark mode, and look over the final screenshots in `docs/screenshots/phase-2/`
+**Next task:** The owner works through "Needs the owner's review" below: fast-forward `main` to `claude/brave-cray-shr7y8`, run the Phase 3 demo by hand, check the Phase 3 screenshots, then tag `v0.3.0-profiles`. Still open for a person: run the demo script in the README by hand once, in light and in dark mode, and look over the final screenshots in `docs/screenshots/phase-2/` After that review, start 3F on `phase/3f-completion`
 
 ## Phase checklist
 
@@ -29,6 +29,7 @@ Phase 3, Kindness score, profiles, chat and reviews ([PLAN-PHASE-3.md](PLAN-PHAS
 - [x] **3C.** Chat between requester and helper
 - [x] **3D.** Reviews
 - [ ] **3E.** Hardening, demo, docs, tag `v0.3.0-profiles` (everything but the by-eye checks and the tag; see "Needs the owner's review")
+- [ ] **3F.** Requester-only completion and auto-complete after 7 days
 
 ## Needs the owner's review
 
@@ -317,6 +318,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-09 · 3E · Spoken sentences: activity rows "Need a pinch of saffron, Ingredient, Helped, Downtown Brooklyn"; review rows "5 out of 5 stars from Dana, Oct 9: Fast and friendly"; message bubbles "Bea said: On my way, at 9:41 PM" · the 3E accessibility task
 - 2026-10-09 · 3E · `ScreenshotUITests` also captures the chat (empty and with a message), the review form (empty and filled), Request Detail with a review, and the profile's reviews: 25 captures per appearance · so the new screens can be checked by eye
 - 2026-10-09 · 3E · `MARKETING_VERSION` is `0.3.0`. The tag `v0.3.0-profiles` was not created · the tag should mark a commit a person has checked by hand; see "Needs the owner's review"
+- 2026-10-13 · Phase 3 plan · Added phase 3F to `docs/PLAN-PHASE-3.md`: only the requester can mark a request completed, and a claimed request completes on its own 7 days after pick-up (rule 15, replacing Phase 1 rule 4) · owner's decision during the Phase 3 review; it stops a helper from awarding themselves points, and the 7-day limit stops a requester from withholding them
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues
@@ -348,7 +350,8 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 ## Open questions
 
-- Phase 3: the helper can mark a request completed (Phase 1 rule 4), so a helper can award themselves 10 points. Default: leave it for the prototype; later, award points only when the requester confirms.
+- Phase 3: the helper can mark a request completed (Phase 1 rule 4), so a helper can award themselves 10 points. Resolved 2026-10-13: only the requester can mark completed, and a claimed request auto-completes 7 days after pick-up; planned as phase 3F.
+- Phase 3F: how is auto-complete shown in a demo, when 7 days never pass? Default: tests only, with a fixed clock.
 - Phase 3: are 10 points per favor, 2 per star and 100 points for a "$5" gift card the right values? Default: yes, as placeholders in `KindnessRules`.
 - Phase 3: should chat stay open for sending after a request is completed? Default: no, the thread becomes read-only.
 - Phase 3: what does someone else's profile show? Default: completed requests only, never gift-card progress or reward codes.

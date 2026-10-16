@@ -129,6 +129,7 @@ Implement in `Rules/`, enforce in the repository, cover with tests. Numbering co
 12. **Reviews (`ReviewRules`).** Only the requester can review, only when the request is `completed` and has a helper (`notAllowed` otherwise), and only once per request (`alreadyReviewed`). The rating is 1 to 5. The comment is trimmed and 0 to 300 characters. Bad input throws `validation("…")` with a readable message.
 13. **Chat (`ChatRules`).** A request's thread exists once it has a helper. Only the requester and the helper can read it (`notAllowed` otherwise). Sending is allowed only while the request is `claimed`; after completion or cancellation the thread is read-only. Message text is trimmed and 1 to 500 characters.
 14. **Privacy.** Rule 9 extends to profiles: past activities show the location label only. Someone else's profile shows completed requests only, and never their gift-card progress or reward codes.
+15. **Completion (`RequestRules`, added 2026-10-13, replaces Phase 1's rule 4).** Only the requester can mark a claimed request completed; anyone else, the helper included, gets `notAllowed`. A claimed request that the requester has not completed or cancelled completes on its own 7 days after `claimedAt` (`RequestRules.autoCompleteInterval`). An auto-completed request is an ordinary completed request: the helper earns the points, and the requester can still review it.
 
 ## Data layer
 
@@ -186,7 +187,7 @@ Every interactive element gets an `accessibilityIdentifier`: `profile.*`, `chat.
 
 ## Implementation phases
 
-Five sequential phases, each sized for one agent session. Each ends with green tests, an updated `docs/PROGRESS.md` including the commit map, and a build that can be demoed.
+Six sequential phases (3F was added on 2026-10-13), each sized for one agent session. Each ends with green tests, an updated `docs/PROGRESS.md` including the commit map, and a build that can be demoed.
 
 No pull requests. Work on a branch `phase/<id>-<short-name>`; when the phase is done, fast-forward `main` to it, push `main`, and delete the branch.
 
@@ -239,6 +240,21 @@ No pull requests. Work on a branch `phase/<id>-<short-name>`; when the phase is 
 
 **Done when:** the *Definition of done* in the Overview is met on a fresh clone.
 
+### 3F. Requester-only completion and auto-complete
+
+Decided by the owner on 2026-10-13, after reviewing 3A–3E. It closes the "Self-awarded points" open question: a helper can no longer complete a request, so they cannot award themselves points, and a requester who never confirms cannot hold the helper's points back for more than 7 days. Branch `phase/3f-completion`.
+
+- [ ] `RequestRules.validateComplete`: only the requester passes; the helper gets `notAllowed`. Update the status-rules text in `docs/PLAN.md` (rule 4 and the Request Detail row) to match
+- [ ] `RequestRules.autoCompleteInterval` (7 days) and `RequestRules.isAutoCompleteDue(_:now:)`: true for a claimed request whose `claimedAt` is 7 days or more before `now`
+- [ ] `MockRequestRepository`: before every read and write, complete each claimed request that is due, and emit on `changes()` when any changed. No timer; the repository's `now` closure decides, so tests use a fixed clock
+- [ ] `RequestDetailViewModel`: `canComplete` is true for the requester only. For the helper of a claimed request, expose the auto-complete date
+- [ ] `RequestDetailView`: the helper sees no Mark completed button, and a gray note in its place: "Completes automatically on Oct 20 if Alex doesn't confirm." (`detail.autoCompleteNote`)
+- [ ] Tests: the helper cannot complete; the requester can; not due at 7 days minus one second, due at exactly 7 days; an auto-completed request gives the helper 10 points and can be reviewed; a cancelled or open request never auto-completes; `reset()` is unaffected; the view model hides the action from the helper
+- [ ] UI tests: the helper's Request Detail has no Mark completed button and shows the note. Edit any existing test that completes a request as the helper
+- [ ] README demo script and `docs/ARCHITECTURE.md` if either mentions the helper completing
+
+**Done when:** as Bea, a picked-up request shows the note and no Mark completed button; as Alex, Mark completed still works; a test with the clock moved 7 days forward shows the request completed and Bea's score 10 higher.
+
 ## Testing and demo
 
 Commands are unchanged from [PLAN.md](PLAN.md).
@@ -263,7 +279,8 @@ Commands are unchanged from [PLAN.md](PLAN.md).
 
 Each has a default the plan assumes. Change them in `docs/PROGRESS.md` if the team decides otherwise.
 
-- **Self-awarded points.** Phase 1's rule 4 lets the helper mark a request completed, so a helper can award themselves 10 points. Default: leave it for the prototype. The later fix is to award points only when the requester confirms.
+- **Self-awarded points.** Resolved 2026-10-13: only the requester can mark a request completed, and a claimed request completes on its own after 7 days. See rule 15 and phase 3F.
+- **Showing auto-complete in the demo.** Data is in memory and resets on launch, so 7 days never pass in a demo. Default: tests only, with a fixed clock; no seed request and no Dev Settings control to move time.
 - **Point values.** 10 per favor, 2 per star, and 100 points for a "$5" gift card are placeholders, defined once in `KindnessRules`.
 - **Chat after completion.** Sending closes when the request is completed. Reopening it is a one-line change in `ChatRules`.
 - **What others see.** Someone else's profile shows completed requests only. Open and cancelled requests stay private to their owner.

@@ -84,6 +84,24 @@ Start from a fresh launch (or Reset demo data, and switch back to Alex and Corne
 5. Switch to Bea. Profile shows 110 points, the new review and the favor under Past activities. Tap Redeem: the code `FAVORLY-0001` appears and progress reads "10 of 100 points".
 6. Switch to Chen. In My Activity open "Water my plants for the weekend" and tap the Helper row: Bea's profile shows her score and reviews, but no gift card.
 
+## Pitch demo: the rice story
+
+`scripts/demo-rice-story.sh` boots an iPhone simulator, opens the Simulator window and plays the story from the pitch slide on its own, paced for narration (under two minutes):
+
+1. Alex planned to cook, but the rice ran out and the store is closed. Alex posts "Need a cup of rice".
+2. Bea, down the hall, sees it at the top of Nearby, picks it up and messages "On my way with a cup of rice!".
+3. Alex replies, marks the favor completed and leaves Bea a 5-star review.
+4. Bea's Profile shows 110 Kindness points.
+
+```bash
+scripts/demo-rice-story.sh                            # first available iPhone, 0.5 s per beat
+scripts/demo-rice-story.sh --device "iPhone 16 Pro"   # a specific simulator
+scripts/demo-rice-story.sh --pace 2                   # slower, for narrating live
+scripts/demo-rice-story.sh --record rice-demo.mov     # also save a screen recording
+```
+
+The steps are `RiceStoryDemoUITests`, which is skipped in the normal test run unless `TEST_RUNNER_FAVORLY_DEMO=1` is set.
+
 ## Updating the screenshots
 
 `ScreenshotUITests` is skipped unless it is given a folder to write to:

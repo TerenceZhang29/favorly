@@ -32,6 +32,7 @@ struct ReviewFormView: View {
                 Section {
                     TextField("Comment (optional)", text: $viewModel.comment, axis: .vertical)
                         .lineLimit(3 ... 6)
+                        .doneKey(text: $viewModel.comment)
                         .accessibilityIdentifier("review.comment")
                     if let commentMessage = viewModel.commentMessage {
                         InlineMessage(text: commentMessage, identifier: "review.commentMessage")
@@ -63,6 +64,7 @@ struct ReviewFormView: View {
                     .plainListRow()
                 }
             }
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle("Leave a review")
             .toolbarTitleDisplayMode(.inline)
             .toolbar {

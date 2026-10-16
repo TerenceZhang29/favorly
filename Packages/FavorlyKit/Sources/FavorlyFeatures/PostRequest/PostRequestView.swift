@@ -14,12 +14,14 @@ struct PostRequestView: View {
         Form {
             Section {
                 TextField("Title", text: $viewModel.title)
+                    .submitLabel(.done)
                     .accessibilityIdentifier("post.title")
                 if let titleMessage = viewModel.titleMessage {
                     InlineMessage(text: titleMessage, identifier: "post.titleMessage")
                 }
                 TextField("Details (optional)", text: $viewModel.details, axis: .vertical)
                     .lineLimit(3 ... 6)
+                    .doneKey(text: $viewModel.details)
                     .accessibilityIdentifier("post.details")
                 if let detailsMessage = viewModel.detailsMessage {
                     InlineMessage(text: detailsMessage, identifier: "post.detailsMessage")
@@ -64,6 +66,7 @@ struct PostRequestView: View {
                 .plainListRow()
             }
         }
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Post")
         .task(id: viewModel.reloadKey) { await viewModel.loadLocation() }
     }

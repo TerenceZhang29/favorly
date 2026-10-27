@@ -64,6 +64,8 @@ xcodebuild test -project Favorly.xcodeproj -scheme Favorly \
 
 The second command runs the package tests again on iOS, plus the UI tests. Each UI test class runs on its own clone of the simulator at the same time. The UI tests take minutes, so use `swift test` while working and run the full suite before pushing. `DemoFlowUITests` walks through the demo script below. UI tests launch the app with `-uiTesting`, which removes the 300 ms delay the mock data layer adds to mimic a network.
 
+If `KeyboardUITests` fails because the Done key is "not visible", the simulator thinks a hardware keyboard is attached, which happens after you type into it from the Mac keyboard, and keeps the on-screen keyboard below the screen. Erase that simulator (`xcrun simctl erase <device id>`) and run the tests again.
+
 Every push to `main` and to `phase/**`, `ci/**` and `claude/**` branches runs both commands on GitHub Actions (`.github/workflows/ci.yml`). A second workflow, `.github/workflows/manual-checks.yml`, runs SwiftLint and SwiftFormat on `claude/**` branches (agent sessions without Xcode) or by hand from the Actions tab, and can capture the screenshots and upload them as an artifact.
 
 ## Lint and format

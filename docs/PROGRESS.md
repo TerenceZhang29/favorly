@@ -319,6 +319,8 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-09 · 3E · `ScreenshotUITests` also captures the chat (empty and with a message), the review form (empty and filled), Request Detail with a review, and the profile's reviews: 25 captures per appearance · so the new screens can be checked by eye
 - 2026-10-09 · 3E · `MARKETING_VERSION` is `0.3.0`. The tag `v0.3.0-profiles` was not created · the tag should mark a commit a person has checked by hand; see "Needs the owner's review"
 - 2026-10-13 · Phase 3 plan · Added phase 3F to `docs/PLAN-PHASE-3.md`: only the requester can mark a request completed, and a claimed request completes on its own 7 days after pick-up (rule 15, replacing Phase 1 rule 4) · owner's decision during the Phase 3 review; it stops a helper from awarding themselves points, and the 7-day limit stops a requester from withholding them
+- 2026-10-26 · tooling · Signing settings come from `Config/Signing.xcconfig`, which includes an optional, git-ignored `Config/Local.xcconfig` for `DEVELOPMENT_TEAM` and an optional `FAVORLY_BUNDLE_ID` · lets each person run on their own iPhone with a free Personal Team without committing their team ID; simulator builds are unchanged
+- 2026-10-26 · tooling · `FavorlyUITests` is parallelizable in the scheme, and the full UI suite runs only before a push; `swift test` covers day-to-day checks · the serial UI suite took over 10 minutes on a laptop
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues

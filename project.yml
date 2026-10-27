@@ -23,6 +23,9 @@ targets:
     platform: iOS
     sources:
       - App
+    configFiles:
+      Debug: Config/Signing.xcconfig
+      Release: Config/Signing.xcconfig
     dependencies:
       - package: FavorlyKit
         product: FavorlyCore
@@ -32,7 +35,7 @@ targets:
         product: FavorlyFeatures
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: edu.cornelltech.team402.favorly
+        PRODUCT_BUNDLE_IDENTIFIER: $(FAVORLY_BUNDLE_ID)
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Favorly
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
@@ -46,11 +49,14 @@ targets:
     platform: iOS
     sources:
       - AppUITests
+    configFiles:
+      Debug: Config/Signing.xcconfig
+      Release: Config/Signing.xcconfig
     dependencies:
       - target: Favorly
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: edu.cornelltech.team402.favorly.uitests
+        PRODUCT_BUNDLE_IDENTIFIER: $(FAVORLY_BUNDLE_ID).uitests
         GENERATE_INFOPLIST_FILE: YES
         TEST_TARGET_NAME: Favorly
 
@@ -68,4 +74,6 @@ schemes:
         - package: FavorlyKit/FavorlyCoreTests
         - package: FavorlyKit/FavorlyDataTests
         - package: FavorlyKit/FavorlyFeaturesTests
-        - FavorlyUITests
+        # Each UI test class runs on its own clone of the simulator.
+        - name: FavorlyUITests
+          parallelizable: true

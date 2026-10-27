@@ -30,3 +30,6 @@ Package.resolved
 
 # Demo recordings
 *.mov
+
+# Personal signing settings (see Config/Local.xcconfig.example)
+Config/Local.xcconfig

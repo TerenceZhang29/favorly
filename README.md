@@ -36,6 +36,18 @@ open Favorly.xcodeproj
 
 Pick an iPhone simulator and press Run. All data is in memory and resets on every launch.
 
+### Run on your iPhone
+
+This uses a free Apple ID; no paid developer account is needed. Your iPhone needs iOS 17 or later.
+
+1. In Xcode → Settings → Accounts, add your Apple ID. This creates a free Personal Team.
+2. Copy `Config/Local.xcconfig.example` to `Config/Local.xcconfig` and set `DEVELOPMENT_TEAM` to your team ID. The file is git-ignored, so your team ID stays on your Mac. If Xcode says the bundle identifier is not available, also set `FAVORLY_BUNDLE_ID` to something of your own.
+3. Run `xcodegen generate`.
+4. Plug in the iPhone, tap Trust This Computer, and turn on Settings → Privacy & Security → Developer Mode.
+5. Pick the iPhone as the run destination and press Run. On the first launch, iOS asks you to trust the developer in Settings → General → VPN & Device Management.
+
+With a free team the app stops opening after 7 days; press Run again to renew it.
+
 ## Test
 
 ```bash
@@ -50,7 +62,7 @@ xcodebuild test -project Favorly.xcodeproj -scheme Favorly \
   -destination 'platform=iOS Simulator,name=<iPhone model from the list>'
 ```
 
-The second command runs the package tests again on iOS, plus the UI tests. `DemoFlowUITests` walks through the demo script below. UI tests launch the app with `-uiTesting`, which removes the 300 ms delay the mock data layer adds to mimic a network.
+The second command runs the package tests again on iOS, plus the UI tests. Each UI test class runs on its own clone of the simulator at the same time. The UI tests take minutes, so use `swift test` while working and run the full suite before pushing. `DemoFlowUITests` walks through the demo script below. UI tests launch the app with `-uiTesting`, which removes the 300 ms delay the mock data layer adds to mimic a network.
 
 Every push to `main` and to `phase/**`, `ci/**` and `claude/**` branches runs both commands on GitHub Actions (`.github/workflows/ci.yml`). A second workflow, `.github/workflows/manual-checks.yml`, runs SwiftLint and SwiftFormat on `claude/**` branches (agent sessions without Xcode) or by hand from the Actions tab, and can capture the screenshots and upload them as an artifact.
 

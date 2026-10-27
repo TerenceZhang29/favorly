@@ -1,0 +1,8 @@
+// Copy this file to Config/Local.xcconfig (git-ignored) and fill in your values,
+// then run `xcodegen generate`. Simulator builds don't need it.
+
+// Your team ID: Xcode → Settings → Accounts → your Apple ID → Personal Team.
+DEVELOPMENT_TEAM = ABCDE12345
+
+// Uncomment if Xcode says the bundle identifier is not available.
+// FAVORLY_BUNDLE_ID = edu.cornelltech.team402.favorly.yourname

@@ -2,8 +2,8 @@
 
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
-**Current phase:** Phase 3 is complete (3A–3E tagged `v0.3.0-profiles`, 3F done on 2026-10-28). Phase 4 is planned in `docs/PLAN-PHASE-4.md`, with the owner's defaults accepted. Phase 2 is complete (`v0.2.0-ui`), Phase 1 is complete (`v0.1.0-prototype`)
-**Next task:** start 4A (release groundwork) on `phase/4a-release-groundwork`
+**Current phase:** Phase 4. 4A (release groundwork) is done. Phase 3 is complete (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
+**Next task:** 4B (backend schema and server rules) on `phase/4b-backend`. It starts with an owner step: install Docker Desktop and the Supabase CLI
 
 ## Phase checklist
 
@@ -33,7 +33,7 @@ Phase 3, Kindness score, profiles, chat and reviews ([PLAN-PHASE-3.md](PLAN-PHAS
 
 Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). The owner accepted every default in "Decisions needed from the owner" on 2026-10-28:
 
-- [ ] **4A.** Release groundwork: onboarding and account screens on a mock auth service, Dev Settings Debug-only, no fake Redeem
+- [x] **4A.** Release groundwork: onboarding and account screens on a mock auth service, Dev Settings Debug-only, no fake Redeem
 - [ ] **4B.** Backend schema and server rules (local Supabase, database tests)
 - [ ] **4C.** Real accounts and shared data (`FavorlyRemote`, Sign in with Apple; needs the paid developer account)
 - [ ] **4D.** Real location and privacy
@@ -175,6 +175,14 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 3F | `7bc820d` | feat(detail): only the requester sees Mark completed; the helper sees when it completes on its own |
 | 3F | `5966af0` | test(ui): the helper sees the auto-complete note and the requester completes in the profile test |
 | 3F | `0be77da` | docs: requester-only completion and auto-complete in the README demo and architecture notes |
+| 3F | `a8fb345` | docs: record phase 3F progress |
+| 4A | `1f12138` | feat(core): auth service, sign-in states, profile setup rules; demo user switching leaves SessionStore |
+| 4A | `6a764a4` | feat(data): mock auth service; mock session store offers profile lookup and demo controls |
+| 4A | `8f03933` | feat(profile): sign out and delete account; remove the gift card and Redeem |
+| 4A | `e257684` | feat(onboarding): Welcome and profile setup screens behind a sign-in gate; Dev Settings in Debug builds only |
+| 4A | `6b8fbe6` | feat(app): demo or live environment at launch, -demo in the Run scheme, no-encryption Info.plist key |
+| 4A | `88f2118` | test(ui): onboarding, sign out and delete account; launch starts at Welcome; gift card steps removed |
+| 4A | `a7bdf6d` | docs: sign-in gate, demo and live launches, and the removed gift card in the README and architecture notes; tick 4A |
 
 ## Confirmed decisions
 
@@ -348,6 +356,17 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-28 · 3F · The helper's note is a gray footnote with a clock symbol where Mark completed would be, built by `RequestDetailViewModel.autoCompleteNote` like the chat's `closedText` · matches the chat's read-only note
 - 2026-10-28 · 3F · `ProfileUITests.testOneMoreFavorLetsBeaRedeemAGiftCard` now checks Bea's note and missing button, then switches to Chen to complete; `ScreenshotUITests` waits for the note instead of Mark completed · the only UI tests that completed as the helper
 - 2026-10-28 · 3F · `DoneKeyModifier.isReturnKey` is `nonisolated` · its tests raised Swift 6 actor-isolation warnings, and it is a pure function
+- 2026-10-28 · 4A · `AuthState` has no payload (`.signedOut`, `.needsProfile`, `.signedIn`) instead of the plan's `.signedIn(UserProfile)` · the signed-in user lives in `SessionStore`, so one source of truth; a payload went stale when Dev Settings switched users
+- 2026-10-28 · 4A · `AuthService.completeProfile` takes a `ProfileSetupDraft` (name, adult, accepted terms) instead of three parameters; `ProfileSetupRules.termsVersion` (1) is the version accepted · matches `NewRequestDraft` and `NewReviewDraft`, and the server records the version in 4B
+- 2026-10-28 · 4A · `SessionStore` is now `currentUser` plus `profile(for:)`; `availableUsers` and `switchUser(to:)` moved to `DemoSessionControls`, adopted by the mock and preview sessions only. Dev Settings casts to it · change to a Phase 1 protocol, as the plan says; a real session cannot list every user
+- 2026-10-28 · 4A · The gift card section, Redeem and reward codes are removed from the Profile tab rather than turned into points progress with no reward · progress toward nothing has no meaning; the plainer option. `KindnessRepository` keeps its redeem methods for the mock, unused by any screen
+- 2026-10-28 · 4A · Supabase URL and key plumbing is deferred to 4C · nothing reads them until `FavorlyRemote` exists, and an unused key in the Info.plist is dead config
+- 2026-10-28 · 4A · The Welcome button is a styled "Continue with Apple" button driving the mock; Apple's `SignInWithAppleButton` arrives in 4C · the real button needs the Sign in with Apple capability, which needs the paid account
+- 2026-10-28 · 4A · The Run scheme passes `-demo`; UI tests pass `-uiTesting`, plus `-signedOut` to start at Welcome; any other launch uses `AppEnvironment.live()`, which until 4C is the demo wiring starting signed out · Xcode's Run keeps the old demo, and a Release build starts where a downloaded app will
+- 2026-10-28 · 4A · `MockAuthService.deleteAccount` forgets the user in the session and signs out; their requests, messages and reviews stay in the mock repository. The confirmation text describes the plan's server behavior · real deletion is a server function (4B) wired in 4C
+- 2026-10-28 · 4A · Terms and Privacy links point at GitHub Pages paths (`terencezhang29.github.io/favorly/terms`, `/privacy`) that go live in 4G · the links need a stable address now; the pages are 4G's work
+- 2026-10-28 · 4A · Dev Settings is left out of non-Debug builds through `RootTab.visible` (`#if DEBUG`); tests cover `RootTab.tabs(showingDevSettings:)` · a unit test cannot build Release, so the switch is a tested pure function
+- 2026-10-28 · 4A · Profile setup uses two toggles (18 or older; accept the terms) with separate links to read each document · a link inside a toggle's label toggles the switch instead of opening the link
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues
@@ -374,7 +393,10 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - CI does not run SwiftLint or SwiftFormat; run them locally before pushing.
 - A CI run takes about 12 minutes, nearly all of it the UI tests on the hosted simulator.
 - The UI test suite takes a little over three minutes, mostly app launches and typing.
-- If a UI test fails, `xcodebuild` can sit for several minutes collecting diagnostics before it exits.
+- If a UI test fails, `xcodebuild` can sit for several minutes collecting diagnostics before it exits. Pass `-collect-test-diagnostics never` to skip that.
+- A new test file is not in the Xcode project until `xcodegen generate` runs again; until then `-only-testing` silently skips it.
+- The sign-in is a mock until 4C: Continue with Apple goes straight to profile setup, every sign-up is a new user, and deleting an account only forgets the user in the session.
+- The Nearby header still shows the fake location label from Dev Settings presets ("Alex @ Cornell Tech, Roosevelt Island"), also in Release builds; 4D replaces it with the real neighborhood.
 - `xcodebuild` prints `appintentsmetadataprocessor ... Metadata extraction skipped` warnings. They come from an Xcode build tool, not the Swift compiler, and need no action.
 
 ## Open questions
@@ -394,6 +416,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-10-28 · 4A · `AuthService`, `AuthState`, `ProfileSetupRules`, `DemoSessionControls`; `MockAuthService`; Welcome and profile setup behind a sign-in gate; Sign out and Delete account on the Profile tab; gift card and Redeem removed; Dev Settings Debug-only; `-demo`, `-signedOut` and `AppEnvironment.live()`; no-encryption key; 307 package tests and the changed UI test classes pass · start 4B on `phase/4b-backend` after the owner installs Docker and the Supabase CLI
 - 2026-10-28 · 3F · Requester-only completion, auto-complete 7 days after pick-up in rules and the mock repository, the helper's auto-complete note on Request Detail, tests (279 package tests, profile UI tests), docs; also accepted the Phase 3 review, tagged `v0.3.0-profiles`, wrote the Phase 4 plan · start 4A on `phase/4a-release-groundwork`
 - 2026-10-09 · 3B–3E · Profile tab and other users' profiles with score, gift card and redeem; scores and tappable names on Request Detail; chat (rules, mock, screen, Message button); reviews (rules, submit, star picker, review sheet, review on Request Detail and on profiles); `ProfileUITests`, `ChatUITests`, `ReviewUITests`, `DemoFlowUITests.testExtendedDemoScript`, new screenshot captures; version 0.3.0, README and architecture notes; CI on `claude/**` branches and a lint and screenshot workflow. View models and rules pass on Linux; the app, the UI tests and lint ran on GitHub Actions (results in the commit map rows and below) · the owner's review list at the top of this file
 - 2026-10-09 · 3A · `Review`, `Redemption`, `KindnessSummary` and their IDs, `KindnessRepository`, `ReviewRepository` (reads), `KindnessRules`, `alreadyReviewed` and `notEnoughPoints` with messages; seeds 13–17 and `DemoReviews` (Bea 90, Chen 18, Dana 0, Alex 0); kindness and review conformances on `MockRequestRepository`; `kindness` and `reviews` in `AppEnvironment`, demo wiring, preview stubs and `TestWorld`. 154 tests pass on Linux; app build, UI tests and lint left to CI and a Mac · confirm CI, fast-forward `main`, start 3B on `phase/3b-profile`

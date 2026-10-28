@@ -148,13 +148,13 @@ Everything the store build needs that does not depend on a server, built against
 
 ### 4B. Backend schema and server rules (local only, no cost)
 
-- [ ] **Owner:** install Docker Desktop and the Supabase CLI
-- [ ] `backend/supabase/` project: migrations for every table, PostGIS, row-level security policies, the RPCs and the kindness view described above
-- [ ] Server versions of rules 1–15 and the content filter, in the RPCs
-- [ ] `pg_cron` auto-complete job; rate limits; block rules
-- [ ] `delete_my_account` function implementing the deletion decision
-- [ ] pgTAP tests for every RPC and policy: allowed and refused for requester, helper, stranger and blocked user; nearby radius edges; auto-complete at 7 days minus 1 second and at 7 days; kindness totals; deletion leaves "Deleted user" on completed favors
-- [ ] `backend/README.md`: start, reset, test and deploy commands
+- [x] **Owner:** install Docker Desktop and the Supabase CLI
+- [x] `backend/supabase/` project: migrations for every table, PostGIS, row-level security policies, the RPCs and the kindness view described above
+- [x] Server versions of rules 1–15 in the RPCs (the content filter moved to 4E, see `docs/PROGRESS.md`)
+- [x] `pg_cron` auto-complete job; rate limits; block rules
+- [x] `delete_my_account` function implementing the deletion decision
+- [x] pgTAP tests for every RPC and policy: allowed and refused for requester, helper, stranger and blocked user; nearby radius edges; auto-complete at 7 days minus 1 second and at 7 days; kindness totals; deletion leaves "Deleted user" on completed favors
+- [x] `backend/README.md`: start, reset, test and deploy commands
 - [ ] **Owner, $ (free tier):** create the hosted Supabase project, then deploy the migrations to it
 
 **Done when:** `supabase test db` passes locally; every rule in `docs/PLAN.md` and Phase 3 has a server test; nothing in the app changed.
@@ -189,7 +189,7 @@ Everything the store build needs that does not depend on a server, built against
 
 - [ ] Report a request, a message or a user (menu on Request Detail, long-press on a message, menu on a profile); reason and an optional note
 - [ ] Block and unblock a user; Blocked users list in Profile; blocked content disappears at once
-- [ ] Content filter on post, message and review, in the app and on the server
+- [ ] Content filter on post, message and review, in the app and on the server (one shared word list; moved here from 4B)
 - [ ] Terms of Use shown and accepted at sign-up (version stored); link in Profile; Safety tips screen (meet in public places, don't share your address, report anything unsafe)
 - [ ] Contact support link (email or website) in Profile
 - [ ] Moderation: `reports` queue readable in the Supabase dashboard; a saved query listing open reports; **Owner:** a written moderation routine in `docs/MODERATION.md` (check daily, remove content, ban accounts)

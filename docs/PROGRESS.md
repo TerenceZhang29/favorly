@@ -2,8 +2,8 @@
 
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
-**Current phase:** Phase 4. 4A (release groundwork) is done. Phase 3 is complete (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
-**Next task:** 4B (backend schema and server rules) on `phase/4b-backend`. It starts with an owner step: install Docker Desktop and the Supabase CLI
+**Current phase:** Phase 4. 4A is done; 4B's backend is built and tested locally, and only the hosted project is left, waiting on the owner's approval. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
+**Next task:** the owner approves and creates the hosted Supabase project (free tier), then the migrations are deployed to it; after that, 4C on `phase/4c-accounts`, which also needs the paid Apple Developer Program
 
 ## Phase checklist
 
@@ -34,7 +34,7 @@ Phase 3, Kindness score, profiles, chat and reviews ([PLAN-PHASE-3.md](PLAN-PHAS
 Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). The owner accepted every default in "Decisions needed from the owner" on 2026-10-28:
 
 - [x] **4A.** Release groundwork: onboarding and account screens on a mock auth service, Dev Settings Debug-only, no fake Redeem
-- [ ] **4B.** Backend schema and server rules (local Supabase, database tests)
+- [ ] **4B.** Backend schema and server rules (local Supabase, database tests). Built and tested locally; the hosted project waits on the owner
 - [ ] **4C.** Real accounts and shared data (`FavorlyRemote`, Sign in with Apple; needs the paid developer account)
 - [ ] **4D.** Real location and privacy
 - [ ] **4E.** Trust and safety: report, block, content filter, moderation, terms
@@ -183,6 +183,12 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 4A | `6b8fbe6` | feat(app): demo or live environment at launch, -demo in the Run scheme, no-encryption Info.plist key |
 | 4A | `88f2118` | test(ui): onboarding, sign out and delete account; launch starts at Welcome; gift card steps removed |
 | 4A | `a7bdf6d` | docs: sign-in gate, demo and live launches, and the removed gift card in the README and architecture notes; tick 4A |
+| 4A | `317e3e8` | docs: record phase 4A progress |
+| 4B | `b9f4f48` | chore(backend): local Supabase project, ports moved up by 1000, storage off |
+| 4B | `4e93523` | feat(backend): schema for profiles, requests, chat, reviews, reports and blocks; read access by row-level security |
+| 4B | `682f9bd` | feat(backend): actions enforcing the app's rules, rate limits, blocks, account deletion; auto-complete job |
+| 4B | `d2c79df` | test(backend): pgTAP tests for every action and policy |
+| 4B | `bae2f11` | docs(backend): commands, how it works, and the error contract |
 
 ## Confirmed decisions
 
@@ -367,6 +373,18 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-28 · 4A · Terms and Privacy links point at GitHub Pages paths (`terencezhang29.github.io/favorly/terms`, `/privacy`) that go live in 4G · the links need a stable address now; the pages are 4G's work
 - 2026-10-28 · 4A · Dev Settings is left out of non-Debug builds through `RootTab.visible` (`#if DEBUG`); tests cover `RootTab.tabs(showingDevSettings:)` · a unit test cannot build Release, so the switch is a tested pure function
 - 2026-10-28 · 4A · Profile setup uses two toggles (18 or older; accept the terms) with separate links to read each document · a link inside a toggle's label toggles the switch instead of opening the link
+- 2026-10-28 · 4B · The server's content filter moved from 4B to 4E · the app has no `ContentFilter` yet, and both must share one word list; building them together keeps them the same
+- 2026-10-28 · 4B · No `redemptions` or `device_tokens` tables · the gift card is gone (4A), and push tokens arrive with 4F
+- 2026-10-28 · 4B · Writes go only through `security definer` functions; tables are read-only for signed-in users and closed to the anonymous key · one place enforces each rule, and a client cannot write a row the rules would refuse
+- 2026-10-28 · 4B · Row-level security shows another person's requests unless cancelled or blocked, so claimed and completed ones are readable · Request Detail and profiles need them, as in the mock; open-only reading is `nearby_requests`
+- 2026-10-28 · 4B · `nearby_requests` includes the caller's own open requests · matches `MockRequestRepository.nearby`, where Alex sees his own rice request
+- 2026-10-28 · 4B · Picking up across a block fails with `blocked` in both directions · one code for one rule; the app can say "You can't interact with this person"
+- 2026-10-28 · 4B · New server-only texts: "This request is missing its location." and "Note must be 500 characters or fewer." · the app never sends such input, but the server must still refuse it
+- 2026-10-28 · 4B · `complete_profile` also changes the name of an existing profile · a later "edit name" needs no new function
+- 2026-10-28 · 4B · `delete_my_account` deletes the `auth.users` row in SQL, cascading to the profile · no edge function needed; reviews about the deleted user go too, since their score goes with them
+- 2026-10-28 · 4B · Errors are SQLSTATE `P0001` with a fixed message, and validation text in DETAIL (contract in `backend/README.md`) · 4C maps them to `FavorlyError`, adding `.notSignedIn`, `.rateLimited` and `.blocked`
+- 2026-10-28 · 4B · Local Supabase ports are 55321–55329, not the default 54321–54329 · another local Supabase project (hackamatch) uses the defaults on this Mac
+- 2026-10-28 · 4B · Backend tests run locally (`supabase test db`), not on GitHub Actions yet · CI minutes may cost money on a private repo; ask the owner before adding a workflow
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues
@@ -416,6 +434,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-10-28 · 4B · Supabase CLI installed; `backend/supabase` with four migrations (schema, row-level security, actions with the app's rules, rate limits, blocks, account deletion, `pg_cron` auto-complete); 116 pgTAP tests pass; lint clean; `backend/README.md` with the error contract. App unchanged · owner approves the hosted Supabase project (free tier), then deploy; then 4C
 - 2026-10-28 · 4A · `AuthService`, `AuthState`, `ProfileSetupRules`, `DemoSessionControls`; `MockAuthService`; Welcome and profile setup behind a sign-in gate; Sign out and Delete account on the Profile tab; gift card and Redeem removed; Dev Settings Debug-only; `-demo`, `-signedOut` and `AppEnvironment.live()`; no-encryption key; 307 package tests and the changed UI test classes pass · start 4B on `phase/4b-backend` after the owner installs Docker and the Supabase CLI
 - 2026-10-28 · 3F · Requester-only completion, auto-complete 7 days after pick-up in rules and the mock repository, the helper's auto-complete note on Request Detail, tests (279 package tests, profile UI tests), docs; also accepted the Phase 3 review, tagged `v0.3.0-profiles`, wrote the Phase 4 plan · start 4A on `phase/4a-release-groundwork`
 - 2026-10-09 · 3B–3E · Profile tab and other users' profiles with score, gift card and redeem; scores and tappable names on Request Detail; chat (rules, mock, screen, Message button); reviews (rules, submit, star picker, review sheet, review on Request Detail and on profiles); `ProfileUITests`, `ChatUITests`, `ReviewUITests`, `DemoFlowUITests.testExtendedDemoScript`, new screenshot captures; version 0.3.0, README and architecture notes; CI on `claude/**` branches and a lint and screenshot workflow. View models and rules pass on Linux; the app, the UI tests and lint ran on GitHub Actions (results in the commit map rows and below) · the owner's review list at the top of this file

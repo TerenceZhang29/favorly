@@ -175,13 +175,13 @@ Everything the store build needs that does not depend on a server, built against
 
 ### 4D. Real location and privacy
 
-- [ ] `CoreLocationProvider` implementing `LocationProvider`: when-in-use permission, reduced accuracy is enough, one fix per request
-- [ ] Neighborhood name from reverse geocoding (`CLGeocoder`), shown instead of the preset label
-- [ ] Location snapped to about 100 m before upload; distances shown rounded
-- [ ] Permission flow: ask when Nearby or Post first needs it, with the reason; if denied, an explanation and a button to Settings; `.locationPermissionDenied` error
-- [ ] `NSLocationWhenInUseUsageDescription` in `project.yml`
-- [ ] `LocationSettings` and presets only in Debug and `-demo`
-- [ ] Tests: snapping, rounding, permission states in the view models (with a fake provider)
+- [x] `CoreLocationProvider` implementing `LocationProvider` (built as `DeviceLocationProvider` on `CoreLocationSource`, in a new `FavorlyDevice` module): when-in-use permission, reduced accuracy is enough, one fix per request
+- [x] Neighborhood name from reverse geocoding (`CLGeocoder`), shown instead of the preset label
+- [x] Location snapped to about 100 m before upload; distances shown rounded
+- [x] Permission flow: ask when Nearby or Post first needs it, with the reason; if denied, an explanation and a button to Settings; `.locationPermissionDenied` error
+- [x] `NSLocationWhenInUseUsageDescription` in `project.yml`
+- [x] `LocationSettings` and presets only in Debug and `-demo`
+- [x] Tests: snapping, rounding, permission states in the view models (with a fake provider)
 
 **Done when:** on a phone, Nearby shows real requests around the real location; denying permission shows the explanation and the Settings button; no screen shows a location more exact than the neighborhood and a rounded distance.
 
@@ -218,6 +218,7 @@ Everything the store build needs that does not depend on a server, built against
 - [ ] Version `1.0.0` (build numbers count up per upload); archive a Release build
 - [ ] **Owner:** App Store Connect app record; internal TestFlight for the team
 - [ ] Internal round: the team uses it for a week on Roosevelt Island; fix crashes (Xcode Organizer) and blockers
+- [ ] **Owner:** the two-phone check moved here from 4C: two Apple IDs post, pick up, chat, complete and review with each other, screens update without refreshing, and deleting one account updates the other phone
 - [ ] **Owner:** external TestFlight group (Beta App Review, about a day), 20–50 neighbors, two weeks; "What to Test" notes; feedback through TestFlight
 - [ ] Triage list in `docs/PROGRESS.md`; fix everything marked "launch blocker"
 - [ ] Cold-start plan: team members post real requests in the pilot area so the first users see activity

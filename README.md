@@ -48,7 +48,7 @@ To develop against the local backend instead:
 2. Put them in `Config/Local.xcconfig` (see `Config/Local.xcconfig.example`; write the URL as `http:/$()/127.0.0.1:55321`), and run `xcodegen generate`.
 3. Sign in with Apple is not set up on the local backend, so add `-devEmail you@dev.local -devPassword any-password` to the Run arguments (Debug builds only). The first launch creates that account and asks for a profile.
 
-Two simulators with two different `-devEmail` values see each other's requests, chat and reviews. Locations still come from Dev Settings until phase 4D. The session lives in the keychain, which survives deleting the app; sign out from the Profile tab to start again at Welcome.
+Two simulators with two different `-devEmail` values see each other's requests, chat and reviews. Launches against a backend use the device's own location, asking for permission the first time; on a simulator, set it in the Simulator app under Features → Location (or `xcrun simctl location <device> set 40.762,-73.950`). Dev Settings location presets exist only in `-demo` launches. The session lives in the keychain, which survives deleting the app; sign out from the Profile tab to start again at Welcome.
 
 ### Run on your iPhone
 

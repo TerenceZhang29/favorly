@@ -2,8 +2,8 @@
 
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
-**Current phase:** Phase 4. 4A, 4B and 4C are done: the app signs in with Apple and runs on the hosted Supabase project. One 4C check waits on the owner: two phones with two Apple IDs (see "Needs the owner's review"). Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
-**Next task:** 4D (real location and privacy) on `phase/4d-location`
+**Current phase:** Phase 4. 4A–4D are done: Sign in with Apple on the hosted Supabase project, and the device's own location. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
+**Next task:** 4E (trust and safety) on `phase/4e-safety`
 
 ## Phase checklist
 
@@ -35,8 +35,8 @@ Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). T
 
 - [x] **4A.** Release groundwork: onboarding and account screens on a mock auth service, Dev Settings Debug-only, no fake Redeem
 - [x] **4B.** Backend schema and server rules (local Supabase, database tests, hosted project `favorly`)
-- [x] **4C.** Real accounts and shared data (`FavorlyRemote`, Sign in with Apple). The two-phone check waits on the owner
-- [ ] **4D.** Real location and privacy
+- [x] **4C.** Real accounts and shared data (`FavorlyRemote`, Sign in with Apple). The two-phone check moved to 4G
+- [x] **4D.** Real location and privacy
 - [ ] **4E.** Trust and safety: report, block, content filter, moderation, terms
 - [ ] **4F.** Push notifications
 - [ ] **4G.** Release candidate and TestFlight beta
@@ -44,7 +44,7 @@ Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). T
 
 ## Needs the owner's review
 
-- **4C two-phone check.** Two iPhones (or an iPhone and a simulator signed in to Apple) with two different Apple IDs, both on the hosted project: post, pick up, chat, mark completed and review between them, and check that each screen updates on the other phone without pulling to refresh. Then delete one account from its Profile tab and check the other phone. Until 4D, both phones use the Dev Settings location presets, so pick the same preset on both.
+- **Two-phone check (4G).** Moved from 4C on the owner's decision: done during the internal TestFlight round, when teammates install the app anyway. Steps are in `docs/PLAN-PHASE-4.md`, 4G.
 
 ## Owner's review of Phase 3
 
@@ -209,6 +209,11 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 4C | `7648e4f` | feat(onboarding): Sign in with Apple button with a hashed nonce on the backend; the demo keeps its plain button |
 | 4C | `b8ce42a` | feat(app): normal launches use the hosted backend; Sign in with Apple entitlement |
 | 4C | `f521dd1` | docs: hosted auth settings and the Sign in with Apple decisions |
+| 4C | `1c519e1` | docs: 4C done but the two-phone check; running against the hosted or local backend |
+| 4D | `0cad4c3` | feat(core): locationPermissionDenied, and snapping locations to about 100 m |
+| 4D | `d1b153e` | feat(device): device location provider with permission, snapping and neighborhood names, on CoreLocation |
+| 4D | `513a5af` | feat(features): Nearby names the neighborhood; Open Settings when location is off; presets only in demo launches |
+| 4D | `343a77f` | feat(app): the backend launch uses the device's location; location permission text |
 
 ## Confirmed decisions
 
@@ -423,6 +428,13 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-29 · 4C · `Config/Backend.xcconfig` holds the hosted project's URL and public anon key, committed; `Local.xcconfig` may override them with the local backend · the anon key is public by design; normal launches need it to reach the backend
 - 2026-10-29 · 4C · With an Individual enrollment the paid team keeps the Personal Team's ID (`5B89U2CMF9`); Xcode needed the account removed and re-added before it allowed the Sign in with Apple capability · Apple upgrades the team in place
 - 2026-10-29 · 4C · Sign in with Apple tried by the owner on an iPhone against the hosted project: sign-in, profile setup and the tabs work, and the hosted project has the one profile · the plan's 4C sign-in check
+- 2026-10-29 · 4D · Device location lives in a new `FavorlyDevice` module: `DeviceLocationProvider` holds the rules (ask once, `.locationPermissionDenied` when refused, snap, name, cache the name per 100 m square) behind two seams, `LocationSource` and `NeighborhoodNamer`, so tests use fakes; `CoreLocationSource` and `GeocoderNeighborhoodNamer` are thin adapters checked in the simulator · CoreLocation cannot be driven from unit tests
+- 2026-10-29 · 4D · `LocationPrivacy.snapped` rounds to 3 decimal places on the device, the same as the server · the exact position never leaves the phone
+- 2026-10-29 · 4D · `CLGeocoder` for neighborhood names (`subLocality`, else `locality`, else "Your neighborhood") · its iOS 26 deprecation does not warn with an iOS 17 deployment target; `MKReverseGeocodingRequest` can replace it when the target moves to 26
+- 2026-10-29 · 4D · `AppEnvironment.locationSettings` is optional: demo launches pass the presets, backend launches pass nil and Dev Settings hides its location section · the plan's "presets only in Debug and -demo"
+- 2026-10-29 · 4D · The Nearby header shows "Near <neighborhood>" from the last fix ("Location is off" when denied) instead of the debug line "Alex @ preset"; its identifier is now `nearby.location`. Dev Settings keeps the debug line · the user name next to a place was debug information
+- 2026-10-29 · 4D · Permission is asked the first time Nearby or Post needs a location; if refused, both show the reason and an Open Settings button instead of Retry · the plan's permission flow; Retry cannot help until Settings changes
+- 2026-10-29 · 4D · `MessageView` takes an `actionTitle` (default "Retry") · Open Settings reuses the same component
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues
@@ -454,7 +466,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - Demo launches (`-demo`, UI tests) still use the mock sign-in: Continue with Apple goes straight to profile setup, every sign-up is a new user, and deleting an account only forgets the user in the session. Normal launches sign in with Apple.
 - The Supabase session is kept in the keychain, which survives deleting the app, on a simulator as on a phone. Reinstalling therefore restores the last account; sign out, or run `xcrun simctl keychain <device> reset` on a simulator, to start at Welcome.
 - `xcodegen generate` ticks `-demo` in the Run scheme again; untick it to run against the backend.
-- The Nearby header still shows the fake location label from Dev Settings presets ("Alex @ Cornell Tech, Roosevelt Island"), also in Release builds; 4D replaces it with the real neighborhood.
+- Apple's geocoder names Roosevelt Island "Manhattan" (its borough, as `subLocality`), so the Nearby header reads "Near Manhattan" there. Coarser than the plan's example, but accurate and private.
 - `xcodebuild` prints `appintentsmetadataprocessor ... Metadata extraction skipped` warnings. They come from an Xcode build tool, not the Swift compiler, and need no action.
 
 ## Open questions
@@ -474,6 +486,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-10-29 · 4D · `FavorlyDevice` (permission, 100 m snapping, neighborhood names), Nearby header from the real fix, Open Settings when denied, presets only in demo launches, location permission text; 361 package tests; checked in the simulator against the local backend ("Near Manhattan", then denied with Open Settings); two-phone check moved to 4G · start 4E on `phase/4e-safety`
 - 2026-10-29 · 4C · Sign in with Apple (Apple's button, hashed nonce, no scopes); normal launches on the hosted project; Apple provider on and Email off on the hosted project; owner signed in on an iPhone and the profile exists on the hosted project; 4C done but the owner's two-phone check · start 4D on `phase/4d-location`
 - 2026-10-29 · 4C (part) · Migration 0005 (transition status, realtime); four new `FavorlyError` cases; `FavorlyRemote` on supabase-swift (rows, errors, repository with realtime, profiles, session, auth); 22 remote tests, contract tests pass on mock and local backend; `-remote` Debug launches with email sign-in, checked end to end in the simulator · owner deploys migration 0005 and enrolls in the Apple Developer Program, then Sign in with Apple and the live wiring
 - 2026-10-28 · 4B · Backend CI on GitHub Actions (first run green, 104 s); owner logged in to Supabase and created the hosted project `favorly`; migrations deployed and checked (`migration list --linked`, `db diff --linked`); 4B done · 4C after the owner enrolls in the Apple Developer Program

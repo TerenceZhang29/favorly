@@ -1,7 +1,9 @@
-// Signing settings shared by the app and UI test targets (see "Run on your iPhone" in the README).
+// Signing and backend settings shared by the app and UI test targets (see "Run on your iPhone" in the README).
 // Personal values go in Local.xcconfig next to this file, which git ignores.
 
 FAVORLY_BUNDLE_ID = edu.cornelltech.team402.favorly
 CODE_SIGN_STYLE = Automatic
+
+#include "Backend.xcconfig"
 
 #include? "Local.xcconfig"

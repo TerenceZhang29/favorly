@@ -6,3 +6,8 @@ DEVELOPMENT_TEAM = ABCDE12345
 
 // Uncomment if Xcode says the bundle identifier is not available.
 // FAVORLY_BUNDLE_ID = edu.cornelltech.team402.favorly.yourname
+
+// Optional: the Supabase project for `-remote` launches. For the local backend, after `supabase start` in backend/,
+// copy the API URL and anon key from `supabase status`. Note the $() that keeps "//" from starting a comment.
+// FAVORLY_SUPABASE_URL = http:/$()/127.0.0.1:55321
+// FAVORLY_SUPABASE_ANON_KEY = <anon key>

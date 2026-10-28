@@ -39,6 +39,10 @@ struct DisplayTests {
         (.locationUnavailable, "Your location isn't available right now."),
         (.alreadyReviewed, "You already reviewed this favor."),
         (.notEnoughPoints, "You need 100 points to redeem a gift card."),
+        (.notSignedIn, "Please sign in again."),
+        (.rateLimited, "You're doing that too often. Please wait a little and try again."),
+        (.blocked, "You can't interact with this person."),
+        (.network, "Can't reach Favorly. Check your connection and try again."),
     ])
     func everyFavorlyErrorHasAUserMessage(error: FavorlyError, expected: String) {
         #expect(ErrorMessage.text(for: error) == expected)

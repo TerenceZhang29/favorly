@@ -14,6 +14,10 @@ enum ErrorMessage {
         case .locationUnavailable: "Your location isn't available right now."
         case .alreadyReviewed: "You already reviewed this favor."
         case .notEnoughPoints: "You need \(KindnessRules.giftCardCost) points to redeem a gift card."
+        case .notSignedIn: "Please sign in again."
+        case .rateLimited: "You're doing that too often. Please wait a little and try again."
+        case .blocked: "You can't interact with this person."
+        case .network: "Can't reach Favorly. Check your connection and try again."
         }
     }
 }

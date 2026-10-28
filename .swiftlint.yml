@@ -17,6 +17,10 @@ opt_in_rules:
 trailing_comma:
   mandatory_comma: true
 
+# A switch that maps one enum onto another is not complex.
+cyclomatic_complexity:
+  ignores_case_statements: true
+
 line_length:
   warning: 120
   error: 160

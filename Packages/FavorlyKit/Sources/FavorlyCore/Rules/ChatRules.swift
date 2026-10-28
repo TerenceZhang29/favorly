@@ -35,6 +35,7 @@ public enum ChatRules {
         guard trimmed.count <= messageLengthRange.upperBound else {
             throw FavorlyError.validation("Message must be \(messageLengthRange.upperBound) characters or fewer.")
         }
+        try ContentFilter.validate(trimmed)
         return trimmed
     }
 }

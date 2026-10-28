@@ -20,6 +20,7 @@ public enum DraftValidator {
         guard normalized.details.count <= maxDetailsLength else {
             throw FavorlyError.validation("Details must be \(maxDetailsLength) characters or fewer.")
         }
+        try ContentFilter.validate(normalized.title + " " + normalized.details)
         return normalized
     }
 }

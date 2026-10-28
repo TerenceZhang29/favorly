@@ -31,6 +31,7 @@ public enum ReviewRules {
         guard normalized.comment.count <= maxCommentLength else {
             throw FavorlyError.validation("Comment must be \(maxCommentLength) characters or fewer.")
         }
+        try ContentFilter.validate(normalized.comment)
         return normalized
     }
 }

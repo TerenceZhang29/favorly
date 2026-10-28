@@ -17,6 +17,7 @@ public enum ProfileSetupRules {
         guard normalized.displayName.count <= displayNameLengthRange.upperBound else {
             throw FavorlyError.validation("Name must be \(displayNameLengthRange.upperBound) characters or fewer.")
         }
+        try ContentFilter.validate(normalized.displayName)
         guard draft.confirmedAdult else {
             throw FavorlyError.validation("You must be 18 or older to use Favorly.")
         }

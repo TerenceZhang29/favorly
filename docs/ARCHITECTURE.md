@@ -31,6 +31,7 @@ The three modules are library targets of one local package, `Packages/FavorlyKit
 
 - `AppEnvironment` holds seven services, all protocols in Core: `RequestRepository`, `KindnessRepository`, `ReviewRepository`, `ChatRepository`, `LocationProvider`, `SessionStore` and `LocationSettings`.
 - One mock actor, `MockRequestRepository`, implements all four repository protocols, one conformance per file (`MockRequestRepository+Kindness.swift`, `+Reviews.swift`, `+Chat.swift`). `AppEnvironment.demo()` passes the same instance to each. One actor keeps rules that span requests and reviews atomic, and keeps one `changes()` stream and one `reset()` for everything. A real backend can split them later without touching Features.
+- Only the requester marks a request completed. A picked-up request completes on its own 7 days after pick-up: `MockRequestRepository` completes every due request at the start of each read and write, using its `now` clock, with no timer. A real backend does the same on the server (see `docs/PLAN-PHASE-4.md`).
 - The Kindness score is never stored. `KindnessRules.summary` derives it from completed requests, reviews and redemptions each time it is asked for.
 - `RootView` reads the environment once and hands it to each screen's initializer. The screen creates its view model from it.
 - Each tab's `NavigationStack` registers its destinations once, through `appDestinations(_:)`: a `RequestID` opens Request Detail and a `UserID` opens that user's profile. Chat is pushed and the review form is a sheet, both from Request Detail.

@@ -93,7 +93,7 @@ Start from a fresh launch (or Reset demo data, and switch back to Alex and Corne
 
 1. Profile tab: Alex has a score of 0 and "No activity yet".
 2. Post "Need a cup of rice" as Alex. Switch to Bea: her Profile shows 90 points and "90 of 100 points" on the gift card.
-3. As Bea, open the rice request in Nearby, Pick up, then tap Message Alex and send "On my way". Switch to Alex, open the request from My Activity, tap Message Bea, reply, go back and tap Mark completed.
+3. As Bea, open the rice request in Nearby and Pick up. Bea has no Mark completed button; a note says the favor completes automatically in 7 days if Alex doesn't confirm. Tap Message Alex and send "On my way". Switch to Alex, open the request from My Activity, tap Message Bea, reply, go back and tap Mark completed.
 4. Still as Alex, tap Leave a review: 5 stars, "Fast and friendly", Submit.
 5. Switch to Bea. Profile shows 110 points, the new review and the favor under Past activities. Tap Redeem: the code `FAVORLY-0001` appears and progress reads "10 of 100 points".
 6. Switch to Chen. In My Activity open "Water my plants for the weekend" and tap the Helper row: Bea's profile shows her score and reviews, but no gift card.

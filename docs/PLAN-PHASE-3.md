@@ -244,14 +244,14 @@ No pull requests. Work on a branch `phase/<id>-<short-name>`; when the phase is 
 
 Decided by the owner on 2026-10-13, after reviewing 3A–3E. It closes the "Self-awarded points" open question: a helper can no longer complete a request, so they cannot award themselves points, and a requester who never confirms cannot hold the helper's points back for more than 7 days. Branch `phase/3f-completion`.
 
-- [ ] `RequestRules.validateComplete`: only the requester passes; the helper gets `notAllowed`. Update the status-rules text in `docs/PLAN.md` (rule 4 and the Request Detail row) to match
-- [ ] `RequestRules.autoCompleteInterval` (7 days) and `RequestRules.isAutoCompleteDue(_:now:)`: true for a claimed request whose `claimedAt` is 7 days or more before `now`
-- [ ] `MockRequestRepository`: before every read and write, complete each claimed request that is due, and emit on `changes()` when any changed. No timer; the repository's `now` closure decides, so tests use a fixed clock
-- [ ] `RequestDetailViewModel`: `canComplete` is true for the requester only. For the helper of a claimed request, expose the auto-complete date
-- [ ] `RequestDetailView`: the helper sees no Mark completed button, and a gray note in its place: "Completes automatically on Oct 20 if Alex doesn't confirm." (`detail.autoCompleteNote`)
-- [ ] Tests: the helper cannot complete; the requester can; not due at 7 days minus one second, due at exactly 7 days; an auto-completed request gives the helper 10 points and can be reviewed; a cancelled or open request never auto-completes; `reset()` is unaffected; the view model hides the action from the helper
-- [ ] UI tests: the helper's Request Detail has no Mark completed button and shows the note. Edit any existing test that completes a request as the helper
-- [ ] README demo script and `docs/ARCHITECTURE.md` if either mentions the helper completing
+- [x] `RequestRules.validateComplete`: only the requester passes; the helper gets `notAllowed`. Update the status-rules text in `docs/PLAN.md` (rule 4 and the Request Detail row) to match
+- [x] `RequestRules.autoCompleteInterval` (7 days) and `RequestRules.isAutoCompleteDue(_:now:)`: true for a claimed request whose `claimedAt` is 7 days or more before `now`
+- [x] `MockRequestRepository`: before every read and write, complete each claimed request that is due, and emit on `changes()` when any changed. No timer; the repository's `now` closure decides, so tests use a fixed clock
+- [x] `RequestDetailViewModel`: `canComplete` is true for the requester only. For the helper of a claimed request, expose the auto-complete date
+- [x] `RequestDetailView`: the helper sees no Mark completed button, and a gray note in its place: "Completes automatically on Oct 20 if Alex doesn't confirm." (`detail.autoCompleteNote`)
+- [x] Tests: the helper cannot complete; the requester can; not due at 7 days minus one second, due at exactly 7 days; an auto-completed request gives the helper 10 points and can be reviewed; a cancelled or open request never auto-completes; `reset()` is unaffected; the view model hides the action from the helper
+- [x] UI tests: the helper's Request Detail has no Mark completed button and shows the note. Edit any existing test that completes a request as the helper
+- [x] README demo script and `docs/ARCHITECTURE.md` if either mentions the helper completing
 
 **Done when:** as Bea, a picked-up request shows the note and no Mark completed button; as Alex, Mark completed still works; a test with the clock moved 7 days forward shows the request completed and Bea's score 10 higher.
 

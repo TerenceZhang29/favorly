@@ -1,0 +1,1 @@
+-- Local development only. Favorly's tests create their own users, so there is nothing to seed yet.

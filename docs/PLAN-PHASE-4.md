@@ -134,15 +134,15 @@ One phase per session, on `phase/4x-<short-name>` branches, as in `CLAUDE.md`. O
 
 Everything the store build needs that does not depend on a server, built against mocks.
 
-- [ ] `AuthService`, `AuthState`, `DemoSessionControls` in Core; `MockAuthService` in Data (starts signed out in live-like mode, signed in as Alex in `-uiTesting` and `-demo`)
-- [ ] Onboarding: Welcome screen with Sign in with Apple button (wired to the mock for now), profile setup (display name, "I'm 18 or older", accept Terms of Use and Privacy Policy with links)
-- [ ] Profile tab: Sign out, Delete account (with a confirmation that explains what is deleted)
-- [ ] Dev Settings tab and user switching compiled only in Debug builds (`#if DEBUG`); Release shows four tabs
-- [ ] Remove the Redeem button and reward codes from the UI; gift-card progress becomes "Kindness score" progress with no money amount (per decisions)
-- [ ] `AppEnvironment.live()` stub and the `-demo` launch argument; `FavorlyApp` chooses the environment
-- [ ] Config plumbing: `FAVORLY_SUPABASE_URL` and `FAVORLY_SUPABASE_ANON_KEY` from `Config/Signing.xcconfig` / `Local.xcconfig` into the Info.plist; `ITSAppUsesNonExemptEncryption = NO`
-- [ ] Tests: auth state transitions, onboarding validation (empty name, unticked boxes), delete-account confirmation, Release build has no Dev Settings (a build-setting test or a UI test on a Release-config scheme)
-- [ ] Update UI tests and the demo script for the onboarding step (skipped under `-uiTesting`)
+- [x] `AuthService`, `AuthState`, `DemoSessionControls` in Core; `MockAuthService` in Data (starts signed out in live-like mode, signed in as Alex in `-uiTesting` and `-demo`)
+- [x] Onboarding: Welcome screen with Sign in with Apple button (wired to the mock for now), profile setup (display name, "I'm 18 or older", accept Terms of Use and Privacy Policy with links)
+- [x] Profile tab: Sign out, Delete account (with a confirmation that explains what is deleted)
+- [x] Dev Settings tab and user switching compiled only in Debug builds (`#if DEBUG`); Release shows four tabs
+- [x] Remove the Redeem button and reward codes from the UI; gift-card progress becomes "Kindness score" progress with no money amount (per decisions). Done by removing the gift card section entirely; see `docs/PROGRESS.md`
+- [x] `AppEnvironment.live()` stub and the `-demo` launch argument; `FavorlyApp` chooses the environment
+- [x] Config plumbing (encryption key done; the Supabase keys moved to 4C, see `docs/PROGRESS.md`): `FAVORLY_SUPABASE_URL` and `FAVORLY_SUPABASE_ANON_KEY` from `Config/Signing.xcconfig` / `Local.xcconfig` into the Info.plist; `ITSAppUsesNonExemptEncryption = NO`
+- [x] Tests: auth state transitions, onboarding validation (empty name, unticked boxes), delete-account confirmation, Release build has no Dev Settings (a build-setting test or a UI test on a Release-config scheme)
+- [x] Update UI tests and the demo script for the onboarding step (skipped under `-uiTesting`)
 
 **Done when:** a Release build launches to the Welcome screen with no Dev Settings tab; a Debug `-demo` launch behaves exactly as 0.3.0 did; `swift test` and `xcodebuild test` pass.
 
@@ -167,6 +167,8 @@ Everything the store build needs that does not depend on a server, built against
 - [ ] `RemoteRequestRepository`, `RemoteChatRepository`, `RemoteReviewRepository`, `RemoteKindnessRepository`; `changes()` backed by Supabase realtime; chat updates live
 - [ ] Error mapping: server errors to `FavorlyError` (`.network`, `.notAllowed`, `.rateLimited`, …); offline shows a retryable error, never a crash
 - [ ] Contract tests: one shared test suite run against `MockRequestRepository` always, and against local Supabase when `FAVORLY_REMOTE_TESTS=1`, so mock and server behave the same
+- [ ] `FAVORLY_SUPABASE_URL` and `FAVORLY_SUPABASE_ANON_KEY` from `Config/Signing.xcconfig` / `Local.xcconfig` into the Info.plist (moved from 4A)
+- [ ] Replace the Welcome screen's mock button with Apple's `SignInWithAppleButton`
 - [ ] `AppEnvironment.live()` wired; Release builds use it
 
 **Done when:** two phones signed in with two Apple IDs (simulator plus a device is fine) can post, pick up, chat, complete and review a favor with each other, against the hosted project; deleting an account on one phone updates the other; contract tests pass against both implementations.

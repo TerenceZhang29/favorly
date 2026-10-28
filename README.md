@@ -36,6 +36,8 @@ open Favorly.xcodeproj
 
 Pick an iPhone simulator and press Run. All data is in memory and resets on every launch.
 
+The Run scheme passes `-demo`, so the app starts signed in as Alex with demo data and a Dev Settings tab. To try sign-up, untick `-demo` in Product → Scheme → Edit Scheme → Run → Arguments: the app then starts at the Welcome screen, as a downloaded app will. Until phase 4C the sign-in is a mock: Continue with Apple goes straight to profile setup, and every sign-up is a new user. Release builds have no Dev Settings tab.
+
 ### Run on your iPhone
 
 This uses a free Apple ID; no paid developer account is needed. Your iPhone needs iOS 17 or later.
@@ -92,11 +94,11 @@ One person plays both sides by switching users in the Dev Settings tab. It takes
 Start from a fresh launch (or Reset demo data, and switch back to Alex and Cornell Tech). `DemoFlowUITests.testExtendedDemoScript` runs the same steps.
 
 1. Profile tab: Alex has a score of 0 and "No activity yet".
-2. Post "Need a cup of rice" as Alex. Switch to Bea: her Profile shows 90 points and "90 of 100 points" on the gift card.
+2. Post "Need a cup of rice" as Alex. Switch to Bea: her Profile shows 90 points.
 3. As Bea, open the rice request in Nearby and Pick up. Bea has no Mark completed button; a note says the favor completes automatically in 7 days if Alex doesn't confirm. Tap Message Alex and send "On my way". Switch to Alex, open the request from My Activity, tap Message Bea, reply, go back and tap Mark completed.
 4. Still as Alex, tap Leave a review: 5 stars, "Fast and friendly", Submit.
-5. Switch to Bea. Profile shows 110 points, the new review and the favor under Past activities. Tap Redeem: the code `FAVORLY-0001` appears and progress reads "10 of 100 points".
-6. Switch to Chen. In My Activity open "Water my plants for the weekend" and tap the Helper row: Bea's profile shows her score and reviews, but no gift card.
+5. Switch to Bea. Profile shows 110 points, the new review and the favor under Past activities.
+6. Switch to Chen. In My Activity open "Water my plants for the weekend" and tap the Helper row: Bea's profile shows her score and reviews, but no Account section.
 
 ## Pitch demo: the rice story
 

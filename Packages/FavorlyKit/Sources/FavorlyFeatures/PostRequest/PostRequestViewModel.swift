@@ -8,11 +8,14 @@ final class PostRequestViewModel {
         case loading
         case tagged(TaggedLocation)
         case failed(String)
+        /// Location is off for Favorly; the form offers Settings instead of Retry.
+        case denied(String)
     }
 
     /// Everything that should trigger a fresh location lookup when it changes.
     struct ReloadKey: Hashable {
-        let preset: LocationPreset
+        /// Nil on the device's own location.
+        let preset: LocationPreset?
         let simulatesError: Bool
     }
 
@@ -32,8 +35,8 @@ final class PostRequestViewModel {
 
     var reloadKey: ReloadKey {
         ReloadKey(
-            preset: environment.locationSettings.selectedPreset,
-            simulatesError: environment.locationSettings.simulatesError
+            preset: environment.locationSettings?.selectedPreset,
+            simulatesError: environment.locationSettings?.simulatesError ?? false
         )
     }
 
@@ -65,7 +68,9 @@ final class PostRequestViewModel {
         } catch is CancellationError {
             // A newer lookup replaced this one.
         } catch {
-            locationState = .failed(ErrorMessage.text(for: error))
+            locationState = error as? FavorlyError == .locationPermissionDenied
+                ? .denied(ErrorMessage.text(for: error))
+                : .failed(ErrorMessage.text(for: error))
         }
     }
 

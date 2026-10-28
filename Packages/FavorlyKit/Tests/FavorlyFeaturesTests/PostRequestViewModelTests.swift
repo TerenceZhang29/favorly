@@ -125,4 +125,19 @@ struct PostRequestViewModelTests {
         world.locationSettings.simulatesError = true
         #expect(Set([initial, afterMove, viewModel.reloadKey]).count == 3)
     }
+
+    // MARK: Device location
+
+    @Test func aDeniedLocationOffersSettingsAndBlocksSubmit() async {
+        let viewModel = PostRequestViewModel(environment: world
+            .deviceEnvironment(locationProvider: DeniedLocationProvider()))
+        viewModel.title = "Need a cup of rice"
+        await viewModel.loadLocation()
+        #expect(viewModel.locationState == .denied(
+            "Favorly needs your location to show requests near you. Turn on Location for Favorly in Settings."
+        ))
+        #expect(viewModel.locationText == nil)
+        #expect(!viewModel.canSubmit)
+        #expect(viewModel.reloadKey.preset == nil)
+    }
 }

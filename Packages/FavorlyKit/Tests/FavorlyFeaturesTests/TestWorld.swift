@@ -40,6 +40,20 @@ struct TestWorld {
         )
     }
 
+    /// Like a normal launch: the given location provider and no Dev Settings presets.
+    func deviceEnvironment(locationProvider: any LocationProvider) -> AppEnvironment {
+        AppEnvironment(
+            repository: repository,
+            kindness: repository,
+            reviews: repository,
+            chat: repository,
+            locationProvider: locationProvider,
+            session: session,
+            auth: auth,
+            locationSettings: nil
+        )
+    }
+
     static func seedID(_ number: UInt8) -> RequestID {
         RequestID(rawValue: UUID(uuid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, number)))
     }

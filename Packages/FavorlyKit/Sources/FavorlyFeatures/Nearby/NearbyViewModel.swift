@@ -9,17 +9,22 @@ final class NearbyViewModel {
         case loaded([NearbyRequest])
         case empty
         case failed(String)
+        /// Location is off for Favorly; the screen offers Settings instead of Retry.
+        case locationDenied(String)
     }
 
     /// Everything that should trigger a fresh load when it changes.
     struct ReloadKey: Hashable {
-        let preset: LocationPreset
+        /// Nil on the device's own location.
+        let preset: LocationPreset?
         let simulatesError: Bool
         let radius: RadiusOption
     }
 
     private(set) var state: State = .loading
     var radius = RadiusOption.default
+    /// Where the last list was loaded around.
+    private(set) var location: TaggedLocation?
 
     @ObservationIgnored private let environment: AppEnvironment
     @ObservationIgnored private var latestLoad = 0
@@ -30,10 +35,19 @@ final class NearbyViewModel {
 
     var reloadKey: ReloadKey {
         ReloadKey(
-            preset: environment.locationSettings.selectedPreset,
-            simulatesError: environment.locationSettings.simulatesError,
+            preset: environment.locationSettings?.selectedPreset,
+            simulatesError: environment.locationSettings?.simulatesError ?? false,
             radius: radius
         )
+    }
+
+    /// "Near Roosevelt Island", the neighborhood the list is around; "Location is off" when it is denied; nil
+    /// before the first location.
+    var locationText: String? {
+        if case .locationDenied = state {
+            return "Location is off"
+        }
+        return location.map { "Near \($0.label)" }
     }
 
     /// "7 requests", or nil when there is no list to count.
@@ -58,20 +72,26 @@ final class NearbyViewModel {
     func load() async {
         latestLoad += 1
         let load = latestLoad
-        if case .failed = state {
+        switch state {
+        case .failed, .locationDenied:
             state = .loading
+        default:
+            break
         }
 
         do {
             let location = try await environment.locationProvider.currentLocation()
             let results = try await environment.repository.nearby(around: location.point, radiusMeters: radius.meters)
             guard load == latestLoad else { return }
+            self.location = location
             state = results.isEmpty ? .empty : .loaded(results)
         } catch is CancellationError {
             // A newer load replaced this one.
         } catch {
             guard load == latestLoad else { return }
-            state = .failed(ErrorMessage.text(for: error))
+            state = error as? FavorlyError == .locationPermissionDenied
+                ? .locationDenied(ErrorMessage.text(for: error))
+                : .failed(ErrorMessage.text(for: error))
         }
     }
 

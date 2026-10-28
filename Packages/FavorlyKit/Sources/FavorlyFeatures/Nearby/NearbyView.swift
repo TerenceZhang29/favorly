@@ -2,11 +2,10 @@ import FavorlyCore
 import SwiftUI
 
 struct NearbyView: View {
-    private let environment: AppEnvironment
     @State private var viewModel: NearbyViewModel
+    @Environment(\.openURL) private var openURL
 
     init(environment: AppEnvironment) {
-        self.environment = environment
         _viewModel = State(initialValue: NearbyViewModel(environment: environment))
     }
 
@@ -18,9 +17,9 @@ struct NearbyView: View {
                         Image(systemName: "mappin.and.ellipse")
                             .foregroundStyle(Theme.Colors.brand)
                             .accessibilityHidden(true)
-                        Text(environment.debugSummary)
+                        Text(viewModel.locationText ?? "Finding your location…")
                             .foregroundStyle(.secondary)
-                            .accessibilityIdentifier("nearby.debugSummary")
+                            .accessibilityIdentifier("nearby.location")
                     }
                     .font(.subheadline)
                     Picker("Radius", selection: $viewModel.radius) {
@@ -80,6 +79,19 @@ struct NearbyView: View {
                 retryIdentifier: "nearby.retry"
             ) {
                 Task { await viewModel.load() }
+            }
+            .plainListRow()
+        case let .locationDenied(message):
+            MessageView(
+                systemImage: "location.slash",
+                message: message,
+                messageIdentifier: "nearby.locationDenied",
+                retryIdentifier: "nearby.openSettings",
+                actionTitle: "Open Settings"
+            ) {
+                if let url = SystemSettings.appURL {
+                    openURL(url)
+                }
             }
             .plainListRow()
         }

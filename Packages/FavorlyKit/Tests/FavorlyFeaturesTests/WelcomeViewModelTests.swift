@@ -44,7 +44,8 @@ struct WelcomeViewModelTests {
         let first = viewModel.appleRequestNonce()
         let second = viewModel.appleRequestNonce()
         #expect(first.count == 64)
-        #expect(first.allSatisfy { $0.isHexDigit })
+        let isHex = first.allSatisfy(\.isHexDigit)
+        #expect(isHex)
         #expect(first != second)
     }
 

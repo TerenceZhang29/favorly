@@ -9,7 +9,8 @@ public struct AppEnvironment: Sendable {
     public let locationProvider: any LocationProvider
     public let session: any SessionStore
     public let auth: any AuthService
-    public let locationSettings: any LocationSettings
+    /// The Dev Settings location presets, for demo launches only; nil when the device's own location is used.
+    public let locationSettings: (any LocationSettings)?
 
     public init(
         repository: any RequestRepository,
@@ -19,7 +20,7 @@ public struct AppEnvironment: Sendable {
         locationProvider: any LocationProvider,
         session: any SessionStore,
         auth: any AuthService,
-        locationSettings: any LocationSettings
+        locationSettings: (any LocationSettings)?
     ) {
         self.repository = repository
         self.kindness = kindness
@@ -33,6 +34,7 @@ public struct AppEnvironment: Sendable {
 
     /// Who is signed in and where they are, such as "Alex @ Cornell Tech, Roosevelt Island".
     @MainActor public var debugSummary: String {
-        "\(session.currentUser.displayName) @ \(locationSettings.selectedPreset.location.label)"
+        let place = locationSettings?.selectedPreset.location.label ?? "this device's location"
+        return "\(session.currentUser.displayName) @ \(place)"
     }
 }

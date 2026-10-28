@@ -1,12 +1,13 @@
 import SwiftUI
 
-/// An empty or error state: a symbol, a message and, when `onRetry` is given, a Retry button.
+/// An empty or error state: a symbol, a message and, when `onRetry` is given, a button (Retry unless named).
 struct MessageView: View {
     let systemImage: String
     let message: String
     /// Identifier for the message text, so UI tests can read it.
     let messageIdentifier: String
     var retryIdentifier = ""
+    var actionTitle = "Retry"
     var onRetry: (() -> Void)?
 
     var body: some View {
@@ -20,7 +21,7 @@ struct MessageView: View {
                 .multilineTextAlignment(.center)
                 .accessibilityIdentifier(messageIdentifier)
             if let onRetry {
-                Button("Retry", action: onRetry)
+                Button(actionTitle, action: onRetry)
                     .buttonStyle(.bordered)
                     .accessibilityIdentifier(retryIdentifier)
             }

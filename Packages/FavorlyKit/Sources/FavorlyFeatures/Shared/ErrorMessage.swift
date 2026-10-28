@@ -12,6 +12,8 @@ enum ErrorMessage {
         case .invalidTransition: "This request can't be changed that way anymore."
         case let .validation(message): message
         case .locationUnavailable: "Your location isn't available right now."
+        case .locationPermissionDenied:
+            "Favorly needs your location to show requests near you. Turn on Location for Favorly in Settings."
         case .alreadyReviewed: "You already reviewed this favor."
         case .notEnoughPoints: "You need \(KindnessRules.giftCardCost) points to redeem a gift card."
         case .notSignedIn: "Please sign in again."

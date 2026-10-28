@@ -32,20 +32,22 @@ struct DevSettingsView: View {
                 }
             }
 
-            Section("Fake location") {
-                ForEach(environment.locationSettings.presets) { preset in
-                    Button {
-                        environment.locationSettings.selectedPreset = preset
-                    } label: {
-                        SelectableRow(
-                            title: preset.location.label,
-                            isSelected: preset.id == environment.locationSettings.selectedPreset.id
-                        )
+            if let settings = environment.locationSettings {
+                Section("Fake location") {
+                    ForEach(settings.presets) { preset in
+                        Button {
+                            settings.selectedPreset = preset
+                        } label: {
+                            SelectableRow(
+                                title: preset.location.label,
+                                isSelected: preset.id == settings.selectedPreset.id
+                            )
+                        }
+                        .accessibilityIdentifier("devSettings.location.\(preset.id)")
                     }
-                    .accessibilityIdentifier("devSettings.location.\(preset.id)")
+                    Toggle("Simulate location error", isOn: simulatesError(in: settings))
+                        .accessibilityIdentifier("devSettings.simulateLocationError")
                 }
-                Toggle("Simulate location error", isOn: simulatesError)
-                    .accessibilityIdentifier("devSettings.simulateLocationError")
             }
 
             Section("Data") {
@@ -65,10 +67,10 @@ struct DevSettingsView: View {
         .navigationTitle("Dev Settings")
     }
 
-    private var simulatesError: Binding<Bool> {
+    private func simulatesError(in settings: any LocationSettings) -> Binding<Bool> {
         Binding(
-            get: { environment.locationSettings.simulatesError },
-            set: { environment.locationSettings.simulatesError = $0 }
+            get: { settings.simulatesError },
+            set: { settings.simulatesError = $0 }
         )
     }
 }

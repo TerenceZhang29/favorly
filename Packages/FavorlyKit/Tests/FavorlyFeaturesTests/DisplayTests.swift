@@ -37,6 +37,10 @@ struct DisplayTests {
         (.invalidTransition(from: .completed, to: .cancelled), "This request can't be changed that way anymore."),
         (.validation("Title must be at least 3 characters."), "Title must be at least 3 characters."),
         (.locationUnavailable, "Your location isn't available right now."),
+        (
+            .locationPermissionDenied,
+            "Favorly needs your location to show requests near you. Turn on Location for Favorly in Settings."
+        ),
         (.alreadyReviewed, "You already reviewed this favor."),
         (.notEnoughPoints, "You need 100 points to redeem a gift card."),
         (.notSignedIn, "Please sign in again."),

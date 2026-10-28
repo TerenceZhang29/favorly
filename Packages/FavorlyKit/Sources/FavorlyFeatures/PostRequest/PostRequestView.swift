@@ -3,6 +3,7 @@ import SwiftUI
 
 struct PostRequestView: View {
     @State private var viewModel: PostRequestViewModel
+    @Environment(\.openURL) private var openURL
     private let onPosted: (HelpRequest) -> Void
 
     init(environment: AppEnvironment, onPosted: @escaping (HelpRequest) -> Void) {
@@ -91,6 +92,14 @@ struct PostRequestView: View {
                 Task { await viewModel.loadLocation() }
             }
             .accessibilityIdentifier("post.locationRetry")
+        case let .denied(message):
+            InlineMessage(text: message, identifier: "post.locationDenied")
+            Button("Open Settings") {
+                if let url = SystemSettings.appURL {
+                    openURL(url)
+                }
+            }
+            .accessibilityIdentifier("post.openSettings")
         }
     }
 }

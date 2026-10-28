@@ -2,11 +2,11 @@ import XCTest
 
 final class DevSettingsUITests: UITestCase {
     @MainActor
-    func testSwitchingUserAndLocationUpdatesTheNearbyDebugLine() {
+    func testSwitchingUserAndLocationUpdatesSettingsAndNearby() {
         launchApp()
 
-        let debugLine = element("nearby.debugSummary")
-        waitFor(debugLine, toRead: "Alex @ Cornell Tech, Roosevelt Island")
+        let header = element("nearby.location")
+        waitFor(header, toRead: "Near Cornell Tech, Roosevelt Island")
 
         openTab("Dev Settings")
         waitFor(element("devSettings.summary"), toRead: "Alex @ Cornell Tech, Roosevelt Island")
@@ -16,6 +16,6 @@ final class DevSettingsUITests: UITestCase {
         app.buttons["devSettings.location.ithaca"].tap()
 
         openTab("Nearby")
-        waitFor(debugLine, toRead: "Bea @ Ithaca, NY")
+        waitFor(header, toRead: "Near Ithaca, NY")
     }
 }

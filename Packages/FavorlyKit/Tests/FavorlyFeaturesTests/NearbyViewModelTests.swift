@@ -100,4 +100,30 @@ struct NearbyViewModelTests {
         await viewModel.load()
         #expect(viewModel.countText == "1 request")
     }
+
+    // MARK: Device location
+
+    @Test func theHeaderNamesTheNeighborhoodOnceLoaded() async {
+        #expect(viewModel.locationText == nil)
+        await viewModel.load()
+        #expect(viewModel.locationText == "Near Cornell Tech, Roosevelt Island")
+    }
+
+    @Test func aDeniedLocationOffersSettingsInsteadOfRetry() async {
+        let viewModel = NearbyViewModel(environment: world
+            .deviceEnvironment(locationProvider: DeniedLocationProvider()))
+        await viewModel.load()
+        #expect(viewModel.state == .locationDenied(
+            "Favorly needs your location to show requests near you. Turn on Location for Favorly in Settings."
+        ))
+        #expect(viewModel.locationText == "Location is off")
+        #expect(viewModel.countText == nil)
+    }
+
+    @Test func theDevicesLocationHasNoPresetInTheReloadKey() {
+        let viewModel = NearbyViewModel(environment: world
+            .deviceEnvironment(locationProvider: DeniedLocationProvider()))
+        #expect(viewModel.reloadKey.preset == nil)
+        #expect(!viewModel.reloadKey.simulatesError)
+    }
 }

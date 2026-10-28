@@ -29,16 +29,16 @@ struct AppEnvironmentTests {
     @Test func debugSummaryFollowsUserAndLocationChanges() {
         let environment = makeEnvironment()
         (environment.session as? MockSessionStore)?.switchUser(to: DemoUsers.bea.id)
-        environment.locationSettings.selectedPreset = LocationPresets.ithaca
+        environment.locationSettings?.selectedPreset = LocationPresets.ithaca
         #expect(environment.debugSummary == "Bea @ Ithaca, NY")
     }
 
     @Test func locationProviderFollowsTheSharedLocationSettings() async throws {
         let environment = makeEnvironment()
-        environment.locationSettings.selectedPreset = LocationPresets.midtownEast
+        environment.locationSettings?.selectedPreset = LocationPresets.midtownEast
         #expect(try await environment.locationProvider.currentLocation() == LocationPresets.midtownEast.location)
 
-        environment.locationSettings.simulatesError = true
+        environment.locationSettings?.simulatesError = true
         await #expect(throws: FavorlyError.locationUnavailable) {
             try await environment.locationProvider.currentLocation()
         }
@@ -49,10 +49,11 @@ struct AppEnvironmentTests {
         #expect(environment.auth.state == .signedIn)
         let controls = try #require(environment.session as? any DemoSessionControls)
         #expect(controls.availableUsers.contains(environment.session.currentUser))
-        #expect(environment.locationSettings.presets.contains(environment.locationSettings.selectedPreset))
+        let settings = try #require(environment.locationSettings)
+        #expect(settings.presets.contains(settings.selectedPreset))
 
         let here = try await environment.locationProvider.currentLocation()
-        #expect(here == environment.locationSettings.selectedPreset.location)
+        #expect(here == settings.selectedPreset.location)
         #expect(try await !environment.repository.nearby(around: here.point, radiusMeters: 1000).isEmpty)
     }
 
@@ -96,5 +97,11 @@ struct AppEnvironmentTests {
                 by: user
             )
         }
+    }
+
+    @Test func withoutPresetsTheSummarySaysTheDevicesLocation() {
+        let world = TestWorld()
+        #expect(world.deviceEnvironment(locationProvider: DeniedLocationProvider()).debugSummary
+            == "Alex @ this device's location")
     }
 }

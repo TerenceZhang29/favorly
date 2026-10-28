@@ -35,6 +35,10 @@ targets:
         product: FavorlyFeatures
       - package: FavorlyKit
         product: FavorlyRemote
+    entitlements:
+      path: App/Favorly.entitlements
+      properties:
+        com.apple.developer.applesignin: [Default]
     info:
       path: App/Info.plist
       properties:
@@ -43,7 +47,7 @@ targets:
         # Read by RemoteConfiguration; both come from Config/Backend.xcconfig and Local.xcconfig.
         FavorlySupabaseURL: $(FAVORLY_SUPABASE_URL)
         FavorlySupabaseAnonKey: $(FAVORLY_SUPABASE_ANON_KEY)
-        # Debug launches with -remote may use the local backend over plain http on this Mac.
+        # Development builds may use the local backend over plain http on this Mac.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
     settings:

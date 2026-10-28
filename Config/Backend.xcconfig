@@ -1,7 +1,7 @@
-// Which Supabase project the app talks to. Empty means the app runs on demo data only.
-// Set both in Local.xcconfig. In an xcconfig, "//" starts a comment, so write a URL with "$()" between the
-// slashes: FAVORLY_SUPABASE_URL = http:/$()/127.0.0.1:55321
+// Which Supabase project the app talks to: the hosted project `favorly` (US East).
+// Local.xcconfig may override both, for example with the local backend from `supabase status` in backend/.
+// In an xcconfig, "//" starts a comment, so a URL is written with "$()" between the slashes.
 // The anon key is public by design (row-level security protects the data); never put the service-role key here.
 
-FAVORLY_SUPABASE_URL =
-FAVORLY_SUPABASE_ANON_KEY =
+FAVORLY_SUPABASE_URL = https:/$()/dkerjrnwjvrvsuldtqwe.supabase.co
+FAVORLY_SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrZXJqcm53anZydnN1bGR0cXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMTMzNDcsImV4cCI6MjEwODc4OTM0N30.CIs7KeCuSMlzglKyTvxHi__gGBuyntcDD6y-LKyr_8g

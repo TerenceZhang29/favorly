@@ -22,28 +22,15 @@ struct FavorlyApp: App {
         }
     }
 
+    /// Demo data for `-demo` and UI tests; otherwise the backend, as a downloaded app runs.
     private static func makeEnvironment() -> AppEnvironment {
-        if let configuration = remoteConfiguration {
-            return .remote(configuration)
-        }
-        return isDemo
+        isDemo
             ? .demo(artificialDelay: isUITesting ? .zero : .milliseconds(300), startsSignedIn: !startsSignedOut)
             : .live()
     }
 
-    /// `-remote` uses the Supabase project in `Config/Local.xcconfig`. Debug builds only, until Sign in with
-    /// Apple works (phase 4C); after that a normal launch will use it.
-    private static var remoteConfiguration: RemoteConfiguration? {
-        #if DEBUG
-            guard arguments.contains("-remote") else { return nil }
-            return RemoteConfiguration(info: Bundle.main.infoDictionary ?? [:])
-        #else
-            return nil
-        #endif
-    }
-
-    /// Restores a saved session; in Debug, `-devEmail` and `-devPassword` sign in by email (creating the account
-    /// the first time), since Sign in with Apple needs the paid developer account.
+    /// Restores a saved session. In Debug, `-devEmail` and `-devPassword` sign in by email (creating the account
+    /// the first time), for a second simulator or the local backend, where Sign in with Apple is not set up.
     private func signInAtLaunch() async {
         guard let auth = environment.auth as? RemoteAuthService else { return }
         await auth.restore()

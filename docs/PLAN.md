@@ -259,7 +259,7 @@ public enum FavorlyError: Error, Equatable, Sendable {
 1. Status moves only `open → claimed → completed`, plus `open → cancelled` and `claimed → cancelled`. Anything else throws `invalidTransition`.
 2. Only an `open` request can be claimed. A second claim throws `alreadyClaimed`.
 3. A user cannot claim their own request (`cannotClaimOwnRequest`).
-4. Only the requester can cancel; only the requester or helper can mark it completed.
+4. Only the requester can cancel; only the requester can mark it completed. A picked-up request completes on its own 7 days after pick-up (Phase 3 rule 15, which replaced "requester or helper" on 2026-10-13).
 5. Validation on create: title trimmed, 3–80 characters; details 0–500 characters; otherwise `validation("…")` with a readable message.
 6. Nearby returns only `open` requests within the radius, sorted by distance ascending, ties broken by newest first. The current user's own open requests are included and flagged "Yours" in the UI, with no Pick up button.
 7. Radius options: 0.25, 0.5, 1 and 3 miles; default 1 mile. Convert to meters at the UI boundary (1 mi = 1609.344 m).
@@ -312,7 +312,7 @@ Four tabs, plain system styling (default fonts, `List`, `Form`, SF Symbols). Eve
 | Tab / screen | What it shows | Actions | Key states |
 | --- | --- | --- | --- |
 | **Nearby** | Header with current location label and a radius picker; list of open requests: category icon, title, distance, posted time, requester name, "Yours" badge | Pull to refresh; tap a row opens Request Detail | Loading, empty ("No requests within 1 mi"), error with Retry |
-| **Request Detail** | Title, details, category, location label, distance, requester, status, helper name once claimed | **Pick up** (others' open requests); **Cancel** (own open/claimed); **Mark completed** (requester or helper, when claimed) | Confirm dialog before Pick up; inline error for `alreadyClaimed` etc. |
+| **Request Detail** | Title, details, category, location label, distance, requester, status, helper name once claimed | **Pick up** (others' open requests); **Cancel** (own open/claimed); **Mark completed** (requester only, when claimed; the helper sees when it completes on its own) | Confirm dialog before Pick up; inline error for `alreadyClaimed` etc. |
 | **Post** | Form: title, details, category picker, location row prefilled from `LocationProvider` ("Tagged at Cornell Tech, Roosevelt Island") | **Post request**; button disabled until valid | Validation messages; success returns to My Activity and highlights the new item |
 | **My Activity** | Segmented control: *My requests* (with status and helper) and *Picked up by me* | Tap opens Request Detail | Empty states per segment |
 | **Dev Settings** (4th tab, gear icon) | Current user, fake location, data controls | Switch user (Alex/Bea/Chen/Dana); choose location preset; toggle "Simulate location error"; **Reset demo data** | Labeled "Prototype only" |

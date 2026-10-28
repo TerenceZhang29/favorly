@@ -21,4 +21,10 @@ struct MockSessionStoreTests {
         session.switchUser(to: UserID(rawValue: "user-nobody"))
         #expect(session.currentUser == DemoUsers.alex)
     }
+
+    @Test func profileLooksUpAKnownUser() {
+        let session = MockSessionStore()
+        #expect(session.profile(for: DemoUsers.chen.id) == DemoUsers.chen)
+        #expect(session.profile(for: UserID(rawValue: "user-nobody")) == nil)
+    }
 }

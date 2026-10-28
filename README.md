@@ -40,13 +40,15 @@ The Run scheme passes `-demo`, so the app starts signed in as Alex with demo dat
 
 ### Run against the backend
 
-Debug builds can use the Supabase backend instead of demo data (phase 4C). With the local backend:
+Without `-demo`, the app runs as a downloaded app does: it signs in with Apple and uses the hosted Supabase project in `Config/Backend.xcconfig`. To try it, untick `-demo` in Product → Scheme → Edit Scheme → Run → Arguments (`xcodegen generate` ticks it again). Sign in with Apple needs a device, or a simulator signed in to an Apple ID, and the team in `Config/Local.xcconfig`.
+
+To develop against the local backend instead:
 
 1. In `backend/`, run `supabase start`, then `supabase status` for the API URL and anon key.
 2. Put them in `Config/Local.xcconfig` (see `Config/Local.xcconfig.example`; write the URL as `http:/$()/127.0.0.1:55321`), and run `xcodegen generate`.
-3. In Product → Scheme → Edit Scheme → Run → Arguments, untick `-demo` and add `-remote -devEmail you@dev.local -devPassword any-password`. The first launch creates that account and asks for a profile.
+3. Sign in with Apple is not set up on the local backend, so add `-devEmail you@dev.local -devPassword any-password` to the Run arguments (Debug builds only). The first launch creates that account and asks for a profile.
 
-Two simulators with two different `-devEmail` values see each other's requests, chat and reviews. Locations still come from Dev Settings until phase 4D. Email sign-in is for development only; the app signs in with Apple once the developer account exists.
+Two simulators with two different `-devEmail` values see each other's requests, chat and reviews. Locations still come from Dev Settings until phase 4D. The session lives in the keychain, which survives deleting the app; sign out from the Profile tab to start again at Welcome.
 
 ### Run on your iPhone
 

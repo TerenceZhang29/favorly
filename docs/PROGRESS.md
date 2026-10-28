@@ -2,8 +2,8 @@
 
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
-**Current phase:** Phase 4. 4A and 4B are done. 4C is partly done: the remote data layer, error mapping, contract tests and `-remote` Debug launches work against the local backend; Sign in with Apple and the live wiring wait on the Apple Developer Program. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
-**Next task:** Apple processes the owner's Developer Program enrollment; then the paid Team ID goes into `Config/Local.xcconfig`, and Sign in with Apple is tried on the owner's iPhone against the hosted project; then the full suite, push, and 4C is done
+**Current phase:** Phase 4. 4A, 4B and 4C are done: the app signs in with Apple and runs on the hosted Supabase project. One 4C check waits on the owner: two phones with two Apple IDs (see "Needs the owner's review"). Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
+**Next task:** 4D (real location and privacy) on `phase/4d-location`
 
 ## Phase checklist
 
@@ -35,12 +35,16 @@ Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). T
 
 - [x] **4A.** Release groundwork: onboarding and account screens on a mock auth service, Dev Settings Debug-only, no fake Redeem
 - [x] **4B.** Backend schema and server rules (local Supabase, database tests, hosted project `favorly`)
-- [ ] **4C.** Real accounts and shared data (`FavorlyRemote`, Sign in with Apple; needs the paid developer account). Everything but Sign in with Apple and the live wiring is done
+- [x] **4C.** Real accounts and shared data (`FavorlyRemote`, Sign in with Apple). The two-phone check waits on the owner
 - [ ] **4D.** Real location and privacy
 - [ ] **4E.** Trust and safety: report, block, content filter, moderation, terms
 - [ ] **4F.** Push notifications
 - [ ] **4G.** Release candidate and TestFlight beta
 - [ ] **4H.** App Store submission and launch, tag `v1.0.0`
+
+## Needs the owner's review
+
+- **4C two-phone check.** Two iPhones (or an iPhone and a simulator signed in to Apple) with two different Apple IDs, both on the hosted project: post, pick up, chat, mark completed and review between them, and check that each screen updates on the other phone without pulling to refresh. Then delete one account from its Profile tab and check the other phone. Until 4D, both phones use the Dev Settings location presets, so pick the same preset on both.
 
 ## Owner's review of Phase 3
 
@@ -200,6 +204,11 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 4C | `18c722c` | feat(remote): repository, profiles, session and auth against Supabase, with realtime changes |
 | 4C | `bcf145c` | test(remote): contract tests run against the mock always and the local backend on request |
 | 4C | `3a7b6cc` | feat(app): -remote Debug launches use the Supabase backend from Local.xcconfig, with email sign-in for development |
+| 4C | `56ff948` | docs: running against the backend; 4C progress, decisions and the supabase-swift dependency |
+| 4C | `333ab18` | docs: hosted deploys use --linked and the CLI login; migration 0005 deployed |
+| 4C | `7648e4f` | feat(onboarding): Sign in with Apple button with a hashed nonce on the backend; the demo keeps its plain button |
+| 4C | `b8ce42a` | feat(app): normal launches use the hosted backend; Sign in with Apple entitlement |
+| 4C | `f521dd1` | docs: hosted auth settings and the Sign in with Apple decisions |
 
 ## Confirmed decisions
 
@@ -412,6 +421,8 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-29 · 4C · Hosted auth: Apple provider on with Client ID `edu.cornelltech.team402.favorly` and no OAuth secret key; Email provider off; project-wide sign-ups stay on. Checked through the public `/auth/v1/settings` endpoint, and an email sign-up is refused (400) · native Sign in with Apple only needs the bundle ID; the OAuth secret is for web redirects and expires every 6 months; email accounts would bypass Apple sign-in
 - 2026-10-29 · 4C · Sign in with Apple asks for no name or email (`requestedScopes = []`); profile setup asks for the name · less personal data, and the App Privacy answers stay small
 - 2026-10-29 · 4C · `Config/Backend.xcconfig` holds the hosted project's URL and public anon key, committed; `Local.xcconfig` may override them with the local backend · the anon key is public by design; normal launches need it to reach the backend
+- 2026-10-29 · 4C · With an Individual enrollment the paid team keeps the Personal Team's ID (`5B89U2CMF9`); Xcode needed the account removed and re-added before it allowed the Sign in with Apple capability · Apple upgrades the team in place
+- 2026-10-29 · 4C · Sign in with Apple tried by the owner on an iPhone against the hosted project: sign-in, profile setup and the tabs work, and the hosted project has the one profile · the plan's 4C sign-in check
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues
@@ -440,7 +451,9 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - The UI test suite takes a little over three minutes, mostly app launches and typing.
 - If a UI test fails, `xcodebuild` can sit for several minutes collecting diagnostics before it exits. Pass `-collect-test-diagnostics never` to skip that.
 - A new test file is not in the Xcode project until `xcodegen generate` runs again; until then `-only-testing` silently skips it.
-- The sign-in is a mock until 4C: Continue with Apple goes straight to profile setup, every sign-up is a new user, and deleting an account only forgets the user in the session.
+- Demo launches (`-demo`, UI tests) still use the mock sign-in: Continue with Apple goes straight to profile setup, every sign-up is a new user, and deleting an account only forgets the user in the session. Normal launches sign in with Apple.
+- The Supabase session is kept in the keychain, which survives deleting the app, on a simulator as on a phone. Reinstalling therefore restores the last account; sign out, or run `xcrun simctl keychain <device> reset` on a simulator, to start at Welcome.
+- `xcodegen generate` ticks `-demo` in the Run scheme again; untick it to run against the backend.
 - The Nearby header still shows the fake location label from Dev Settings presets ("Alex @ Cornell Tech, Roosevelt Island"), also in Release builds; 4D replaces it with the real neighborhood.
 - `xcodebuild` prints `appintentsmetadataprocessor ... Metadata extraction skipped` warnings. They come from an Xcode build tool, not the Swift compiler, and need no action.
 
@@ -461,6 +474,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-10-29 · 4C · Sign in with Apple (Apple's button, hashed nonce, no scopes); normal launches on the hosted project; Apple provider on and Email off on the hosted project; owner signed in on an iPhone and the profile exists on the hosted project; 4C done but the owner's two-phone check · start 4D on `phase/4d-location`
 - 2026-10-29 · 4C (part) · Migration 0005 (transition status, realtime); four new `FavorlyError` cases; `FavorlyRemote` on supabase-swift (rows, errors, repository with realtime, profiles, session, auth); 22 remote tests, contract tests pass on mock and local backend; `-remote` Debug launches with email sign-in, checked end to end in the simulator · owner deploys migration 0005 and enrolls in the Apple Developer Program, then Sign in with Apple and the live wiring
 - 2026-10-28 · 4B · Backend CI on GitHub Actions (first run green, 104 s); owner logged in to Supabase and created the hosted project `favorly`; migrations deployed and checked (`migration list --linked`, `db diff --linked`); 4B done · 4C after the owner enrolls in the Apple Developer Program
 - 2026-10-28 · 4B · Supabase CLI installed; `backend/supabase` with four migrations (schema, row-level security, actions with the app's rules, rate limits, blocks, account deletion, `pg_cron` auto-complete); 116 pgTAP tests pass; lint clean; `backend/README.md` with the error contract. App unchanged · owner approves the hosted Supabase project (free tier), then deploy; then 4C

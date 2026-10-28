@@ -41,7 +41,6 @@ struct BlockedUsersView: View {
                             .buttonStyle(.bordered)
                             .accessibilityIdentifier("blocked.unblock.\(user.id.rawValue)")
                         }
-                        .accessibilityIdentifier("blocked.row.\(user.id.rawValue)")
                     }
                 } footer: {
                     Text("You and the people you block don't see each other's requests, messages or profiles.")

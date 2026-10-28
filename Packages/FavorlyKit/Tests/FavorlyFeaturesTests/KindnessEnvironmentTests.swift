@@ -25,7 +25,7 @@ struct KindnessEnvironmentTests {
     @Test func aFavorCompletedThroughTheRequestRepositoryCountsTowardTheScore() async throws {
         let environment = world.environment
         _ = try await environment.repository.claim(TestWorld.eggsID, by: DemoUsers.bea.id)
-        _ = try await environment.repository.complete(TestWorld.eggsID, by: DemoUsers.bea.id)
+        _ = try await environment.repository.complete(TestWorld.eggsID, by: DemoUsers.chen.id)
         #expect(try await environment.kindness.kindnessSummary(for: DemoUsers.bea.id).availablePoints == 100)
         #expect(try await environment.kindness.redeemGiftCard(by: DemoUsers.bea.id).code == "FAVORLY-0001")
     }

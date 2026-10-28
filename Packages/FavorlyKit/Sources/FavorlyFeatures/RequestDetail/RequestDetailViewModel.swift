@@ -1,4 +1,5 @@
 import FavorlyCore
+import Foundation
 import Observation
 
 @MainActor
@@ -63,8 +64,22 @@ final class RequestDetailViewModel {
         allows(RequestRules.validateCancel)
     }
 
+    /// The requester only (rule 15).
     var canComplete: Bool {
         allows(RequestRules.validateComplete)
+    }
+
+    /// For the helper of a picked-up request, when it completes on its own (rule 15); nil for everyone else.
+    var autoCompleteDate: Date? {
+        guard let request, request.helperID == currentUserID else { return nil }
+        return RequestRules.autoCompleteDate(of: request)
+    }
+
+    /// "Completes automatically on Oct 20 if Alex doesn't confirm." Shown to the helper instead of Mark completed.
+    var autoCompleteNote: String? {
+        autoCompleteDate.map {
+            "Completes automatically on \($0.formatted(.dateTime.month(.abbreviated).day())) if \(requesterName) doesn't confirm."
+        }
     }
 
     /// The requester, on a completed request they have not reviewed yet.

@@ -176,6 +176,17 @@ struct RequestDetailView: View {
                 }
                 .compactSectionSpacing()
             }
+            if let autoCompleteNote = viewModel.autoCompleteNote {
+                Section {
+                    Label(autoCompleteNote, systemImage: "clock")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                        .plainListRow()
+                        .accessibilityIdentifier("detail.autoCompleteNote")
+                }
+                .compactSectionSpacing()
+            }
             if viewModel.canCancel {
                 Section {
                     Button("Cancel request", role: .destructive) {

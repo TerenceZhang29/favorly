@@ -18,7 +18,7 @@ struct ProfileViewModelTests {
     /// Bea picks up Chen's eggs request and completes it, taking her to 100 points.
     private func beaCompletesAFavor() async throws {
         _ = try await world.repository.claim(TestWorld.eggsID, by: DemoUsers.bea.id)
-        _ = try await world.repository.complete(TestWorld.eggsID, by: DemoUsers.bea.id)
+        _ = try await world.repository.complete(TestWorld.eggsID, by: DemoUsers.chen.id)
     }
 
     // MARK: States

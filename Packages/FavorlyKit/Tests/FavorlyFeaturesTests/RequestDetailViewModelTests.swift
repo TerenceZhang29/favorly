@@ -74,7 +74,7 @@ struct RequestDetailViewModelTests {
         #expect([requester.canPickUp, requester.canCancel, requester.canComplete] == [false, true, true])
 
         let helper = await loaded(TestWorld.ladderID, as: DemoUsers.chen)
-        #expect([helper.canPickUp, helper.canCancel, helper.canComplete] == [false, false, true])
+        #expect([helper.canPickUp, helper.canCancel, helper.canComplete] == [false, false, false])
 
         let stranger = await loaded(TestWorld.ladderID, as: DemoUsers.alex)
         #expect([stranger.canPickUp, stranger.canCancel, stranger.canComplete] == [false, false, false])
@@ -98,7 +98,8 @@ struct RequestDetailViewModelTests {
         #expect(viewModel.statusText == "Claimed by Bea")
         #expect(viewModel.actionError == nil)
         #expect(!viewModel.isWorking)
-        #expect([viewModel.canPickUp, viewModel.canCancel, viewModel.canComplete] == [false, false, true])
+        #expect([viewModel.canPickUp, viewModel.canCancel, viewModel.canComplete] == [false, false, false])
+        #expect(viewModel.autoCompleteNote != nil)
         #expect(try await world.repository.request(id: TestWorld.eggsID).helperID == DemoUsers.bea.id)
     }
 
@@ -119,7 +120,7 @@ struct RequestDetailViewModelTests {
         await viewModel.pickUp()
         #expect(viewModel.actionError != nil)
 
-        world.session.switchUser(to: DemoUsers.dana.id)
+        world.session.switchUser(to: DemoUsers.chen.id)
         await viewModel.complete()
         #expect(viewModel.actionError == nil)
         #expect(viewModel.statusText == "Completed")
@@ -132,11 +133,39 @@ struct RequestDetailViewModelTests {
         #expect([viewModel.canPickUp, viewModel.canCancel, viewModel.canComplete] == [false, false, false])
     }
 
-    @Test func helperCanMarkCompleted() async {
-        let viewModel = await loaded(TestWorld.ladderID, as: DemoUsers.chen)
+    @Test func requesterCanMarkCompleted() async {
+        let viewModel = await loaded(TestWorld.ladderID, as: DemoUsers.dana)
+        #expect(viewModel.canComplete)
         await viewModel.complete()
         #expect(viewModel.statusText == "Completed")
         #expect(viewModel.helperName == "Chen")
+    }
+
+    // MARK: Auto-complete
+
+    @Test func theHelperCannotCompleteAndSeesWhenItCompletesOnItsOwn() async throws {
+        let viewModel = await loaded(TestWorld.ladderID, as: DemoUsers.chen)
+        #expect(!viewModel.canComplete)
+
+        let claimedAt = try #require(viewModel.request?.claimedAt)
+        let date = claimedAt.addingTimeInterval(RequestRules.autoCompleteInterval)
+        #expect(viewModel.autoCompleteDate == date)
+        let day = date.formatted(.dateTime.month(.abbreviated).day())
+        #expect(viewModel.autoCompleteNote == "Completes automatically on \(day) if Dana doesn't confirm.")
+    }
+
+    @Test func onlyTheHelperOfAPickedUpRequestSeesTheNote() async {
+        #expect(await loaded(TestWorld.ladderID, as: DemoUsers.dana).autoCompleteNote == nil)
+        #expect(await loaded(TestWorld.ladderID, as: DemoUsers.alex).autoCompleteNote == nil)
+        #expect(await loaded(TestWorld.seedID(12), as: DemoUsers.bea).autoCompleteNote == nil)
+        #expect(await loaded(as: DemoUsers.bea).autoCompleteNote == nil)
+    }
+
+    @Test func theHelperGetsAnErrorIfTheyTryToComplete() async {
+        let viewModel = await loaded(TestWorld.ladderID, as: DemoUsers.chen)
+        await viewModel.complete()
+        #expect(viewModel.actionError == "You're not allowed to do that.")
+        #expect(viewModel.statusText == "Claimed by Chen")
     }
 
     @Test func anActionThatIsNotAllowedShowsAnError() async {

@@ -13,8 +13,17 @@ final class LaunchUITests: UITestCase {
         }
     }
 
+    /// A launch without `-uiTesting` or `-demo` is what a downloaded app does: it starts at Welcome.
     @MainActor
-    func testLaunchWithoutTheTestingFlagStillLoadsNearby() {
+    func testLaunchWithoutFlagsStartsAtWelcome() {
+        app.launch()
+        XCTAssertTrue(app.buttons["welcome.signIn"].waitForExistence(timeout: Self.waitTimeout))
+        XCTAssertFalse(app.tabBars.firstMatch.exists)
+    }
+
+    @MainActor
+    func testDemoLaunchStillLoadsNearbyWithTheDelay() {
+        app.launchArguments = ["-demo"]
         app.launch()
         waitFor(element("nearby.count"), toRead: "7 requests")
     }

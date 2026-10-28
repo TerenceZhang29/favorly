@@ -8,8 +8,7 @@ final class ProfileUITests: UITestCase {
         openTab("Profile")
         waitFor(element("profile.name"), toRead: "Alex")
         waitFor(element("profile.score"), toRead: "0 points")
-        waitFor(element("profile.giftCardProgress"), toRead: "0 of 100 points")
-        XCTAssertFalse(app.buttons["profile.redeem"].isEnabled)
+        XCTAssertFalse(app.buttons["profile.redeem"].exists)
         scrollToShow(element("profile.empty"))
         waitFor(element("profile.empty"), toRead: "No activity yet")
     }
@@ -22,15 +21,13 @@ final class ProfileUITests: UITestCase {
         waitFor(element("profile.name"), toRead: "Bea")
         waitFor(element("profile.score"), toRead: "90 points")
         waitFor(element("profile.favors"), toRead: "5 favors completed")
-        waitFor(element("profile.giftCardProgress"), toRead: "90 of 100 points")
-        XCTAssertFalse(app.buttons["profile.redeem"].isEnabled)
         let saffron = row("profile.activity.", containing: "Need a pinch of saffron, Ingredient, Helped")
         scrollToShow(saffron)
         XCTAssertTrue(saffron.exists)
     }
 
     @MainActor
-    func testOneMoreFavorLetsBeaRedeemAGiftCard() {
+    func testOneMoreFavorRaisesBeasScore() {
         launchApp()
         switchUser(to: "user-bea")
         openTab("Nearby")
@@ -56,15 +53,11 @@ final class ProfileUITests: UITestCase {
         switchUser(to: "user-bea")
         openTab("Profile")
         waitFor(element("profile.score"), toRead: "100 points")
-        waitFor(element("profile.giftCardProgress"), toRead: "100 of 100 points")
-        scrollToAndTap(app.buttons["profile.redeem"])
-        waitFor(element("profile.rewardCode"), toRead: "FAVORLY-0001")
-        waitFor(element("profile.giftCardProgress"), toRead: "0 of 100 points")
-        waitFor(element("profile.score"), toRead: "100 points")
+        waitFor(element("profile.favors"), toRead: "6 favors completed")
     }
 
     @MainActor
-    func testRequesterAndHelperOpenTheirProfilesWithoutTheGiftCard() {
+    func testRequesterAndHelperOpenTheirProfilesWithoutTheAccountSection() {
         launchApp()
         switchUser(to: "user-chen")
         openTab("My Activity")
@@ -79,16 +72,16 @@ final class ProfileUITests: UITestCase {
         requester.tap()
         waitFor(element("profile.name"), toRead: "Dana")
         waitFor(element("profile.score"), toRead: "0 points")
-        XCTAssertFalse(element("profile.giftCardProgress").exists)
-        XCTAssertFalse(app.buttons["profile.redeem"].exists)
+        XCTAssertFalse(app.buttons["profile.signOut"].exists)
         app.navigationBars.buttons.firstMatch.tap()
 
         let helper = element("detail.helper")
         waitFor(helper, toRead: "Chen")
         helper.tap()
-        // Chen's own profile, reached from a request, still shows his gift card.
+        // Chen's own profile, reached from a request, has no account section either: that is on the Profile tab.
         waitFor(element("profile.name"), toRead: "Chen")
         waitFor(element("profile.score"), toRead: "18 points")
+        XCTAssertFalse(app.buttons["profile.signOut"].exists)
     }
 
     /// Swipes up until the element is on screen, for content below the fold.

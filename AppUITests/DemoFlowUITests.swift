@@ -121,7 +121,7 @@ final class DemoFlowUITests: UITestCase {
         alexPostsAndBeaHas90()
         beaPicksUpAndTheyChat()
         alexReviewsBea()
-        beaRedeemsAGiftCard()
+        beaSeesHerNewScore()
         chenSeesBeasPublicProfile()
     }
 
@@ -155,7 +155,6 @@ final class DemoFlowUITests: UITestCase {
         openTab("Profile")
         waitFor(element("profile.name"), toRead: "Bea")
         waitFor(element("profile.score"), toRead: "90 points")
-        waitFor(element("profile.giftCardProgress"), toRead: "90 of 100 points")
     }
 
     /// Step 3: Bea picks up the request and says "On my way"; Alex replies and marks it completed.
@@ -202,16 +201,12 @@ final class DemoFlowUITests: UITestCase {
         app.navigationBars.buttons.firstMatch.tap()
     }
 
-    /// Step 5: Bea has 110 points, the new review and the favor; Redeem shows FAVORLY-0001 and "10 of 100 points".
+    /// Step 5: Bea has 110 points, the new review and the favor.
     @MainActor
-    private func beaRedeemsAGiftCard() {
+    private func beaSeesHerNewScore() {
         switchUser(to: "user-bea")
         openTab("Profile")
         waitFor(element("profile.score"), toRead: "110 points")
-        waitFor(element("profile.giftCardProgress"), toRead: "110 of 100 points")
-        scrollToAndTap(app.buttons["profile.redeem"])
-        waitFor(element("profile.rewardCode"), toRead: "FAVORLY-0001")
-        waitFor(element("profile.giftCardProgress"), toRead: "10 of 100 points")
 
         let favor = row("profile.activity.", containing: "Need a cup of rice, Ingredient, Helped")
         for _ in 0 ..< 4 where !(favor.exists && favor.isHittable) {
@@ -227,7 +222,7 @@ final class DemoFlowUITests: UITestCase {
         XCTAssertTrue(review.label.hasSuffix(": Fast and friendly"))
     }
 
-    /// Step 6: Chen opens Bea's profile from a request: score and reviews, no gift card.
+    /// Step 6: Chen opens Bea's profile from a request: score and reviews, no account section.
     @MainActor
     private func chenSeesBeasPublicProfile() {
         switchUser(to: "user-chen")
@@ -241,8 +236,7 @@ final class DemoFlowUITests: UITestCase {
         scrollToAndTap(element("detail.helper"))
         waitFor(element("profile.name"), toRead: "Bea")
         waitFor(element("profile.score"), toRead: "110 points")
-        XCTAssertFalse(element("profile.giftCardProgress").exists)
-        XCTAssertFalse(app.buttons["profile.redeem"].exists)
+        XCTAssertFalse(app.buttons["profile.signOut"].exists)
         let review = app.descendants(matching: .any).matching(NSPredicate(
             format: "identifier BEGINSWITH %@ AND label CONTAINS %@", "profile.review.", "from Alex"
         )).firstMatch

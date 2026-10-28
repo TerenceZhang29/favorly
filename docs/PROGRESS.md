@@ -1,6 +1,6 @@
 # Progress
 
-Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md` and `docs/PLAN-PHASE-3.md`, and continue from the first unchecked item.
+Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
 **Current phase:** Phase 3 (Kindness score, profiles, chat and reviews). 3A–3D are done and 3E is done except for the steps that need a person on a Mac. Phase 2 is complete (`v0.2.0-ui`), Phase 1 is complete (`v0.1.0-prototype`)
 **Next task:** The owner works through "Needs the owner's review" below: fast-forward `main` to `claude/brave-cray-shr7y8`, run the Phase 3 demo by hand, check the Phase 3 screenshots, then tag `v0.3.0-profiles`. Still open for a person: run the demo script in the README by hand once, in light and in dark mode, and look over the final screenshots in `docs/screenshots/phase-2/` After that review, start 3F on `phase/3f-completion`
@@ -30,6 +30,17 @@ Phase 3, Kindness score, profiles, chat and reviews ([PLAN-PHASE-3.md](PLAN-PHAS
 - [x] **3D.** Reviews
 - [ ] **3E.** Hardening, demo, docs, tag `v0.3.0-profiles` (everything but the by-eye checks and the tag; see "Needs the owner's review")
 - [ ] **3F.** Requester-only completion and auto-complete after 7 days
+
+Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). Starts after 3E and 3F; the owner answers the plan's "Decisions needed from the owner" first:
+
+- [ ] **4A.** Release groundwork: onboarding and account screens on a mock auth service, Dev Settings Debug-only, no fake Redeem
+- [ ] **4B.** Backend schema and server rules (local Supabase, database tests)
+- [ ] **4C.** Real accounts and shared data (`FavorlyRemote`, Sign in with Apple; needs the paid developer account)
+- [ ] **4D.** Real location and privacy
+- [ ] **4E.** Trust and safety: report, block, content filter, moderation, terms
+- [ ] **4F.** Push notifications
+- [ ] **4G.** Release candidate and TestFlight beta
+- [ ] **4H.** App Store submission and launch, tag `v1.0.0`
 
 ## Needs the owner's review
 

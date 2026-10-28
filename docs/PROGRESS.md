@@ -189,6 +189,8 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 4B | `682f9bd` | feat(backend): actions enforcing the app's rules, rate limits, blocks, account deletion; auto-complete job |
 | 4B | `d2c79df` | test(backend): pgTAP tests for every action and policy |
 | 4B | `bae2f11` | docs(backend): commands, how it works, and the error contract |
+| 4B | `f332e21` | docs: record phase 4B progress; hosted project waits on the owner |
+| CI | `2318ac2` | ci: run the backend database tests and schema lint on pushes that change backend/ |
 
 ## Confirmed decisions
 
@@ -384,7 +386,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-28 · 4B · `delete_my_account` deletes the `auth.users` row in SQL, cascading to the profile · no edge function needed; reviews about the deleted user go too, since their score goes with them
 - 2026-10-28 · 4B · Errors are SQLSTATE `P0001` with a fixed message, and validation text in DETAIL (contract in `backend/README.md`) · 4C maps them to `FavorlyError`, adding `.notSignedIn`, `.rateLimited` and `.blocked`
 - 2026-10-28 · 4B · Local Supabase ports are 55321–55329, not the default 54321–54329 · another local Supabase project (hackamatch) uses the defaults on this Mac
-- 2026-10-28 · 4B · Backend tests run locally (`supabase test db`), not on GitHub Actions yet · CI minutes may cost money on a private repo; ask the owner before adding a workflow
+- 2026-10-28 · 4B · Backend tests and the schema lint also run on GitHub Actions (`.github/workflows/backend.yml`), on pushes that change `backend/`, starting only the database (about 2 minutes) · the repo is public, so the minutes are free; owner asked for CI before the hosted project
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues

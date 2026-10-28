@@ -3,7 +3,7 @@
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
 **Current phase:** Phase 4. 4A and 4B are done. 4C is partly done: the remote data layer, error mapping, contract tests and `-remote` Debug launches work against the local backend; Sign in with Apple and the live wiring wait on the Apple Developer Program. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
-**Next task:** the owner enrolls in the Apple Developer Program ($99/year); then finish 4C on `phase/4c-accounts`: Sign in with Apple, the Supabase Apple provider, `SignInWithAppleButton`, and `AppEnvironment.live()` on the backend
+**Next task:** Apple processes the owner's Developer Program enrollment; then the paid Team ID goes into `Config/Local.xcconfig`, and Sign in with Apple is tried on the owner's iPhone against the hosted project; then the full suite, push, and 4C is done
 
 ## Phase checklist
 
@@ -409,6 +409,9 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-29 · 4C · Backend settings live in `Config/Backend.xcconfig` (empty by default), included by `Signing.xcconfig`; `project.yml` now generates `App/Info.plist` with the two keys, the version build settings, and `NSAllowsLocalNetworking` for the local backend · XcodeGen's `info` is the only way to add custom Info.plist keys; its default hardcoded version 1.0, so the version keys point at the build settings
 - 2026-10-29 · 4C · Mock and server differ in two known ways the contract tests avoid: the server snaps locations to about 100 m, and the server returns an empty thread to a stranger where the mock throws `notAllowed` · both are deliberate on the server; the app never shows a stranger's thread
 - 2026-10-29 · 4C · Migration `20261029000005_app_support.sql` deployed to the hosted project after the full test suite and backend CI passed on `main`; `supabase db diff --linked` finds no differences · owner approved. `supabase db push` works with the CLI login, no database password, so deploys can run from here with the owner's approval
+- 2026-10-29 · 4C · Hosted auth: Apple provider on with Client ID `edu.cornelltech.team402.favorly` and no OAuth secret key; Email provider off; project-wide sign-ups stay on. Checked through the public `/auth/v1/settings` endpoint, and an email sign-up is refused (400) · native Sign in with Apple only needs the bundle ID; the OAuth secret is for web redirects and expires every 6 months; email accounts would bypass Apple sign-in
+- 2026-10-29 · 4C · Sign in with Apple asks for no name or email (`requestedScopes = []`); profile setup asks for the name · less personal data, and the App Privacy answers stay small
+- 2026-10-29 · 4C · `Config/Backend.xcconfig` holds the hosted project's URL and public anon key, committed; `Local.xcconfig` may override them with the local backend · the anon key is public by design; normal launches need it to reach the backend
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues

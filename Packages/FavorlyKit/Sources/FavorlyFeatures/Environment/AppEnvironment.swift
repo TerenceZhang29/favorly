@@ -8,6 +8,7 @@ public struct AppEnvironment: Sendable {
     public let chat: any ChatRepository
     public let locationProvider: any LocationProvider
     public let session: any SessionStore
+    public let auth: any AuthService
     public let locationSettings: any LocationSettings
 
     public init(
@@ -17,6 +18,7 @@ public struct AppEnvironment: Sendable {
         chat: any ChatRepository,
         locationProvider: any LocationProvider,
         session: any SessionStore,
+        auth: any AuthService,
         locationSettings: any LocationSettings
     ) {
         self.repository = repository
@@ -25,6 +27,7 @@ public struct AppEnvironment: Sendable {
         self.chat = chat
         self.locationProvider = locationProvider
         self.session = session
+        self.auth = auth
         self.locationSettings = locationSettings
     }
 

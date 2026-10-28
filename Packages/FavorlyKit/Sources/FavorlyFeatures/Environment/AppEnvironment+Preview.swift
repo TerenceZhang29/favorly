@@ -46,6 +46,7 @@ public extension AppEnvironment {
             chat: repository,
             locationProvider: PreviewLocationProvider(location: here),
             session: PreviewSessionStore(availableUsers: [alex, bea], currentUser: alex),
+            auth: PreviewAuthService(),
             locationSettings: PreviewLocationSettings(preset: LocationPreset(id: "preview-here", location: here))
         )
     }

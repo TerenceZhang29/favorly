@@ -17,8 +17,15 @@ struct TestWorld {
         artificialDelay: .zero,
         now: { now }
     )
-    let session = MockSessionStore()
+    let session: MockSessionStore
+    let auth: MockAuthService
     let locationSettings = MockLocationSettings()
+
+    init(startsSignedIn: Bool = true) {
+        let session = MockSessionStore()
+        self.session = session
+        auth = MockAuthService(session: session, startsSignedIn: startsSignedIn, artificialDelay: .zero)
+    }
 
     var environment: AppEnvironment {
         AppEnvironment(
@@ -28,6 +35,7 @@ struct TestWorld {
             chat: repository,
             locationProvider: MockLocationProvider(settings: locationSettings),
             session: session,
+            auth: auth,
             locationSettings: locationSettings
         )
     }

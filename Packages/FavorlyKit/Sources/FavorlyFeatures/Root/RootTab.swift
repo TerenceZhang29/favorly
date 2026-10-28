@@ -9,6 +9,19 @@ enum RootTab: String, CaseIterable, Identifiable, Sendable {
 
     var id: String { rawValue }
 
+    /// The tabs this build shows: Dev Settings only in Debug builds, never in the App Store build.
+    static var visible: [RootTab] {
+        #if DEBUG
+            tabs(showingDevSettings: true)
+        #else
+            tabs(showingDevSettings: false)
+        #endif
+    }
+
+    static func tabs(showingDevSettings: Bool) -> [RootTab] {
+        showingDevSettings ? allCases : allCases.filter { $0 != .devSettings }
+    }
+
     var title: String {
         switch self {
         case .nearby: "Nearby"

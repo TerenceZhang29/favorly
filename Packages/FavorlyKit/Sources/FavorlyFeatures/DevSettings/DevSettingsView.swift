@@ -15,18 +15,20 @@ struct DevSettingsView: View {
                     .foregroundStyle(.secondary)
             }
 
-            Section("Current user") {
-                ForEach(environment.session.availableUsers) { user in
-                    Button {
-                        environment.session.switchUser(to: user.id)
-                    } label: {
-                        SelectableRow(
-                            title: user.displayName,
-                            subtitle: user.neighborhood,
-                            isSelected: user.id == environment.session.currentUser.id
-                        )
+            if let controls = environment.session as? any DemoSessionControls {
+                Section("Current user") {
+                    ForEach(controls.availableUsers) { user in
+                        Button {
+                            controls.switchUser(to: user.id)
+                        } label: {
+                            SelectableRow(
+                                title: user.displayName,
+                                subtitle: user.neighborhood,
+                                isSelected: user.id == environment.session.currentUser.id
+                            )
+                        }
+                        .accessibilityIdentifier("devSettings.user.\(user.id.rawValue)")
                     }
-                    .accessibilityIdentifier("devSettings.user.\(user.id.rawValue)")
                 }
             }
 

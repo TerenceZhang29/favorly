@@ -9,13 +9,15 @@ struct AppEnvironmentTests {
     private func makeEnvironment() -> AppEnvironment {
         let locationSettings = MockLocationSettings()
         let repository = MockRequestRepository(artificialDelay: .zero)
+        let session = MockSessionStore()
         return AppEnvironment(
             repository: repository,
             kindness: repository,
             reviews: repository,
             chat: repository,
             locationProvider: MockLocationProvider(settings: locationSettings),
-            session: MockSessionStore(),
+            session: session,
+            auth: MockAuthService(session: session, startsSignedIn: true, artificialDelay: .zero),
             locationSettings: locationSettings
         )
     }
@@ -26,7 +28,7 @@ struct AppEnvironmentTests {
 
     @Test func debugSummaryFollowsUserAndLocationChanges() {
         let environment = makeEnvironment()
-        environment.session.switchUser(to: DemoUsers.bea.id)
+        (environment.session as? MockSessionStore)?.switchUser(to: DemoUsers.bea.id)
         environment.locationSettings.selectedPreset = LocationPresets.ithaca
         #expect(environment.debugSummary == "Bea @ Ithaca, NY")
     }
@@ -44,7 +46,9 @@ struct AppEnvironmentTests {
 
     @Test func previewEnvironmentIsSelfConsistent() async throws {
         let environment = AppEnvironment.preview()
-        #expect(environment.session.availableUsers.contains(environment.session.currentUser))
+        #expect(environment.auth.state == .signedIn)
+        let controls = try #require(environment.session as? any DemoSessionControls)
+        #expect(controls.availableUsers.contains(environment.session.currentUser))
         #expect(environment.locationSettings.presets.contains(environment.locationSettings.selectedPreset))
 
         let here = try await environment.locationProvider.currentLocation()
@@ -59,9 +63,21 @@ struct AppEnvironmentTests {
 
     @Test func previewSessionSwitchesBetweenItsUsers() throws {
         let session = AppEnvironment.preview().session
-        let other = try #require(session.availableUsers.first { $0 != session.currentUser })
-        session.switchUser(to: other.id)
+        let controls = try #require(session as? any DemoSessionControls)
+        let other = try #require(controls.availableUsers.first { $0 != session.currentUser })
+        controls.switchUser(to: other.id)
         #expect(session.currentUser == other)
+        #expect(session.profile(for: other.id) == other)
+    }
+
+    @Test func previewAuthMovesThroughEverySignInState() async throws {
+        let auth = AppEnvironment.preview().auth
+        await auth.signOut()
+        #expect(auth.state == .signedOut)
+        try await auth.signInWithApple(identityToken: "", nonce: "")
+        #expect(auth.state == .needsProfile)
+        try await auth.completeProfile(ProfileSetupDraft(displayName: "Sam", confirmedAdult: true, acceptedTerms: true))
+        #expect(auth.state == .signedIn)
     }
 
     @Test func previewRepositoryIsReadOnly() async throws {

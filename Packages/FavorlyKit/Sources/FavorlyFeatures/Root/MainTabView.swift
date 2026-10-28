@@ -1,17 +1,16 @@
 import FavorlyCore
 import SwiftUI
 
-public struct RootView: View {
+/// The app's tabs, for a signed-in user.
+struct MainTabView: View {
     @Environment(\.appEnvironment) private var environment
     @State private var selection: RootTab = .nearby
     /// The request just posted, highlighted in My Activity until the user leaves that tab.
     @State private var newlyPostedID: RequestID?
 
-    public init() {}
-
-    public var body: some View {
+    var body: some View {
         TabView(selection: $selection) {
-            ForEach(RootTab.allCases) { tab in
+            ForEach(RootTab.visible) { tab in
                 NavigationStack {
                     content(for: tab)
                         .appDestinations(environment)
@@ -52,5 +51,5 @@ public struct RootView: View {
 }
 
 #Preview {
-    RootView()
+    MainTabView()
 }

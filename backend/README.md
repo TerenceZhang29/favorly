@@ -20,6 +20,8 @@ supabase status       # local URLs and keys
 supabase stop         # stop the containers; data is kept until the next reset
 ```
 
+The tests always run against the local database, which is rebuilt from the same migrations the hosted project gets. Never run them against the hosted project (`supabase test db --linked`): they create users directly and act as an admin. GitHub Actions runs them, with the lint, on every push that changes `backend/` (`.github/workflows/backend.yml`).
+
 The local ports are moved up by 1000 from Supabase's defaults (API on 55321, database on 55322, Studio on 55323), so this project can run next to another local Supabase project.
 
 Deploying to the hosted project is phase 4B's last step and needs the owner's approval first (see `PENDING_APPROVALS.md` if it exists, and the cost rule in `CLAUDE.md`).

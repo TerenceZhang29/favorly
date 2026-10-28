@@ -1,0 +1,34 @@
+name: Backend
+
+on:
+  push:
+    branches: [main, "phase/**", "ci/**", "claude/**"]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  database-tests:
+    name: Database tests (supabase test db)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.0
+      # Only the database: the tests need nothing else, and it starts in a fraction of the time.
+      - name: Start the database and apply the migrations
+        run: supabase db start
+      - name: Run the pgTAP tests
+        run: supabase test db
+      - name: Lint the schema
+        run: supabase db lint --level warning --schema public,private --fail-on warning

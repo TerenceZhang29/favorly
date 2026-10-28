@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "FavorlyData", targets: ["FavorlyData"]),
         .library(name: "FavorlyFeatures", targets: ["FavorlyFeatures"]),
         .library(name: "FavorlyRemote", targets: ["FavorlyRemote"]),
+        .library(name: "FavorlyDevice", targets: ["FavorlyDevice"]),
     ],
     dependencies: [
         // Exact, because Package.resolved is not committed. See docs/PROGRESS.md before changing it.
@@ -29,6 +30,8 @@ let package = Package(
         .testTarget(name: "FavorlyCoreTests", dependencies: ["FavorlyCore"]),
         .testTarget(name: "FavorlyDataTests", dependencies: ["FavorlyData"]),
         .testTarget(name: "FavorlyFeaturesTests", dependencies: ["FavorlyFeatures", "FavorlyData"]),
+        .target(name: "FavorlyDevice", dependencies: ["FavorlyCore"]),
         .testTarget(name: "FavorlyRemoteTests", dependencies: ["FavorlyRemote", "FavorlyData"]),
+        .testTarget(name: "FavorlyDeviceTests", dependencies: ["FavorlyDevice"]),
     ]
 )

@@ -91,6 +91,22 @@ select pg_temp.login(:'alex');
 select is((select status::text from public.complete_request(:'rice')), 'completed', 'the requester marks it completed');
 select throws_ok(format('select public.cancel_request(%L)', :'rice'), 'P0001', 'invalid_transition',
     'a completed request cannot be cancelled');
+select pg_temp.logout();
+create function pg_temp.detail_of(statement text) returns text language plpgsql as $$
+declare
+    detail text;
+begin
+    execute statement;
+    return null;
+exception when others then
+    get stacked diagnostics detail = pg_exception_detail;
+    return detail;
+end;
+$$;
+grant execute on function pg_temp.detail_of(text) to authenticated;
+select pg_temp.login(:'alex');
+select is(pg_temp.detail_of(format('select public.cancel_request(%L)', :'rice')), 'completed',
+    'invalid_transition says the current status');
 select throws_ok(format('select public.claim_request(%L)', :'rice'), 'P0001', 'cannot_claim_own_request',
     'the requester still cannot pick it up');
 

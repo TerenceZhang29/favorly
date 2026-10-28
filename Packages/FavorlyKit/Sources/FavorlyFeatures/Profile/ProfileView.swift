@@ -4,6 +4,7 @@ import SwiftUI
 /// The Profile tab for the signed-in user, or another user's profile pushed from Request Detail.
 struct ProfileView: View {
     @State private var viewModel: ProfileViewModel
+    @State private var isConfirmingDelete = false
     /// True for the Profile tab, false when pushed for a given user.
     private let isTab: Bool
 
@@ -25,11 +26,11 @@ struct ProfileView: View {
             case let .loaded(content):
                 header(content.user)
                 score
-                if let redemptions = content.redemptions {
-                    giftCard(redemptions)
-                }
                 activities(content.activities)
                 reviews(content.reviews)
+                if viewModel.showsAccount {
+                    account
+                }
             case let .failed(message):
                 MessageView(
                     systemImage: "exclamationmark.triangle",
@@ -82,21 +83,37 @@ struct ProfileView: View {
         }
     }
 
-    private func giftCard(_ redemptions: [Redemption]) -> some View {
+    private var account: some View {
         Section {
-            GiftCardCard(
-                progress: viewModel.giftCardProgress,
-                progressText: viewModel.giftCardProgressText,
-                explanation: "Every \(KindnessRules.giftCardCost) points earns a $5 gift card.",
-                canRedeem: viewModel.canRedeem,
-                newCode: viewModel.latestRedemption?.code,
-                pastCodes: redemptions.filter { $0.id != viewModel.latestRedemption?.id }.map(\.code),
-                errorMessage: viewModel.redeemError
-            ) {
-                Task { await viewModel.redeem() }
+            if let accountError = viewModel.accountError {
+                InlineMessage(text: accountError, identifier: "profile.accountError")
             }
+            Button("Sign out") {
+                Task { await viewModel.signOut() }
+            }
+            .accessibilityIdentifier("profile.signOut")
+            Button("Delete account", role: .destructive) {
+                isConfirmingDelete = true
+            }
+            .disabled(viewModel.isDeletingAccount)
+            .accessibilityIdentifier("profile.deleteAccount")
+        } header: {
+            SectionHeader(text: "Account")
+        }
+        .confirmationDialog("Delete your account?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button("Delete account", role: .destructive) {
+                Task { await viewModel.deleteAccount() }
+            }
+            .accessibilityIdentifier("profile.confirmDelete")
+        } message: {
+            Text(Self.deleteExplanation)
         }
     }
+
+    static let deleteExplanation = """
+    This deletes your profile, your open requests, and the messages and reviews you wrote. \
+    Favors you completed stay, shown as from a deleted user. This can't be undone.
+    """
 
     private func reviews(_ reviews: [Review]) -> some View {
         Section {

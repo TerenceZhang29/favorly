@@ -27,7 +27,6 @@ struct ProfileViewModelTests {
         let viewModel = ProfileViewModel(environment: world.environment)
         #expect(viewModel.state == .loading)
         #expect(viewModel.content == nil)
-        #expect(!viewModel.canRedeem)
     }
 
     @Test func alexStartsWithZeroAndNoActivity() async throws {
@@ -37,12 +36,8 @@ struct ProfileViewModelTests {
         #expect(content.summary.lifetimePoints == 0)
         #expect(content.activities.isEmpty)
         #expect(content.reviews.isEmpty)
-        #expect(content.redemptions == [])
         #expect(viewModel.favorsText == "No favors yet")
         #expect(viewModel.ratingText == "No reviews yet")
-        #expect(viewModel.giftCardProgressText == "0 of 100 points")
-        #expect(viewModel.giftCardProgress == 0)
-        #expect(!viewModel.canRedeem)
     }
 
     @Test func beaHas90PointsAndHerHistory() async throws {
@@ -51,9 +46,6 @@ struct ProfileViewModelTests {
         #expect(content.summary.lifetimePoints == 90)
         #expect(viewModel.favorsText == "5 favors completed")
         #expect(viewModel.ratingText == "5.0 average from 4 reviews")
-        #expect(viewModel.giftCardProgressText == "90 of 100 points")
-        #expect(viewModel.giftCardProgress == 0.9)
-        #expect(!viewModel.canRedeem)
         #expect(content.reviews.count == 4)
 
         // Saffron (12) and 13–16 as helper, 17 as requester, newest pick-up first.
@@ -81,6 +73,7 @@ struct ProfileViewModelTests {
             chat: repository,
             locationProvider: MockLocationProvider(settings: world.locationSettings),
             session: world.session,
+            auth: world.auth,
             locationSettings: world.locationSettings
         )
         let viewModel = ProfileViewModel(environment: environment)
@@ -90,21 +83,23 @@ struct ProfileViewModelTests {
 
     // MARK: Own versus other
 
-    @Test func ownProfileShowsTheGiftCard() async {
+    @Test func theProfileTabOffersTheAccount() async {
         let viewModel = await loadedOwnProfile(as: DemoUsers.bea)
-        #expect(viewModel.isOwn)
-        #expect(viewModel.content?.redemptions == [])
+        #expect(viewModel.showsAccount)
     }
 
-    @Test func someoneElsesProfileHasNoGiftCard() async throws {
+    @Test func someoneElsesProfileHasNoAccountSection() async throws {
         let viewModel = ProfileViewModel(userID: DemoUsers.bea.id, environment: world.environment)
         await viewModel.load()
         let content = try #require(viewModel.content)
-        #expect(!viewModel.isOwn)
+        #expect(!viewModel.showsAccount)
         #expect(content.user == DemoUsers.bea)
         #expect(content.summary.lifetimePoints == 90)
-        #expect(content.redemptions == nil)
-        #expect(!viewModel.canRedeem)
+    }
+
+    @Test func yourOwnProfileOpenedFromARequestHasNoAccountSection() {
+        world.session.switchUser(to: DemoUsers.bea.id)
+        #expect(!ProfileViewModel(userID: DemoUsers.bea.id, environment: world.environment).showsAccount)
     }
 
     @Test func someoneElsesProfileStaysOnThemAfterAUserSwitch() async {
@@ -112,8 +107,6 @@ struct ProfileViewModelTests {
         world.session.switchUser(to: DemoUsers.chen.id)
         await viewModel.load()
         #expect(viewModel.content?.user == DemoUsers.bea)
-        world.session.switchUser(to: DemoUsers.bea.id)
-        #expect(viewModel.isOwn)
     }
 
     @Test func anUnknownUserGetsAFallbackName() async {
@@ -123,40 +116,30 @@ struct ProfileViewModelTests {
         #expect(viewModel.content?.activities == [])
     }
 
-    // MARK: Redeem
+    // MARK: Account
 
-    @Test func redeemAt100ShowsTheCodeAndResetsProgress() async throws {
-        try await beaCompletesAFavor()
-        let viewModel = await loadedOwnProfile(as: DemoUsers.bea)
-        #expect(viewModel.giftCardProgressText == "100 of 100 points")
-        #expect(viewModel.giftCardProgress == 1)
-        #expect(viewModel.canRedeem)
-
-        await viewModel.redeem()
-
-        #expect(viewModel.latestRedemption?.code == "FAVORLY-0001")
-        #expect(viewModel.redeemError == nil)
-        #expect(viewModel.content?.summary.lifetimePoints == 100)
-        #expect(viewModel.giftCardProgressText == "0 of 100 points")
-        #expect(viewModel.content?.redemptions?.map(\.code) == ["FAVORLY-0001"])
-        #expect(!viewModel.canRedeem)
+    @Test func signingOutReturnsToWelcome() async {
+        let viewModel = await loadedOwnProfile(as: DemoUsers.alex)
+        await viewModel.signOut()
+        #expect(world.auth.state == .signedOut)
+        #expect(viewModel.accountError == nil)
     }
 
-    @Test func redeemBelow100DoesNothing() async throws {
+    @Test func deletingTheAccountSignsOutAndForgetsTheUser() async {
         let viewModel = await loadedOwnProfile(as: DemoUsers.bea)
-        await viewModel.redeem()
-        #expect(viewModel.latestRedemption == nil)
-        #expect(try await world.repository.redemptions(by: DemoUsers.bea.id).isEmpty)
+        await viewModel.deleteAccount()
+        #expect(world.auth.state == .signedOut)
+        #expect(world.session.profile(for: DemoUsers.bea.id) == nil)
+        #expect(viewModel.accountError == nil)
+        #expect(!viewModel.isDeletingAccount)
     }
 
-    @Test func aFailedRedeemShowsTheMessage() async throws {
-        try await beaCompletesAFavor()
-        let viewModel = await loadedOwnProfile(as: DemoUsers.bea)
-        // Someone else spends the points first, in another window of the same account.
-        _ = try await world.repository.redeemGiftCard(by: DemoUsers.bea.id)
-        await viewModel.redeem()
-        #expect(viewModel.redeemError == "You need 100 points to redeem a gift card.")
-        #expect(viewModel.latestRedemption == nil)
+    @Test func aFailedDeletionShowsTheMessage() async {
+        let viewModel = await loadedOwnProfile(as: DemoUsers.alex)
+        // Signed out in another window first, so there is no account to delete here.
+        await world.auth.signOut()
+        await viewModel.deleteAccount()
+        #expect(viewModel.accountError == "You're not allowed to do that.")
     }
 
     // MARK: Reloading
@@ -169,15 +152,6 @@ struct ProfileViewModelTests {
         await viewModel.load()
         #expect(viewModel.content?.user == DemoUsers.bea)
         #expect(viewModel.content?.summary.lifetimePoints == 90)
-    }
-
-    @Test func aSwitchClearsTheRedeemedCode() async throws {
-        try await beaCompletesAFavor()
-        let viewModel = await loadedOwnProfile(as: DemoUsers.bea)
-        await viewModel.redeem()
-        world.session.switchUser(to: DemoUsers.alex.id)
-        await viewModel.load()
-        #expect(viewModel.latestRedemption == nil)
     }
 
     @Test func aCompletedFavorRaisesTheScoreWithoutAManualRefresh() async throws {

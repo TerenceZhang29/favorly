@@ -3,7 +3,7 @@ import Foundation
 import Observation
 
 /// One user's profile: who they are, their Kindness score, and their completed favors.
-/// The owner also sees gift-card progress and past reward codes.
+/// On the Profile tab the owner can also sign out or delete their account.
 @MainActor
 @Observable
 final class ProfileViewModel {
@@ -14,8 +14,6 @@ final class ProfileViewModel {
         let activities: [ProfileActivity]
         /// Newest first.
         let reviews: [Review]
-        /// The owner's past gift cards, newest first; nil on someone else's profile.
-        let redemptions: [Redemption]?
     }
 
     enum State: Equatable {
@@ -25,11 +23,9 @@ final class ProfileViewModel {
     }
 
     private(set) var state: State = .loading
-    /// The gift card redeemed on this screen, shown until the user is switched.
-    private(set) var latestRedemption: Redemption?
-    /// Why the last redeem failed.
-    private(set) var redeemError: String?
-    private(set) var isRedeeming = false
+    /// Why the last sign out or account deletion failed.
+    private(set) var accountError: String?
+    private(set) var isDeletingAccount = false
 
     /// The user whose profile this is, or nil for the signed-in user (the Profile tab).
     private let subjectID: UserID?
@@ -50,9 +46,9 @@ final class ProfileViewModel {
         subjectID ?? environment.session.currentUser.id
     }
 
-    /// The signed-in user is looking at their own profile, so the gift card shows.
-    var isOwn: Bool {
-        userID == environment.session.currentUser.id
+    /// The Profile tab, where the signed-in user manages their account.
+    var showsAccount: Bool {
+        subjectID == nil
     }
 
     var content: Content? {
@@ -75,22 +71,6 @@ final class ProfileViewModel {
         return "\(Self.ratingFormat(average)) average from \(reviews)"
     }
 
-    /// "90 of 100 points". Above 100 it reads "110 of 100 points", so the number is never hidden.
-    var giftCardProgressText: String {
-        "\(content?.summary.availablePoints ?? 0) of \(KindnessRules.giftCardCost) points"
-    }
-
-    /// Progress toward the next gift card, from 0 to 1.
-    var giftCardProgress: Double {
-        let available = Double(content?.summary.availablePoints ?? 0)
-        return min(max(available / Double(KindnessRules.giftCardCost), 0), 1)
-    }
-
-    var canRedeem: Bool {
-        guard isOwn, !isRedeeming, let summary = content?.summary else { return false }
-        return (try? KindnessRules.validateRedeem(summary)) != nil
-    }
-
     func displayName(for id: UserID) -> String {
         environment.session.displayName(for: id)
     }
@@ -102,12 +82,8 @@ final class ProfileViewModel {
         latestLoad += 1
         let load = latestLoad
         let user = userID
-        let isOwn = isOwn
         if case .failed = state {
             state = .loading
-        }
-        if let latestRedemption, latestRedemption.userID != user {
-            self.latestRedemption = nil
         }
 
         do {
@@ -115,18 +91,12 @@ final class ProfileViewModel {
             let posted = try await environment.repository.requests(postedBy: user)
             let pickedUp = try await environment.repository.requests(claimedBy: user)
             let reviews = try await environment.reviews.reviews(about: user)
-            let redemptions: [Redemption]? = if isOwn {
-                try await environment.kindness.redemptions(by: user)
-            } else {
-                nil
-            }
             guard load == latestLoad else { return }
             state = .loaded(Content(
                 user: profile(for: user),
                 summary: summary,
                 activities: Self.activities(posted: posted, pickedUp: pickedUp),
-                reviews: reviews,
-                redemptions: redemptions
+                reviews: reviews
             ))
         } catch is CancellationError {
             // A newer load replaced this one.
@@ -145,27 +115,32 @@ final class ProfileViewModel {
 
     // MARK: Actions
 
-    /// Spends 100 points on a gift card and shows its code.
-    func redeem() async {
-        guard canRedeem else { return }
-        isRedeeming = true
-        defer { isRedeeming = false }
-        redeemError = nil
+    /// Back to the Welcome screen.
+    func signOut() async {
+        accountError = nil
+        await environment.auth.signOut()
+    }
+
+    /// Deletes the account for good, then returns to the Welcome screen. The view confirms first.
+    func deleteAccount() async {
+        guard !isDeletingAccount else { return }
+        isDeletingAccount = true
+        defer { isDeletingAccount = false }
+        accountError = nil
 
         do {
-            latestRedemption = try await environment.kindness.redeemGiftCard(by: userID)
-            await load()
+            try await environment.auth.deleteAccount()
         } catch is CancellationError {
             // The screen went away.
         } catch {
-            redeemError = ErrorMessage.text(for: error)
+            accountError = ErrorMessage.text(for: error)
         }
     }
 
     // MARK: Helpers
 
     private func profile(for id: UserID) -> UserProfile {
-        environment.session.availableUsers.first { $0.id == id }
+        environment.session.profile(for: id)
             ?? UserProfile(id: id, displayName: environment.session.displayName(for: id), neighborhood: "")
     }
 

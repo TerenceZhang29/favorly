@@ -19,7 +19,7 @@ struct DoneKeyModifier: ViewModifier {
     }
 
     /// True when `new` is `old` plus one typed line break. Pasted text keeps its line breaks.
-    static func isReturnKey(old: String, new: String) -> Bool {
+    nonisolated static func isReturnKey(old: String, new: String) -> Bool {
         guard new.count == old.count + 1 else { return false }
         let lineBreaks: (String) -> Int = { $0.count(where: \.isNewline) }
         return lineBreaks(new) == lineBreaks(old) + 1

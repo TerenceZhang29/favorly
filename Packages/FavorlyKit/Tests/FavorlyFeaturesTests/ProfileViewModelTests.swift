@@ -71,6 +71,7 @@ struct ProfileViewModelTests {
             kindness: FailingKindnessRepository(),
             reviews: repository,
             chat: repository,
+            moderation: repository,
             locationProvider: MockLocationProvider(settings: world.locationSettings),
             session: world.session,
             auth: world.auth,

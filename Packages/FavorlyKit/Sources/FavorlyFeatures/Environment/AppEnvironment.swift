@@ -6,6 +6,7 @@ public struct AppEnvironment: Sendable {
     public let kindness: any KindnessRepository
     public let reviews: any ReviewRepository
     public let chat: any ChatRepository
+    public let moderation: any ModerationRepository
     public let locationProvider: any LocationProvider
     public let session: any SessionStore
     public let auth: any AuthService
@@ -17,6 +18,7 @@ public struct AppEnvironment: Sendable {
         kindness: any KindnessRepository,
         reviews: any ReviewRepository,
         chat: any ChatRepository,
+        moderation: any ModerationRepository,
         locationProvider: any LocationProvider,
         session: any SessionStore,
         auth: any AuthService,
@@ -26,6 +28,7 @@ public struct AppEnvironment: Sendable {
         self.kindness = kindness
         self.reviews = reviews
         self.chat = chat
+        self.moderation = moderation
         self.locationProvider = locationProvider
         self.session = session
         self.auth = auth

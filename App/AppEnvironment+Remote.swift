@@ -17,6 +17,7 @@ extension AppEnvironment {
             kindness: repository,
             reviews: repository,
             chat: repository,
+            moderation: repository,
             locationProvider: DeviceLocationProvider(source: CoreLocationSource(), namer: GeocoderNeighborhoodNamer()),
             session: session,
             auth: RemoteAuthService(client: client, session: session),

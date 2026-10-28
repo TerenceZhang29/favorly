@@ -14,6 +14,7 @@ extension AppEnvironment {
             kindness: repository,
             reviews: repository,
             chat: repository,
+            moderation: repository,
             locationProvider: MockLocationProvider(settings: locationSettings),
             session: session,
             auth: MockAuthService(session: session, startsSignedIn: startsSignedIn, artificialDelay: artificialDelay),

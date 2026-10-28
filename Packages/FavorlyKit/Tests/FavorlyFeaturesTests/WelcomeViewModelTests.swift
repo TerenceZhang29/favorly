@@ -24,6 +24,7 @@ struct WelcomeViewModelTests {
             kindness: environment.kindness,
             reviews: environment.reviews,
             chat: environment.chat,
+            moderation: environment.moderation,
             locationProvider: environment.locationProvider,
             session: environment.session,
             auth: FailingAuthService(),

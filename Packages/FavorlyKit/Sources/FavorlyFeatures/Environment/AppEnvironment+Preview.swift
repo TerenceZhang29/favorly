@@ -44,6 +44,7 @@ public extension AppEnvironment {
             kindness: repository,
             reviews: repository,
             chat: repository,
+            moderation: repository,
             locationProvider: PreviewLocationProvider(location: here),
             session: PreviewSessionStore(availableUsers: [alex, bea], currentUser: alex),
             auth: PreviewAuthService(),

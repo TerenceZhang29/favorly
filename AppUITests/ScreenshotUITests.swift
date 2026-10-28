@@ -121,8 +121,9 @@ final class ScreenshotUITests: UITestCase {
         try capture("request-detail-open")
         scrollToAndTap(app.buttons["detail.pickUp"])
         app.buttons["Confirm pick up"].tap()
-        // Mark completed can be below the fold at the largest text size, so it is given a moment but not required.
-        _ = app.buttons["detail.complete"].waitForExistence(timeout: Self.shortWait)
+        // The helper's auto-complete note can be below the fold at the largest text size, so it is given a moment
+        // but not required.
+        _ = element("detail.autoCompleteNote").waitForExistence(timeout: Self.shortWait)
         try capture("request-detail")
         scrollToAndTap(app.buttons["detail.message"])
         XCTAssertTrue(element("chat.input").waitForExistence(timeout: Self.waitTimeout))

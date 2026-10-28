@@ -39,10 +39,21 @@ final class ProfileUITests: UITestCase {
         eggs.tap()
         app.buttons["detail.pickUp"].tap()
         app.buttons["Confirm pick up"].tap()
-        XCTAssertTrue(app.buttons["detail.complete"].waitForExistence(timeout: Self.waitTimeout))
+
+        // Only the requester can mark it completed; the helper sees when it completes on its own.
+        XCTAssertTrue(element("detail.autoCompleteNote").waitForExistence(timeout: Self.waitTimeout))
+        XCTAssertFalse(app.buttons["detail.complete"].exists)
+
+        switchUser(to: "user-chen")
+        openTab("My Activity")
+        app.segmentedControls["activity.segment"].buttons["My requests"].tap()
+        let picked = row("activity.row.", containing: "Need 2 eggs for a cake")
+        XCTAssertTrue(picked.waitForExistence(timeout: Self.waitTimeout))
+        picked.tap()
         scrollToAndTap(app.buttons["detail.complete"])
         waitFor(element("detail.status"), toRead: "Completed")
 
+        switchUser(to: "user-bea")
         openTab("Profile")
         waitFor(element("profile.score"), toRead: "100 points")
         waitFor(element("profile.giftCardProgress"), toRead: "100 of 100 points")

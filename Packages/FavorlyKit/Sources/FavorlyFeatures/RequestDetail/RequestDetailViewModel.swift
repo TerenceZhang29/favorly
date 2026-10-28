@@ -78,7 +78,8 @@ final class RequestDetailViewModel {
     /// "Completes automatically on Oct 20 if Alex doesn't confirm." Shown to the helper instead of Mark completed.
     var autoCompleteNote: String? {
         autoCompleteDate.map {
-            "Completes automatically on \($0.formatted(.dateTime.month(.abbreviated).day())) if \(requesterName) doesn't confirm."
+            let day = $0.formatted(.dateTime.month(.abbreviated).day())
+            return "Completes automatically on \(day) if \(requesterName) doesn't confirm."
         }
     }
 

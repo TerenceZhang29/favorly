@@ -2,8 +2,8 @@
 
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
-**Current phase:** Phase 3. 3A–3E are done and tagged `v0.3.0-profiles`; 3F is in progress on `phase/3f-completion`. Phase 4 is planned in `docs/PLAN-PHASE-4.md`. Phase 2 is complete (`v0.2.0-ui`), Phase 1 is complete (`v0.1.0-prototype`)
-**Next task:** finish 3F (requester-only completion and auto-complete), then start 4A on `phase/4a-release-groundwork`
+**Current phase:** Phase 3 is complete (3A–3E tagged `v0.3.0-profiles`, 3F done on 2026-10-28). Phase 4 is planned in `docs/PLAN-PHASE-4.md`, with the owner's defaults accepted. Phase 2 is complete (`v0.2.0-ui`), Phase 1 is complete (`v0.1.0-prototype`)
+**Next task:** start 4A (release groundwork) on `phase/4a-release-groundwork`
 
 ## Phase checklist
 
@@ -29,9 +29,9 @@ Phase 3, Kindness score, profiles, chat and reviews ([PLAN-PHASE-3.md](PLAN-PHAS
 - [x] **3C.** Chat between requester and helper
 - [x] **3D.** Reviews
 - [x] **3E.** Hardening, demo, docs, tag `v0.3.0-profiles` (owner's review accepted 2026-10-28)
-- [ ] **3F.** Requester-only completion and auto-complete after 7 days
+- [x] **3F.** Requester-only completion and auto-complete after 7 days
 
-Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). Starts after 3E and 3F; the owner answers the plan's "Decisions needed from the owner" first:
+Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). The owner accepted every default in "Decisions needed from the owner" on 2026-10-28:
 
 - [ ] **4A.** Release groundwork: onboarding and account screens on a mock auth service, Dev Settings Debug-only, no fake Redeem
 - [ ] **4B.** Backend schema and server rules (local Supabase, database tests)
@@ -168,6 +168,13 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | Tooling | `e6841f7` | chore(build): local signing file for running on a device, parallel UI tests |
 | Tooling | `daf2fce` | docs: README note on the keyboard UI test failing after typing into the simulator |
 | Plan | `3c4d547` | docs: plan phase 4, from prototype to App Store app |
+| 3E | `4bdb168` | docs: owner accepts the Phase 3 review; 3E done |
+| 3F | `33be675` | feat(core): only the requester completes a request; auto-complete after 7 days |
+| 3F | `03f6ade` | feat(data): mock repository completes picked-up requests 7 days after pick-up |
+| 3F | `76a1009` | fix(features): isReturnKey is nonisolated, clearing actor-isolation warnings in its tests |
+| 3F | `7bc820d` | feat(detail): only the requester sees Mark completed; the helper sees when it completes on its own |
+| 3F | `5966af0` | test(ui): the helper sees the auto-complete note and the requester completes in the profile test |
+| 3F | `0be77da` | docs: requester-only completion and auto-complete in the README demo and architecture notes |
 
 ## Confirmed decisions
 
@@ -336,6 +343,11 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-26 · tooling · `FavorlyUITests` is parallelizable in the scheme, and the full UI suite runs only before a push; `swift test` covers day-to-day checks · the serial UI suite took over 10 minutes on a laptop
 - 2026-10-28 · 3E · The owner accepted the Phase 3 review and every listed judgment call as built; tagged `v0.3.0-profiles` · owner's decision
 - 2026-10-28 · Phase 4 plan · The developer account is an Individual enrollment (the App Store shows that person's legal name as the seller), and every other default in `docs/PLAN-PHASE-4.md` stands · owner's decision; an Organization account needs a registered company and a D-U-N-S number
+- 2026-10-28 · 3F · `RequestRules.autoCompleteDate(of:)` added beside the plan's `autoCompleteInterval` and `isAutoCompleteDue(_:now:)` · the helper's note needs the date, and both rules then share one definition
+- 2026-10-28 · 3F · `MockRequestRepository.simulateLatency()` became `beginOperation()`: it waits out the delay and then completes due requests, emitting on `changes()` when any changed · every read and write already called it, so auto-complete runs before each one with no timer, as the plan asks
+- 2026-10-28 · 3F · The helper's note is a gray footnote with a clock symbol where Mark completed would be, built by `RequestDetailViewModel.autoCompleteNote` like the chat's `closedText` · matches the chat's read-only note
+- 2026-10-28 · 3F · `ProfileUITests.testOneMoreFavorLetsBeaRedeemAGiftCard` now checks Bea's note and missing button, then switches to Chen to complete; `ScreenshotUITests` waits for the note instead of Mark completed · the only UI tests that completed as the helper
+- 2026-10-28 · 3F · `DoneKeyModifier.isReturnKey` is `nonisolated` · its tests raised Swift 6 actor-isolation warnings, and it is a pure function
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues
@@ -368,7 +380,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 ## Open questions
 
 - Phase 3: the helper can mark a request completed (Phase 1 rule 4), so a helper can award themselves 10 points. Resolved 2026-10-13: only the requester can mark completed, and a claimed request auto-completes 7 days after pick-up; planned as phase 3F.
-- Phase 3F: how is auto-complete shown in a demo, when 7 days never pass? Default: tests only, with a fixed clock.
+- Phase 3F: how is auto-complete shown in a demo, when 7 days never pass? Resolved 2026-10-28: tests only, with a fixed clock, as the plan's default.
 - Phase 3: are 10 points per favor, 2 per star and 100 points for a "$5" gift card the right values? Default: yes, as placeholders in `KindnessRules`.
 - Phase 3: should chat stay open for sending after a request is completed? Default: no, the thread becomes read-only.
 - Phase 3: what does someone else's profile show? Default: completed requests only, never gift-card progress or reward codes.
@@ -382,6 +394,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-10-28 · 3F · Requester-only completion, auto-complete 7 days after pick-up in rules and the mock repository, the helper's auto-complete note on Request Detail, tests (279 package tests, profile UI tests), docs; also accepted the Phase 3 review, tagged `v0.3.0-profiles`, wrote the Phase 4 plan · start 4A on `phase/4a-release-groundwork`
 - 2026-10-09 · 3B–3E · Profile tab and other users' profiles with score, gift card and redeem; scores and tappable names on Request Detail; chat (rules, mock, screen, Message button); reviews (rules, submit, star picker, review sheet, review on Request Detail and on profiles); `ProfileUITests`, `ChatUITests`, `ReviewUITests`, `DemoFlowUITests.testExtendedDemoScript`, new screenshot captures; version 0.3.0, README and architecture notes; CI on `claude/**` branches and a lint and screenshot workflow. View models and rules pass on Linux; the app, the UI tests and lint ran on GitHub Actions (results in the commit map rows and below) · the owner's review list at the top of this file
 - 2026-10-09 · 3A · `Review`, `Redemption`, `KindnessSummary` and their IDs, `KindnessRepository`, `ReviewRepository` (reads), `KindnessRules`, `alreadyReviewed` and `notEnoughPoints` with messages; seeds 13–17 and `DemoReviews` (Bea 90, Chen 18, Dana 0, Alex 0); kindness and review conformances on `MockRequestRepository`; `kindness` and `reviews` in `AppEnvironment`, demo wiring, preview stubs and `TestWorld`. 154 tests pass on Linux; app build, UI tests and lint left to CI and a Mac · confirm CI, fast-forward `main`, start 3B on `phase/3b-profile`
 - 2026-10-09 · 2D · Consistency pass (no style literals left outside `Theme`), accessibility pass at the largest text size, with Increase Contrast and with Reduce Transparency (three row layout fixes), app icon and its script, version `0.2.0`, README and architecture docs, refreshed screenshots; 138 package tests and 12 UI tests pass, the four behavior classes unedited; Core, Data, view model and existing test diff is empty; SwiftLint and SwiftFormat clean; tagged `v0.2.0-ui` · start 3A on `phase/3a-kindness-core`

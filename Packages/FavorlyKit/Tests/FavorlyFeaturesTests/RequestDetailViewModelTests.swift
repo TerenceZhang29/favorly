@@ -281,4 +281,20 @@ struct RequestDetailViewModelTests {
         await viewModel.complete()
         #expect(viewModel.canReview)
     }
+
+    // MARK: Report and block
+
+    @Test func onlySomeoneElsesRequestCanBeReportedOrBlocked() async {
+        #expect(await loaded(as: DemoUsers.bea).canReportOrBlock)
+        #expect(await !loaded(as: DemoUsers.chen).canReportOrBlock)
+    }
+
+    @Test func blockingTheRequesterHidesThemAndStopsPickUp() async throws {
+        let viewModel = await loaded(as: DemoUsers.bea)
+        #expect(await viewModel.blockRequester())
+        #expect(try await world.repository.blockedUsers(of: DemoUsers.bea.id) == [DemoUsers.chen])
+
+        await viewModel.pickUp()
+        #expect(viewModel.actionError == "You can't interact with this person.")
+    }
 }

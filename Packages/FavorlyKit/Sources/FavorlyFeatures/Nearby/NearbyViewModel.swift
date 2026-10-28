@@ -81,7 +81,10 @@ final class NearbyViewModel {
 
         do {
             let location = try await environment.locationProvider.currentLocation()
-            let results = try await environment.repository.nearby(around: location.point, radiusMeters: radius.meters)
+            let found = try await environment.repository.nearby(around: location.point, radiusMeters: radius.meters)
+            // The server already hides them; the mock cannot, since its reads do not know who is asking.
+            let blocked = await blockedUserIDs()
+            let results = found.filter { !blocked.contains($0.request.requesterID) }
             guard load == latestLoad else { return }
             self.location = location
             state = results.isEmpty ? .empty : .loaded(results)
@@ -93,6 +96,12 @@ final class NearbyViewModel {
                 ? .locationDenied(ErrorMessage.text(for: error))
                 : .failed(ErrorMessage.text(for: error))
         }
+    }
+
+    /// People the signed-in user blocked. A failed lookup hides no one.
+    private func blockedUserIDs() async -> Set<UserID> {
+        let blocked = try? await environment.moderation.blockedUsers(of: environment.session.currentUser.id)
+        return Set((blocked ?? []).map(\.id))
     }
 
     /// Reloads after every repository write. Runs until the surrounding task is cancelled.

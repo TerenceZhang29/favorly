@@ -3,9 +3,13 @@ import SwiftUI
 
 /// The thread between a request's requester and helper, newest message at the bottom.
 struct ChatView: View {
+    private let environment: AppEnvironment
     @State private var viewModel: ChatViewModel
+    /// The message being reported, if any.
+    @State private var reporting: MessageID?
 
     init(requestID: RequestID, environment: AppEnvironment) {
+        self.environment = environment
         _viewModel = State(initialValue: ChatViewModel(requestID: requestID, environment: environment))
     }
 
@@ -25,6 +29,15 @@ struct ChatView: View {
         .safeAreaInset(edge: .bottom) {
             if viewModel.isOpenForSending {
                 composer
+            }
+        }
+        .sheet(isPresented: Binding(get: { reporting != nil }, set: {
+            if !$0 {
+                reporting = nil
+            }
+        })) {
+            if let reporting {
+                ReportView(target: .message(reporting), environment: environment)
             }
         }
         .navigationTitle(viewModel.title)
@@ -60,6 +73,14 @@ struct ChatView: View {
                 )
                 .plainListRow()
                 .id(message.id)
+                .contextMenu {
+                    if !viewModel.isMine(message) {
+                        Button("Report message", systemImage: "exclamationmark.bubble") {
+                            reporting = message.id
+                        }
+                        .accessibilityIdentifier("chat.report")
+                    }
+                }
                 .accessibilityIdentifier("chat.message.\(message.id.rawValue.uuidString)")
             }
             if let closedText = viewModel.closedText {

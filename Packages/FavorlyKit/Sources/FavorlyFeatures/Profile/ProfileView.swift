@@ -3,6 +3,7 @@ import SwiftUI
 
 /// The Profile tab for the signed-in user, or another user's profile pushed from Request Detail.
 struct ProfileView: View {
+    private let environment: AppEnvironment
     @State private var viewModel: ProfileViewModel
     @State private var isConfirmingDelete = false
     /// True for the Profile tab, false when pushed for a given user.
@@ -10,6 +11,7 @@ struct ProfileView: View {
 
     /// - Parameter userID: The user to show, or nil for whoever is signed in.
     init(userID: UserID? = nil, environment: AppEnvironment) {
+        self.environment = environment
         _viewModel = State(initialValue: ProfileViewModel(userID: userID, environment: environment))
         isTab = userID == nil
     }
@@ -45,9 +47,23 @@ struct ProfileView: View {
         }
         .navigationTitle(isTab ? "Profile" : viewModel.content?.user.displayName ?? "Profile")
         .toolbarTitleDisplayMode(isTab ? .automatic : .inline)
+        .modifier(SafetyActions(
+            isEnabled: viewModel.canReportOrBlock,
+            reportTitle: "Report \(personName)",
+            personName: personName,
+            identifier: "profile",
+            reportTarget: .user(viewModel.userID),
+            environment: environment,
+            block: viewModel.block
+        ))
         .refreshable { await viewModel.load() }
         .task(id: viewModel.reloadKey) { await viewModel.load() }
         .task { await viewModel.observeChanges() }
+    }
+
+    /// The name in the report and block menu: the person's name once loaded.
+    private var personName: String {
+        viewModel.content?.user.displayName ?? "this person"
     }
 
     private func header(_ user: UserProfile) -> some View {
@@ -88,6 +104,30 @@ struct ProfileView: View {
             if let accountError = viewModel.accountError {
                 InlineMessage(text: accountError, identifier: "profile.accountError")
             }
+            NavigationLink {
+                BlockedUsersView(environment: environment)
+            } label: {
+                Label("Blocked people", systemImage: "hand.raised")
+            }
+            .accessibilityIdentifier("profile.blockedPeople")
+            NavigationLink {
+                SafetyTipsView()
+            } label: {
+                Label("Safety tips", systemImage: "checkmark.shield")
+            }
+            .accessibilityIdentifier("profile.safetyTips")
+            Link(destination: LegalLinks.terms) {
+                Label("Terms of Use", systemImage: "doc.text")
+            }
+            .accessibilityIdentifier("profile.terms")
+            Link(destination: LegalLinks.privacy) {
+                Label("Privacy Policy", systemImage: "lock")
+            }
+            .accessibilityIdentifier("profile.privacy")
+            Link(destination: LegalLinks.support) {
+                Label("Contact support", systemImage: "envelope")
+            }
+            .accessibilityIdentifier("profile.support")
             Button("Sign out") {
                 Task { await viewModel.signOut() }
             }

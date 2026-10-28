@@ -20,7 +20,9 @@ extension RemoteRepository: ModerationRepository {
     }
 
     public func block(_ blocked: UserID, by _: UserID) async throws {
-        try await call { try await client.rpc("block_user", params: ["user_id": AnyJSON.string(blocked.rawValue)]).execute() }
+        try await call {
+            try await client.rpc("block_user", params: ["user_id": AnyJSON.string(blocked.rawValue)]).execute()
+        }
         broadcaster.send()
     }
 

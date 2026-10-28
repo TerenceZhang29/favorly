@@ -51,6 +51,12 @@ final class ProfileViewModel {
         subjectID == nil
     }
 
+    /// Someone else's profile: they can be reported or blocked.
+    var canReportOrBlock: Bool {
+        guard let subjectID else { return false }
+        return subjectID != environment.session.currentUser.id
+    }
+
     var content: Content? {
         guard case let .loaded(content) = state else { return nil }
         return content
@@ -114,6 +120,21 @@ final class ProfileViewModel {
     }
 
     // MARK: Actions
+
+    /// Blocks this profile's person. Returns true when done, so the screen can close.
+    func block() async -> Bool {
+        guard canReportOrBlock else { return false }
+        accountError = nil
+        do {
+            try await environment.moderation.block(userID, by: environment.session.currentUser.id)
+            return true
+        } catch is CancellationError {
+            return false
+        } catch {
+            accountError = ErrorMessage.text(for: error)
+            return false
+        }
+    }
 
     /// Back to the Welcome screen.
     func signOut() async {

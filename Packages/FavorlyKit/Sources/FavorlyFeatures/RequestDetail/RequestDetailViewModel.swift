@@ -106,6 +106,12 @@ final class RequestDetailViewModel {
         return "Message \(otherID.map { environment.session.displayName(for: $0) } ?? "")"
     }
 
+    /// Someone else's request: its requester can be reported or blocked.
+    var canReportOrBlock: Bool {
+        guard let request else { return false }
+        return request.requesterID != currentUserID && request.requesterID.rawValue != "deleted-user"
+    }
+
     // MARK: Loading
 
     /// Loads the request. A request already on screen stays visible while it reloads.
@@ -144,6 +150,21 @@ final class RequestDetailViewModel {
 
     func complete() async {
         await perform(environment.repository.complete)
+    }
+
+    /// Blocks the requester. Returns true when done, so the screen can close: their request is hidden now.
+    func blockRequester() async -> Bool {
+        guard let request else { return false }
+        actionError = nil
+        do {
+            try await environment.moderation.block(request.requesterID, by: currentUserID)
+            return true
+        } catch is CancellationError {
+            return false
+        } catch {
+            actionError = ErrorMessage.text(for: error)
+            return false
+        }
     }
 
     // MARK: Helpers

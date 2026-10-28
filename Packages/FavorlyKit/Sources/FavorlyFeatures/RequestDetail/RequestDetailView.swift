@@ -43,6 +43,15 @@ struct RequestDetailView: View {
         }
         .navigationTitle("Request")
         .toolbarTitleDisplayMode(.inline)
+        .modifier(SafetyActions(
+            isEnabled: viewModel.canReportOrBlock,
+            reportTitle: "Report request",
+            personName: viewModel.requesterName,
+            identifier: "detail",
+            reportTarget: .request(viewModel.requestID),
+            environment: environment,
+            block: viewModel.blockRequester
+        ))
         .confirmationDialog("Pick up this request?", isPresented: $isConfirmingPickUp, titleVisibility: .visible) {
             Button("Confirm pick up") {
                 Task { await viewModel.pickUp() }

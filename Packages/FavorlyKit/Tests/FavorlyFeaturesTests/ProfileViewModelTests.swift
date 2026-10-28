@@ -165,4 +165,19 @@ struct ProfileViewModelTests {
         #expect(await TestWorld.eventually { viewModel.content?.summary.lifetimePoints == 100 })
         #expect(viewModel.content?.activities.first?.id == TestWorld.eggsID)
     }
+
+    // MARK: Report and block
+
+    @Test func someoneElsesProfileCanBeReportedOrBlocked() {
+        #expect(ProfileViewModel(userID: DemoUsers.bea.id, environment: world.environment).canReportOrBlock)
+        #expect(!ProfileViewModel(environment: world.environment).canReportOrBlock)
+        #expect(!ProfileViewModel(userID: DemoUsers.alex.id, environment: world.environment).canReportOrBlock)
+    }
+
+    @Test func blockingFromAProfile() async throws {
+        let viewModel = ProfileViewModel(userID: DemoUsers.bea.id, environment: world.environment)
+        #expect(await viewModel.block())
+        #expect(try await world.repository.blockedUsers(of: DemoUsers.alex.id) == [DemoUsers.bea])
+        #expect(await !ProfileViewModel(environment: world.environment).block())
+    }
 }

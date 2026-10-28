@@ -126,4 +126,13 @@ struct NearbyViewModelTests {
         #expect(viewModel.reloadKey.preset == nil)
         #expect(!viewModel.reloadKey.simulatesError)
     }
+
+    @Test func requestsFromBlockedPeopleAreHidden() async throws {
+        await viewModel.load()
+        #expect(results.contains { $0.id == TestWorld.eggsID })
+        try await world.repository.block(DemoUsers.chen.id, by: DemoUsers.alex.id)
+        await viewModel.load()
+        #expect(!results.contains { $0.request.requesterID == DemoUsers.chen.id })
+        #expect(!results.isEmpty)
+    }
 }

@@ -26,15 +26,29 @@ struct ContentFilterTests {
         let here = TaggedLocation(point: GeoPoint(latitude: 40.755, longitude: -73.956), label: "Here")
         let refused = FavorlyError.validation(ContentFilter.message)
         #expect(throws: refused) {
-            try DraftValidator.validate(NewRequestDraft(title: "Need shit", details: "", category: .other, location: here))
+            try DraftValidator.validate(NewRequestDraft(
+                title: "Need shit",
+                details: "",
+                category: .other,
+                location: here
+            ))
         }
         #expect(throws: refused) {
-            try DraftValidator.validate(NewRequestDraft(title: "Need rice", details: "fuck", category: .other, location: here))
+            try DraftValidator.validate(NewRequestDraft(
+                title: "Need rice",
+                details: "fuck",
+                category: .other,
+                location: here
+            ))
         }
         #expect(throws: refused) { try ChatRules.validateText("bitch") }
         #expect(throws: refused) { try ReviewRules.validate(NewReviewDraft(rating: 1, comment: "asshole")) }
         #expect(throws: refused) {
-            try ProfileSetupRules.validate(ProfileSetupDraft(displayName: "Dick", confirmedAdult: true, acceptedTerms: true))
+            try ProfileSetupRules.validate(ProfileSetupDraft(
+                displayName: "Dick",
+                confirmedAdult: true,
+                acceptedTerms: true
+            ))
         }
     }
 

@@ -35,6 +35,8 @@ targets:
         product: FavorlyFeatures
       - package: FavorlyKit
         product: FavorlyRemote
+      - package: FavorlyKit
+        product: FavorlyDevice
     entitlements:
       path: App/Favorly.entitlements
       properties:
@@ -62,6 +64,9 @@ targets:
         TARGETED_DEVICE_FAMILY: "1"
         # No encryption beyond Apple's own, so App Store Connect skips the export-compliance question.
         INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: >-
+          Favorly shows requests near you and tags yours with your neighborhood. Your exact location is never
+          shared: it is rounded to about 100 meters first.
 
   FavorlyUITests:
     type: bundle.ui-testing

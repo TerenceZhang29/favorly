@@ -24,7 +24,16 @@ The tests always run against the local database, which is rebuilt from the same 
 
 The local ports are moved up by 1000 from Supabase's defaults (API on 55321, database on 55322, Studio on 55323), so this project can run next to another local Supabase project.
 
-Deploying to the hosted project is phase 4B's last step and needs the owner's approval first (see `PENDING_APPROVALS.md` if it exists, and the cost rule in `CLAUDE.md`).
+The hosted project is `favorly` (ref `dkerjrnwjvrvsuldtqwe`, US East, free tier). To deploy a new migration, after the tests pass locally:
+
+```bash
+supabase link --project-ref dkerjrnwjvrvsuldtqwe   # once per machine; asks for the database password
+supabase db push --dry-run                          # shows what would change
+supabase db push
+supabase db diff --linked --schema public,private   # should say "No schema changes found"
+```
+
+The database password lives only in the owner's password manager. Run the commands that ask for it in your own Terminal, not through an agent. Changing hosted resources follows the cost rule in `CLAUDE.md`.
 
 ## Layout
 

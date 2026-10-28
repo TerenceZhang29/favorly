@@ -2,8 +2,8 @@
 
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
-**Current phase:** Phase 4. 4A is done; 4B's backend is built and tested locally, and only the hosted project is left, waiting on the owner's approval. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
-**Next task:** the owner approves and creates the hosted Supabase project (free tier), then the migrations are deployed to it; after that, 4C on `phase/4c-accounts`, which also needs the paid Apple Developer Program
+**Current phase:** Phase 4. 4A and 4B are done: the backend is deployed to the hosted Supabase project `favorly` and tested in CI. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
+**Next task:** 4C (real accounts and shared data) on `phase/4c-accounts`. It starts with an owner step that costs $99/year: enrolling in the Apple Developer Program, which Sign in with Apple needs
 
 ## Phase checklist
 
@@ -34,7 +34,7 @@ Phase 3, Kindness score, profiles, chat and reviews ([PLAN-PHASE-3.md](PLAN-PHAS
 Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). The owner accepted every default in "Decisions needed from the owner" on 2026-10-28:
 
 - [x] **4A.** Release groundwork: onboarding and account screens on a mock auth service, Dev Settings Debug-only, no fake Redeem
-- [ ] **4B.** Backend schema and server rules (local Supabase, database tests). Built and tested locally; the hosted project waits on the owner
+- [x] **4B.** Backend schema and server rules (local Supabase, database tests, hosted project `favorly`)
 - [ ] **4C.** Real accounts and shared data (`FavorlyRemote`, Sign in with Apple; needs the paid developer account)
 - [ ] **4D.** Real location and privacy
 - [ ] **4E.** Trust and safety: report, block, content filter, moderation, terms
@@ -387,6 +387,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-28 · 4B · Errors are SQLSTATE `P0001` with a fixed message, and validation text in DETAIL (contract in `backend/README.md`) · 4C maps them to `FavorlyError`, adding `.notSignedIn`, `.rateLimited` and `.blocked`
 - 2026-10-28 · 4B · Local Supabase ports are 55321–55329, not the default 54321–54329 · another local Supabase project (hackamatch) uses the defaults on this Mac
 - 2026-10-28 · 4B · Backend tests and the schema lint also run on GitHub Actions (`.github/workflows/backend.yml`), on pushes that change `backend/`, starting only the database (about 2 minutes) · the repo is public, so the minutes are free; owner asked for CI before the hosted project
+- 2026-10-28 · 4B · Hosted Supabase project `favorly` (ref `dkerjrnwjvrvsuldtqwe`), US East, free tier, in the owner's existing organization; the four migrations deployed with `supabase db push`, and `supabase db diff --linked` finds no differences · owner created it and set the password in their own Terminal. The organization now has 2 of 2 free active projects (hackamatch, favorly)
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues
@@ -436,6 +437,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-10-28 · 4B · Backend CI on GitHub Actions (first run green, 104 s); owner logged in to Supabase and created the hosted project `favorly`; migrations deployed and checked (`migration list --linked`, `db diff --linked`); 4B done · 4C after the owner enrolls in the Apple Developer Program
 - 2026-10-28 · 4B · Supabase CLI installed; `backend/supabase` with four migrations (schema, row-level security, actions with the app's rules, rate limits, blocks, account deletion, `pg_cron` auto-complete); 116 pgTAP tests pass; lint clean; `backend/README.md` with the error contract. App unchanged · owner approves the hosted Supabase project (free tier), then deploy; then 4C
 - 2026-10-28 · 4A · `AuthService`, `AuthState`, `ProfileSetupRules`, `DemoSessionControls`; `MockAuthService`; Welcome and profile setup behind a sign-in gate; Sign out and Delete account on the Profile tab; gift card and Redeem removed; Dev Settings Debug-only; `-demo`, `-signedOut` and `AppEnvironment.live()`; no-encryption key; 307 package tests and the changed UI test classes pass · start 4B on `phase/4b-backend` after the owner installs Docker and the Supabase CLI
 - 2026-10-28 · 3F · Requester-only completion, auto-complete 7 days after pick-up in rules and the mock repository, the helper's auto-complete note on Request Detail, tests (279 package tests, profile UI tests), docs; also accepted the Phase 3 review, tagged `v0.3.0-profiles`, wrote the Phase 4 plan · start 4A on `phase/4a-release-groundwork`

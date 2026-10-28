@@ -155,7 +155,7 @@ Everything the store build needs that does not depend on a server, built against
 - [x] `delete_my_account` function implementing the deletion decision
 - [x] pgTAP tests for every RPC and policy: allowed and refused for requester, helper, stranger and blocked user; nearby radius edges; auto-complete at 7 days minus 1 second and at 7 days; kindness totals; deletion leaves "Deleted user" on completed favors
 - [x] `backend/README.md`: start, reset, test and deploy commands
-- [ ] **Owner, $ (free tier):** create the hosted Supabase project, then deploy the migrations to it
+- [x] **Owner, $ (free tier):** create the hosted Supabase project, then deploy the migrations to it (`favorly`, US East, 2026-10-28)
 
 **Done when:** `supabase test db` passes locally; every rule in `docs/PLAN.md` and Phase 3 has a server test; nothing in the app changed.
 

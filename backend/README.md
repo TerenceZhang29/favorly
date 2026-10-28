@@ -28,12 +28,12 @@ The hosted project is `favorly` (ref `dkerjrnwjvrvsuldtqwe`, US East, free tier)
 
 ```bash
 supabase link --project-ref dkerjrnwjvrvsuldtqwe   # once per machine; asks for the database password
-supabase db push --dry-run                          # shows what would change
-supabase db push
+supabase db push --linked --dry-run                 # shows what would change
+supabase db push --linked
 supabase db diff --linked --schema public,private   # should say "No schema changes found"
 ```
 
-The database password lives only in the owner's password manager. Run the commands that ask for it in your own Terminal, not through an agent. Changing hosted resources follows the cost rule in `CLAUDE.md`.
+These commands use your `supabase login` session, not the database password; `--linked` keeps them on the hosted project when a newer CLI makes the local database the default. The database password lives only in the owner's password manager. Changing hosted resources follows the cost rule in `CLAUDE.md`.
 
 ## Layout
 

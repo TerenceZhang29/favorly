@@ -13,6 +13,7 @@ extension MockRequestRepository: ChatRepository {
         try await beginOperation()
         guard let helpRequest = requests[request] else { throw FavorlyError.notFound }
         try ChatRules.validateSend(request: helpRequest, by: user)
+        guard !isBlockedBetween(helpRequest.requesterID, helpRequest.helperID) else { throw FavorlyError.blocked }
         let text = try ChatRules.validateText(text)
         let message = ChatMessage(
             id: MessageID(rawValue: UUID()),

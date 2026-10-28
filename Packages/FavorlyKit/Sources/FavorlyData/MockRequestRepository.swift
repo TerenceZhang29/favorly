@@ -15,6 +15,10 @@ public actor MockRequestRepository: RequestRepository {
     var redemptions: [Redemption] = []
     /// Oldest first, across all threads. The seed has none.
     var messages: [ChatMessage] = []
+    /// Oldest first.
+    var reports: [MockReport] = []
+    /// Who each person blocked, newest first.
+    var blocks: [UserID: [UserID]] = [:]
 
     /// - Parameters:
     ///   - seed: Builds the starting requests, and again on every `reset()`.
@@ -95,6 +99,7 @@ public actor MockRequestRepository: RequestRepository {
         let claimedAt = now()
         return try await update(id) { request in
             try RequestRules.validateClaim(request: request, by: user)
+            guard !isBlockedBetween(user, request.requesterID) else { throw FavorlyError.blocked }
             request.helperID = user
             request.claimedAt = claimedAt
             request.status = .claimed
@@ -119,12 +124,14 @@ public actor MockRequestRepository: RequestRepository {
         broadcaster.stream()
     }
 
-    /// Restores requests and reviews to the seed and removes every redemption and message.
+    /// Restores requests and reviews to the seed and removes every redemption, message, report and block.
     public func reset() async {
         requests = Self.indexed(seed())
         reviews = reviewSeed()
         redemptions = []
         messages = []
+        reports = []
+        blocks = [:]
         broadcaster.send()
     }
 

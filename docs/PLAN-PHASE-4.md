@@ -162,12 +162,12 @@ Everything the store build needs that does not depend on a server, built against
 ### 4C. Real accounts and shared data
 
 - [ ] **Owner, $99:** Apple Developer Program enrolled; App ID with Sign in with Apple; Supabase Apple provider configured
-- [ ] `FavorlyRemote` target with `supabase-swift`; dependency recorded in `docs/PROGRESS.md`
-- [ ] `RemoteAuthService`: Sign in with Apple through Supabase auth, profile completion, sign out, account deletion, session restore on launch
-- [ ] `RemoteRequestRepository`, `RemoteChatRepository`, `RemoteReviewRepository`, `RemoteKindnessRepository`; `changes()` backed by Supabase realtime; chat updates live
-- [ ] Error mapping: server errors to `FavorlyError` (`.network`, `.notAllowed`, `.rateLimited`, …); offline shows a retryable error, never a crash
-- [ ] Contract tests: one shared test suite run against `MockRequestRepository` always, and against local Supabase when `FAVORLY_REMOTE_TESTS=1`, so mock and server behave the same
-- [ ] `FAVORLY_SUPABASE_URL` and `FAVORLY_SUPABASE_ANON_KEY` from `Config/Signing.xcconfig` / `Local.xcconfig` into the Info.plist (moved from 4A)
+- [x] `FavorlyRemote` target with `supabase-swift`; dependency recorded in `docs/PROGRESS.md`
+- [ ] `RemoteAuthService`: Sign in with Apple through Supabase auth, profile completion, sign out, account deletion, session restore on launch (all written and all but Apple tested against the local backend; Apple needs the developer account)
+- [x] `RemoteRequestRepository`, `RemoteChatRepository`, `RemoteReviewRepository`, `RemoteKindnessRepository`; `changes()` backed by Supabase realtime; chat updates live (one `RemoteRepository` actor, like the mock)
+- [x] Error mapping: server errors to `FavorlyError` (`.network`, `.notAllowed`, `.rateLimited`, …); offline shows a retryable error, never a crash
+- [x] Contract tests: one shared test suite run against `MockRequestRepository` always, and against local Supabase when `FAVORLY_REMOTE_TESTS=1`, so mock and server behave the same
+- [x] `FAVORLY_SUPABASE_URL` and `FAVORLY_SUPABASE_ANON_KEY` from `Config/Signing.xcconfig` / `Local.xcconfig` into the Info.plist (moved from 4A)
 - [ ] Replace the Welcome screen's mock button with Apple's `SignInWithAppleButton`
 - [ ] `AppEnvironment.live()` wired; Release builds use it
 

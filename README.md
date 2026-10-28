@@ -38,6 +38,16 @@ Pick an iPhone simulator and press Run. All data is in memory and resets on ever
 
 The Run scheme passes `-demo`, so the app starts signed in as Alex with demo data and a Dev Settings tab. To try sign-up, untick `-demo` in Product → Scheme → Edit Scheme → Run → Arguments: the app then starts at the Welcome screen, as a downloaded app will. Until phase 4C the sign-in is a mock: Continue with Apple goes straight to profile setup, and every sign-up is a new user. Release builds have no Dev Settings tab.
 
+### Run against the backend
+
+Debug builds can use the Supabase backend instead of demo data (phase 4C). With the local backend:
+
+1. In `backend/`, run `supabase start`, then `supabase status` for the API URL and anon key.
+2. Put them in `Config/Local.xcconfig` (see `Config/Local.xcconfig.example`; write the URL as `http:/$()/127.0.0.1:55321`), and run `xcodegen generate`.
+3. In Product → Scheme → Edit Scheme → Run → Arguments, untick `-demo` and add `-remote -devEmail you@dev.local -devPassword any-password`. The first launch creates that account and asks for a profile.
+
+Two simulators with two different `-devEmail` values see each other's requests, chat and reviews. Locations still come from Dev Settings until phase 4D. Email sign-in is for development only; the app signs in with Apple once the developer account exists.
+
 ### Run on your iPhone
 
 This uses a free Apple ID; no paid developer account is needed. Your iPhone needs iOS 17 or later.

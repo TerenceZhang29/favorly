@@ -2,8 +2,8 @@
 
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
-**Current phase:** Phase 4. 4A and 4B are done: the backend is deployed to the hosted Supabase project `favorly` and tested in CI. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
-**Next task:** 4C (real accounts and shared data) on `phase/4c-accounts`. It starts with an owner step that costs $99/year: enrolling in the Apple Developer Program, which Sign in with Apple needs
+**Current phase:** Phase 4. 4A and 4B are done. 4C is partly done: the remote data layer, error mapping, contract tests and `-remote` Debug launches work against the local backend; Sign in with Apple and the live wiring wait on the Apple Developer Program. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
+**Next task:** the owner deploys migration `20261029000005_app_support.sql` to the hosted project (`supabase db push` in their own Terminal) and enrolls in the Apple Developer Program ($99/year); then finish 4C on `phase/4c-accounts`: Sign in with Apple, the Supabase Apple provider, `SignInWithAppleButton`, and `AppEnvironment.live()` on the backend
 
 ## Phase checklist
 
@@ -35,7 +35,7 @@ Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). T
 
 - [x] **4A.** Release groundwork: onboarding and account screens on a mock auth service, Dev Settings Debug-only, no fake Redeem
 - [x] **4B.** Backend schema and server rules (local Supabase, database tests, hosted project `favorly`)
-- [ ] **4C.** Real accounts and shared data (`FavorlyRemote`, Sign in with Apple; needs the paid developer account)
+- [ ] **4C.** Real accounts and shared data (`FavorlyRemote`, Sign in with Apple; needs the paid developer account). Everything but Sign in with Apple and the live wiring is done
 - [ ] **4D.** Real location and privacy
 - [ ] **4E.** Trust and safety: report, block, content filter, moderation, terms
 - [ ] **4F.** Push notifications
@@ -191,6 +191,15 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 4B | `bae2f11` | docs(backend): commands, how it works, and the error contract |
 | 4B | `f332e21` | docs: record phase 4B progress; hosted project waits on the owner |
 | CI | `2318ac2` | ci: run the backend database tests and schema lint on pushes that change backend/ |
+| CI | `98cafca` | docs: backend CI in the progress log |
+| 4B | `939c0fd` | docs: hosted Supabase project and how to deploy; 4B done |
+| 4C | `d2c1f65` | feat(backend): invalid_transition reports the current status; requests, messages and reviews published to realtime |
+| 4C | `58ad6d0` | feat(core): notSignedIn, rateLimited, blocked and network errors with their messages |
+| 4C | `b41af41` | build(kit): FavorlyRemote target on supabase-swift 2.55.5 |
+| 4C | `26d69f8` | feat(remote): configuration, server rows mapped to the domain model, server errors mapped to FavorlyError |
+| 4C | `18c722c` | feat(remote): repository, profiles, session and auth against Supabase, with realtime changes |
+| 4C | `bcf145c` | test(remote): contract tests run against the mock always and the local backend on request |
+| 4C | `3a7b6cc` | feat(app): -remote Debug launches use the Supabase backend from Local.xcconfig, with email sign-in for development |
 
 ## Confirmed decisions
 
@@ -388,6 +397,17 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-28 · 4B · Local Supabase ports are 55321–55329, not the default 54321–54329 · another local Supabase project (hackamatch) uses the defaults on this Mac
 - 2026-10-28 · 4B · Backend tests and the schema lint also run on GitHub Actions (`.github/workflows/backend.yml`), on pushes that change `backend/`, starting only the database (about 2 minutes) · the repo is public, so the minutes are free; owner asked for CI before the hosted project
 - 2026-10-28 · 4B · Hosted Supabase project `favorly` (ref `dkerjrnwjvrvsuldtqwe`), US East, free tier, in the owner's existing organization; the four migrations deployed with `supabase db push`, and `supabase db diff --linked` finds no differences · owner created it and set the password in their own Terminal. The organization now has 2 of 2 free active projects (hackamatch, favorly)
+- 2026-10-29 · 4C · Third-party runtime dependency: `supabase-swift` 2.55.5 (MIT), pinned exactly in `Package.swift` because `Package.resolved` is git-ignored; only `FavorlyRemote` imports it · the plan's backend choice; its Swift client covers auth, PostgREST and realtime
+- 2026-10-29 · 4C · One `RemoteRepository` actor implements all four repository protocols, mirroring `MockRequestRepository`; the `user` parameters of writes are not sent, since the server acts as the session's user · same shape as the mock, so `AppEnvironment` wiring is identical
+- 2026-10-29 · 4C · RPC parameters are `[String: AnyJSON]` dictionaries with the server's snake_case names · structs with snake_case fields broke SwiftLint's `identifier_name`, and the dictionary shows the server's names exactly
+- 2026-10-29 · 4C · `RemoteSessionStore` reads names from `RemoteProfileDirectory`, which the repository fills after every read that names people; a deleted person's side of a favor reads "A neighbor" (`UserID.deletedUser`) · `SessionStore.profile(for:)` is synchronous, so names must be loaded before a screen shows them
+- 2026-10-29 · 4C · New `FavorlyError` cases `.notSignedIn`, `.rateLimited`, `.blocked`, `.network` with user messages; server error codes map one to one (`RemoteErrors`) · the error contract in `backend/README.md`
+- 2026-10-29 · 4C · Migration `20261029000005_app_support.sql` replaces the claim, cancel and complete functions so `invalid_transition` carries the current status in DETAIL, and publishes requests, messages and reviews to realtime · `FavorlyError.invalidTransition(from:to:)` needs the from-status; deployed migrations are never edited
+- 2026-10-29 · 4C · Contract tests (`FavorlyRemoteTests`) run the same 8 checks against the mock always and the local backend with `FAVORLY_REMOTE_TESTS=1` plus the URL and key; each test signs up its own users at a random spot, so data left by earlier runs never interferes · the plan's "mock and server behave the same"
+- 2026-10-29 · 4C · `RemoteAuthService.signIn(email:password:createAccount:)` exists for development and the contract tests; Debug `-remote` launches with `-devEmail`/`-devPassword` sign in by email · Sign in with Apple needs the paid account; email sign-in must stay off on the hosted project
+- 2026-10-29 · 4C · `-remote` is Debug-only; `AppEnvironment.live()` stays on demo data until Sign in with Apple works · a Release build without a way to sign in would be unusable
+- 2026-10-29 · 4C · Backend settings live in `Config/Backend.xcconfig` (empty by default), included by `Signing.xcconfig`; `project.yml` now generates `App/Info.plist` with the two keys, the version build settings, and `NSAllowsLocalNetworking` for the local backend · XcodeGen's `info` is the only way to add custom Info.plist keys; its default hardcoded version 1.0, so the version keys point at the build settings
+- 2026-10-29 · 4C · Mock and server differ in two known ways the contract tests avoid: the server snaps locations to about 100 m, and the server returns an empty thread to a stranger where the mock throws `notAllowed` · both are deliberate on the server; the app never shows a stranger's thread
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues
@@ -437,6 +457,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-10-29 · 4C (part) · Migration 0005 (transition status, realtime); four new `FavorlyError` cases; `FavorlyRemote` on supabase-swift (rows, errors, repository with realtime, profiles, session, auth); 22 remote tests, contract tests pass on mock and local backend; `-remote` Debug launches with email sign-in, checked end to end in the simulator · owner deploys migration 0005 and enrolls in the Apple Developer Program, then Sign in with Apple and the live wiring
 - 2026-10-28 · 4B · Backend CI on GitHub Actions (first run green, 104 s); owner logged in to Supabase and created the hosted project `favorly`; migrations deployed and checked (`migration list --linked`, `db diff --linked`); 4B done · 4C after the owner enrolls in the Apple Developer Program
 - 2026-10-28 · 4B · Supabase CLI installed; `backend/supabase` with four migrations (schema, row-level security, actions with the app's rules, rate limits, blocks, account deletion, `pg_cron` auto-complete); 116 pgTAP tests pass; lint clean; `backend/README.md` with the error contract. App unchanged · owner approves the hosted Supabase project (free tier), then deploy; then 4C
 - 2026-10-28 · 4A · `AuthService`, `AuthState`, `ProfileSetupRules`, `DemoSessionControls`; `MockAuthService`; Welcome and profile setup behind a sign-in gate; Sign out and Delete account on the Profile tab; gift card and Redeem removed; Dev Settings Debug-only; `-demo`, `-signedOut` and `AppEnvironment.live()`; no-encryption key; 307 package tests and the changed UI test classes pass · start 4B on `phase/4b-backend` after the owner installs Docker and the Supabase CLI

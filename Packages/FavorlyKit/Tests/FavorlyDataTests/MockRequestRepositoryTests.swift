@@ -178,16 +178,18 @@ struct MockRequestRepositoryTests {
 
     // MARK: complete
 
-    @Test func requesterOrHelperCanCompleteAClaimedRequest() async throws {
-        #expect(try await repository.complete(Self.ladderID, by: chen).status == .completed)
-        await repository.reset()
+    @Test func requesterCanCompleteAClaimedRequest() async throws {
         #expect(try await repository.complete(Self.ladderID, by: dana).status == .completed)
     }
 
-    @Test func completeByAStrangerThrowsNotAllowed() async {
+    @Test func completeByTheHelperOrAStrangerThrowsNotAllowed() async throws {
+        await #expect(throws: FavorlyError.notAllowed) {
+            try await repository.complete(Self.ladderID, by: chen)
+        }
         await #expect(throws: FavorlyError.notAllowed) {
             try await repository.complete(Self.ladderID, by: alex)
         }
+        #expect(try await repository.request(id: Self.ladderID).status == .claimed)
     }
 
     @Test func completingAnOpenRequestThrowsInvalidTransition() async {
@@ -203,7 +205,7 @@ struct MockRequestRepositoryTests {
         let writes: [@Sendable (MockRequestRepository) async throws -> Void] = [
             { _ = try await $0.create(draft, by: alex) },
             { _ = try await $0.claim(Self.eggsID, by: bea) },
-            { _ = try await $0.complete(Self.eggsID, by: bea) },
+            { _ = try await $0.complete(Self.eggsID, by: chen) },
             { _ = try await $0.cancel(Self.ladderID, by: dana) },
             { await $0.reset() },
         ]

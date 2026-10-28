@@ -20,13 +20,13 @@ struct MockKindnessRepositoryTests {
         now: { now }
     )
 
-    /// Bea picks up Chen's eggs request and completes it: 90 + 10 = 100 points.
+    /// Bea picks up Chen's eggs request and Chen completes it: 90 + 10 = 100 points.
     private func beaCompletesAFavor() async throws {
         _ = try await repository.claim(Self.eggsID, by: bea)
-        _ = try await repository.complete(Self.eggsID, by: bea)
+        _ = try await repository.complete(Self.eggsID, by: chen)
     }
 
-    /// Alex posts `count` requests and `helper` picks up and completes each one, earning 10 points apiece.
+    /// Alex posts `count` requests, `helper` picks up each one and Alex completes it: 10 points apiece.
     private func complete(favors count: Int, by helper: UserID) async throws {
         let draft = NewRequestDraft(
             title: "Need a cup of rice",
@@ -37,7 +37,7 @@ struct MockKindnessRepositoryTests {
         for _ in 0 ..< count {
             let request = try await repository.create(draft, by: alex)
             _ = try await repository.claim(request.id, by: helper)
-            _ = try await repository.complete(request.id, by: helper)
+            _ = try await repository.complete(request.id, by: alex)
         }
     }
 

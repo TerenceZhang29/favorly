@@ -3,17 +3,17 @@ import Foundation
 
 extension MockRequestRepository: KindnessRepository {
     public func kindnessSummary(for user: UserID) async throws -> KindnessSummary {
-        try await simulateLatency()
+        try await beginOperation()
         return summary(for: user)
     }
 
     public func redemptions(by user: UserID) async throws -> [Redemption] {
-        try await simulateLatency()
+        try await beginOperation()
         return redemptions.filter { $0.userID == user }.reversed()
     }
 
     public func redeemGiftCard(by user: UserID) async throws -> Redemption {
-        try await simulateLatency()
+        try await beginOperation()
         try KindnessRules.validateRedeem(summary(for: user))
         let redemption = Redemption(
             id: RedemptionID(rawValue: UUID()),

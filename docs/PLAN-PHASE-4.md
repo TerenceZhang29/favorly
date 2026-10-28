@@ -187,13 +187,13 @@ Everything the store build needs that does not depend on a server, built against
 
 ### 4E. Trust and safety
 
-- [ ] Report a request, a message or a user (menu on Request Detail, long-press on a message, menu on a profile); reason and an optional note
-- [ ] Block and unblock a user; Blocked users list in Profile; blocked content disappears at once
-- [ ] Content filter on post, message and review, in the app and on the server (one shared word list; moved here from 4B)
-- [ ] Terms of Use shown and accepted at sign-up (version stored); link in Profile; Safety tips screen (meet in public places, don't share your address, report anything unsafe)
-- [ ] Contact support link (email or website) in Profile
-- [ ] Moderation: `reports` queue readable in the Supabase dashboard; a saved query listing open reports; **Owner:** a written moderation routine in `docs/MODERATION.md` (check daily, remove content, ban accounts)
-- [ ] Tests: report and block RPCs (4B covers the server), view models, blocked content hidden, filter messages
+- [x] Report a request, a message or a user (menu on Request Detail, long-press on a message, menu on a profile); reason and an optional note
+- [x] Block and unblock a user; Blocked users list in Profile; blocked content disappears at once
+- [x] Content filter on post, message and review, in the app and on the server (one shared word list; moved here from 4B; also on names)
+- [x] Terms of Use shown and accepted at sign-up (version stored); link in Profile; Safety tips screen (meet in public places, don't share your address, report anything unsafe)
+- [x] Contact support link (email or website) in Profile (the support page goes up in 4G)
+- [x] Moderation: `reports` queue readable in the Supabase dashboard; a saved query listing open reports; **Owner:** a written moderation routine in `docs/MODERATION.md` (check daily, remove content, ban accounts)
+- [x] Tests: report and block RPCs (4B covers the server), view models, blocked content hidden, filter messages
 
 **Done when:** a user can report and block from every place content appears; a blocked user's content is gone for the blocker on both phones; offensive words are refused with a clear message.
 

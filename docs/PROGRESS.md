@@ -2,8 +2,8 @@
 
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
-**Current phase:** Phase 4. 4A–4D are done: Sign in with Apple on the hosted Supabase project, and the device's own location. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
-**Next task:** 4E (trust and safety) on `phase/4e-safety`
+**Current phase:** Phase 4. 4A–4E are done: Sign in with Apple on the hosted Supabase project, device location, and reporting, blocking and the word filter. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
+**Next task:** deploy migration `20261029000006_safety.sql` to the hosted project (with the owner's approval), then 4F (push notifications) on `phase/4f-push`
 
 ## Phase checklist
 
@@ -37,7 +37,7 @@ Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). T
 - [x] **4B.** Backend schema and server rules (local Supabase, database tests, hosted project `favorly`)
 - [x] **4C.** Real accounts and shared data (`FavorlyRemote`, Sign in with Apple). The two-phone check moved to 4G
 - [x] **4D.** Real location and privacy
-- [ ] **4E.** Trust and safety: report, block, content filter, moderation, terms
+- [x] **4E.** Trust and safety: report, block, content filter, moderation, terms
 - [ ] **4F.** Push notifications
 - [ ] **4G.** Release candidate and TestFlight beta
 - [ ] **4H.** App Store submission and launch, tag `v1.0.0`
@@ -214,6 +214,16 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 4D | `d1b153e` | feat(device): device location provider with permission, snapping and neighborhood names, on CoreLocation |
 | 4D | `513a5af` | feat(features): Nearby names the neighborhood; Open Settings when location is off; presets only in demo launches |
 | 4D | `343a77f` | feat(app): the backend launch uses the device's location; location permission text |
+| 4D | `d8a0d10` | docs: device location in the README; 4D progress and decisions; two-phone check moved to 4G |
+| 4E | `00a35c9` | feat(core): report targets and reasons, moderation repository, content filter in every validator |
+| 4E | `356d2bb` | feat(backend): offensive-word triggers with the app's list, and blocked_profiles for the Blocked people list |
+| 4E | `1f353e2` | feat(data): reports and blocks in the mock repository; blocks stop pick-ups and messages |
+| 4E | `8984734` | feat(remote): reporting and blocking against the server; contract tests for reports, blocks and the word filter |
+| 4E | `c2d07ef` | feat(features): moderation in AppEnvironment |
+| 4E | `b5b1163` | feat(safety): report requests, messages and people; block from Request Detail and profiles; Blocked people, Safety tips, terms and support on Profile |
+| 4E | `8443ae8` | fix(safety): Unblock keeps its own accessibility identifier |
+| 4E | `dcdb2ba` | test(ui): report a request, block and unblock someone, open safety tips |
+| 4E | `59859c4` | docs: moderation routine and dashboard queries |
 
 ## Confirmed decisions
 
@@ -435,6 +445,17 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-29 · 4D · The Nearby header shows "Near <neighborhood>" from the last fix ("Location is off" when denied) instead of the debug line "Alex @ preset"; its identifier is now `nearby.location`. Dev Settings keeps the debug line · the user name next to a place was debug information
 - 2026-10-29 · 4D · Permission is asked the first time Nearby or Post needs a location; if refused, both show the reason and an Open Settings button instead of Retry · the plan's permission flow; Retry cannot help until Settings changes
 - 2026-10-29 · 4D · `MessageView` takes an `actionTitle` (default "Retry") · Open Settings reuses the same component
+- 2026-10-29 · 4E · `ModerationRepository` (report, block, unblock, blocked users) with `ReportTarget` and `ReportReason`; writes take `by user` like the other repositories · same shape as the rest; the server ignores it and uses the session
+- 2026-10-29 · 4E · `ContentFilter` is part of every validator that checks text other people read: `DraftValidator`, `ChatRules.validateText`, `ReviewRules.validate` and `ProfileSetupRules` (names too, which the plan did not list) · one place per kind of text; names are shown to everyone
+- 2026-10-29 · 4E · The filter matches whole words, lowercased, letters only, also with the endings s, es, ed, er, ers, ing and y; it misses run-together or misspelled words and blocks a few innocent uses (the name "Dick") · a plain list is predictable and the same on both sides; reports catch the rest
+- 2026-10-29 · 4E · The server applies the list with `before insert or update` triggers on requests, messages, reviews and profiles, raising the app's validation text, instead of editing the action functions again · no deployed function needs replacing; direct inserts are covered too
+- 2026-10-29 · 4E · `ContentFilterTests.theServerHasTheSameList` reads the safety migration and compares its `array[...]` with `ContentFilter.words` · the plan's "one shared word list" without generated code
+- 2026-10-29 · 4E · `public.blocked_profiles()` returns the names of the people the caller blocked · row-level security hides a blocked person's profile from both sides, so the Blocked people list could not otherwise name them
+- 2026-10-29 · 4E · The mock refuses pick-ups and messages across a block, like the server, but its reads cannot hide blocked people, since they do not know who is asking; `NearbyViewModel` filters out requests from people the user blocked, which also covers the server's few seconds of realtime lag · keeps the demo honest at the cost of one extra call per Nearby load
+- 2026-10-29 · 4E · The report and block menu is one modifier, `SafetyActions`, on Request Detail and on other people's profiles; a successful block closes the screen · its content is hidden from then on; the shared modifier also kept `RequestDetailView` under SwiftLint's length limit
+- 2026-10-29 · 4E · Report a message by long-pressing someone else's bubble (`contextMenu`) · keeps the chat uncluttered
+- 2026-10-29 · 4E · Support is a web page (`LegalLinks.support`) rather than an email address · no personal address in the app; the page goes up with the privacy policy in 4G
+- 2026-10-29 · 4E · Moderation happens in the Supabase dashboard with the queries in `backend/moderation/queries.sql`, following `docs/MODERATION.md`; banning uses the dashboard's Ban user · no admin screens to build or secure in the app
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues
@@ -486,6 +507,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-10-29 · 4E · Report (request, message, person), block and unblock, Blocked people, Safety tips, terms, privacy and support links; offensive-word filter in the app and as server triggers, with a test that the lists match; `blocked_profiles`; mock and remote moderation with contract tests on both; `SafetyUITests`; `docs/MODERATION.md` and dashboard queries. 380 package tests, 133 database tests · deploy migration 0006 with the owner's approval, then 4F on `phase/4f-push`
 - 2026-10-29 · 4D · `FavorlyDevice` (permission, 100 m snapping, neighborhood names), Nearby header from the real fix, Open Settings when denied, presets only in demo launches, location permission text; 361 package tests; checked in the simulator against the local backend ("Near Manhattan", then denied with Open Settings); two-phone check moved to 4G · start 4E on `phase/4e-safety`
 - 2026-10-29 · 4C · Sign in with Apple (Apple's button, hashed nonce, no scopes); normal launches on the hosted project; Apple provider on and Email off on the hosted project; owner signed in on an iPhone and the profile exists on the hosted project; 4C done but the owner's two-phone check · start 4D on `phase/4d-location`
 - 2026-10-29 · 4C (part) · Migration 0005 (transition status, realtime); four new `FavorlyError` cases; `FavorlyRemote` on supabase-swift (rows, errors, repository with realtime, profiles, session, auth); 22 remote tests, contract tests pass on mock and local backend; `-remote` Debug launches with email sign-in, checked end to end in the simulator · owner deploys migration 0005 and enrolls in the Apple Developer Program, then Sign in with Apple and the live wiring

@@ -7,6 +7,7 @@ final class FailingAuthService: AuthService {
     struct Failure: Error {}
 
     private(set) var state = AuthState.signedOut
+    let usesAppleSignIn = false
 
     func signInWithApple(identityToken _: String, nonce _: String) async throws {
         throw Failure()

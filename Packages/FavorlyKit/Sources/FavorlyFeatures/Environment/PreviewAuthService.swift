@@ -6,6 +6,7 @@ import Observation
 @Observable
 final class PreviewAuthService: AuthService {
     private(set) var state: AuthState
+    let usesAppleSignIn = false
 
     init(state: AuthState = .signedIn) {
         self.state = state

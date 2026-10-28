@@ -8,6 +8,7 @@ import Observation
 @Observable
 public final class MockAuthService: AuthService {
     public private(set) var state: AuthState
+    public let usesAppleSignIn = false
 
     @ObservationIgnored private let session: MockSessionStore
     @ObservationIgnored private let artificialDelay: Duration

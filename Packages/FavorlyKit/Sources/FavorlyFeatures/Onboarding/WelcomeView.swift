@@ -1,8 +1,10 @@
+import AuthenticationServices
 import SwiftUI
 
 /// The first screen for someone who is signed out.
 struct WelcomeView: View {
     @State private var viewModel: WelcomeViewModel
+    @Environment(\.colorScheme) private var colorScheme
 
     init(environment: AppEnvironment) {
         _viewModel = State(initialValue: WelcomeViewModel(environment: environment))
@@ -30,17 +32,41 @@ struct WelcomeView: View {
                 if let errorMessage = viewModel.errorMessage {
                     InlineMessage(text: errorMessage, identifier: "welcome.error")
                 }
-                Button {
-                    Task { await viewModel.signIn() }
-                } label: {
-                    Label("Continue with Apple", systemImage: "apple.logo")
+                if viewModel.usesAppleSignIn {
+                    appleButton
+                } else {
+                    Button {
+                        Task { await viewModel.signIn() }
+                    } label: {
+                        Label("Continue with Apple", systemImage: "apple.logo")
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    .disabled(viewModel.isSigningIn)
+                    .accessibilityIdentifier("welcome.signIn")
                 }
-                .buttonStyle(PrimaryButtonStyle())
-                .disabled(viewModel.isSigningIn)
-                .accessibilityIdentifier("welcome.signIn")
             }
         }
         .padding(Theme.Spacing.section)
+    }
+
+    /// Apple's own button, as App Review expects. It asks for no name or email: the profile asks for a name.
+    private var appleButton: some View {
+        SignInWithAppleButton(.continue) { request in
+            request.requestedScopes = []
+            request.nonce = viewModel.appleRequestNonce()
+        } onCompletion: { result in
+            switch result {
+            case let .success(authorization):
+                let credential = authorization.credential as? ASAuthorizationAppleIDCredential
+                Task { await viewModel.finishAppleSignIn(identityToken: credential?.identityToken) }
+            case let .failure(error):
+                viewModel.failAppleSignIn(error)
+            }
+        }
+        .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
+        .frame(height: Theme.appleButtonHeight)
+        .disabled(viewModel.isSigningIn)
+        .accessibilityIdentifier("welcome.signIn")
     }
 }
 

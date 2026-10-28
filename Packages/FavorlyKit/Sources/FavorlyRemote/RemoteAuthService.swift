@@ -9,6 +9,7 @@ import Supabase
 @Observable
 public final class RemoteAuthService: AuthService {
     public private(set) var state = AuthState.signedOut
+    public let usesAppleSignIn = true
 
     @ObservationIgnored private let client: SupabaseClient
     @ObservationIgnored private let session: RemoteSessionStore

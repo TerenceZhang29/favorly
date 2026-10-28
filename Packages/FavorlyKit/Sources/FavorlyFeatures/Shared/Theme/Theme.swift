@@ -38,6 +38,9 @@ enum Theme {
         static let bubbleInset: CGFloat = 48
     }
 
+    /// Height of Apple's Sign in with Apple button, which draws itself and needs an explicit size.
+    static let appleButtonHeight: CGFloat = 50
+
     enum Radius {
         static let badge: CGFloat = 6
         static let tile: CGFloat = 10

@@ -1,0 +1,47 @@
+-- Shared by every test file through \ir. Each file runs in its own transaction, rolled back at the end.
+create extension if not exists pgtap with schema extensions;
+set search_path = public, extensions;
+
+-- A signed-up user with a finished profile.
+create function pg_temp.make_user(name text) returns uuid language plpgsql as $$
+declare
+    uid uuid := gen_random_uuid();
+begin
+    insert into auth.users (id, email, aud, role) values (uid, name || '@test.local', 'authenticated', 'authenticated');
+    insert into public.profiles (id, display_name, confirmed_adult, accepted_terms_version)
+    values (uid, initcap(name), true, 1);
+    return uid;
+end;
+$$;
+
+-- Makes later statements run as `uid`, the way the API runs them for a signed-in user.
+create function pg_temp.login(uid uuid) returns void language plpgsql as $$
+begin
+    perform set_config('role', 'postgres', true);
+    perform set_config('request.jwt.claims', json_build_object('sub', uid, 'role', 'authenticated')::text, true);
+    perform set_config('role', 'authenticated', true);
+end;
+$$;
+
+-- Back to the test runner's own role, to set things up or look past row-level security.
+create function pg_temp.logout() returns void language plpgsql as $$
+begin
+    perform set_config('role', 'postgres', true);
+    perform set_config('request.jwt.claims', '', true);
+end;
+$$;
+
+-- A request posted by `uid` at Cornell Tech, set up directly so tests can pick its status.
+create function pg_temp.make_request(uid uuid, title text default 'Need 2 eggs for a cake') returns uuid
+language plpgsql as $$
+declare
+    result uuid;
+begin
+    insert into public.requests (title, category, latitude, longitude, location_label, requester_id)
+    values (title, 'ingredient', 40.755, -73.956, 'Roosevelt Island', uid)
+    returning id into result;
+    return result;
+end;
+$$;
+
+grant execute on function pg_temp.login(uuid), pg_temp.logout() to authenticated;

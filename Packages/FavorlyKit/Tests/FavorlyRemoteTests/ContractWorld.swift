@@ -36,7 +36,7 @@ final class ContractWorld {
         switch backend {
         case .mock:
             let id = UserID(rawValue: "user-\(name.lowercased())-\(UUID().uuidString.prefix(8))")
-            return ContractUser(id: id, requests: mock, chat: mock, reviews: mock, kindness: mock)
+            return ContractUser(id: id, requests: mock, chat: mock, reviews: mock, kindness: mock, moderation: mock)
         case .remote:
             let environment = ProcessInfo.processInfo.environment
             guard let url = environment["FAVORLY_SUPABASE_URL"].flatMap(URL.init(string:)),
@@ -63,7 +63,8 @@ final class ContractWorld {
                 requests: repository,
                 chat: repository,
                 reviews: repository,
-                kindness: repository
+                kindness: repository,
+                moderation: repository
             )
         }
     }

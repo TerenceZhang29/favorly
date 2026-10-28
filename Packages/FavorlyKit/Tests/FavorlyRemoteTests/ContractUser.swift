@@ -7,4 +7,5 @@ struct ContractUser: Sendable {
     let chat: any ChatRepository
     let reviews: any ReviewRepository
     let kindness: any KindnessRepository
+    let moderation: any ModerationRepository
 }

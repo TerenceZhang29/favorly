@@ -94,6 +94,7 @@ public actor RemoteRepository: RequestRepository {
     // MARK: Helpers
 
     /// Runs a call and turns its errors into `FavorlyError`.
+    @discardableResult
     func call<T>(transitionTo: RequestStatus = .completed, _ work: () async throws -> T) async throws -> T {
         do {
             return try await work()

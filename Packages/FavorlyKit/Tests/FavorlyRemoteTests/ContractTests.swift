@@ -173,4 +173,51 @@ struct ContractTests {
         _ = try await alex.requests.create(world.draft("Need rice"), by: alex.id)
         #expect(await changes.next() != nil)
     }
+
+    // MARK: Safety
+
+    @Test(arguments: ContractBackend.enabled)
+    func reportingChecksTheTarget(backend: ContractBackend) async throws {
+        let world = ContractWorld(backend)
+        let alex = try await world.signUp("Alex")
+        let bea = try await world.signUp("Bea")
+        let eggs = try await alex.requests.create(world.draft("Need 2 eggs"), by: alex.id)
+
+        try await bea.moderation.report(.request(eggs.id), reason: .spam, note: " Looks fake ", by: bea.id)
+        try await bea.moderation.report(.user(alex.id), reason: .unsafe, note: "", by: bea.id)
+        await #expect(throws: FavorlyError.notFound) {
+            try await bea.moderation.report(.request(RequestID(rawValue: UUID())), reason: .spam, note: "", by: bea.id)
+        }
+        await #expect(throws: FavorlyError.notAllowed) {
+            try await bea.moderation.report(.user(bea.id), reason: .spam, note: "", by: bea.id)
+        }
+    }
+
+    @Test(arguments: ContractBackend.enabled)
+    func aBlockIsListedAndStopsPickUps(backend: ContractBackend) async throws {
+        let world = ContractWorld(backend)
+        let alex = try await world.signUp("Alex")
+        let bea = try await world.signUp("Bea")
+        let eggs = try await alex.requests.create(world.draft("Need 2 eggs"), by: alex.id)
+
+        try await alex.moderation.block(bea.id, by: alex.id)
+        #expect(try await alex.moderation.blockedUsers(of: alex.id).map(\.id) == [bea.id])
+        #expect(try await bea.moderation.blockedUsers(of: bea.id).isEmpty)
+        await #expect(throws: FavorlyError.blocked) {
+            try await bea.requests.claim(eggs.id, by: bea.id)
+        }
+
+        try await alex.moderation.unblock(bea.id, by: alex.id)
+        #expect(try await alex.moderation.blockedUsers(of: alex.id).isEmpty)
+        #expect(try await bea.requests.claim(eggs.id, by: bea.id).status == .claimed)
+    }
+
+    @Test(arguments: ContractBackend.enabled)
+    func offensiveWordsAreRefused(backend: ContractBackend) async throws {
+        let world = ContractWorld(backend)
+        let alex = try await world.signUp("Alex")
+        await #expect(throws: FavorlyError.validation("Please remove offensive language.")) {
+            try await alex.requests.create(world.draft("Need shit"), by: alex.id)
+        }
+    }
 }

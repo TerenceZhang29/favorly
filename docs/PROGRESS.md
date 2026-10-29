@@ -488,6 +488,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-29 · 4G · The GitHub repo is renamed from `favorly-ios` to `favorly` (owner's request); GitHub redirects the old address, and the local remote points at the new one · a shorter name, and the site's address can be `/favorly/`
 - 2026-10-29 · 4G · The privacy policy and terms name the operator "Hantian Zhang for Cornell Tech Team 402" and use a new mailbox the owner creates for support · owner's decisions; the Individual developer account shows the owner's legal name as the seller
 - 2026-10-29 · 4G · The privacy policy and terms are drafted from common templates, not legal advice; the owner acknowledged that Cornell Tech's legal resources should review them before App Store submission (4H) · the plan's legal decision
+- 2026-10-29 · 4G · The website is published to Vercel (owner's choice over GitHub Pages) as the project `favorly-app` at `favorly-app.vercel.app`, deployed from `site/` with the CLI; `site/vercel.json` turns on clean URLs · `favorly.vercel.app` belongs to an unrelated company; the free Hobby plan is for non-commercial use, which a free student app is, but a paid Favorly would need the Pro plan
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues

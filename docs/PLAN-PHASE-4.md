@@ -57,8 +57,8 @@ Nothing below is spent without the owner's approval (see `CLAUDE.md` and the glo
 | Apple Developer Program | Before 4C (Sign in with Apple and push both need it) | $99/year | Free Personal Team for 4A–4B on a plugged-in phone |
 | Supabase hosted project | End of 4B | Free tier | Local Supabase in Docker for all of 4B and most of 4C |
 | Supabase Pro | Start of the external beta (4G) | $25/month | Stay on free tier for internal testers only |
-| Website for privacy policy, terms and support | 4G | Free (GitHub Pages) | — |
-| Custom domain | Optional | About $10–15/year | `<user>.github.io/favorly` |
+| Website for privacy policy, terms and support | 4G | Free (Vercel Hobby plan) | — |
+| Custom domain | Optional | About $10–15/year | `favorly-app.vercel.app` (free Vercel Hobby plan) |
 | Apple Push Notification service | 4F | Free | — |
 | Docker Desktop | 4B | Free for personal and education use | — |
 | GitHub Actions minutes | 4B onward (backend tests) | Free for public repos; private repos get a monthly free allowance, macOS minutes count 10× | Run backend tests locally only |
@@ -213,7 +213,7 @@ Everything the store build needs that does not depend on a server, built against
 ### 4G. Release candidate and beta
 
 - [ ] **Owner, $25/month:** upgrade Supabase to Pro before external testers join
-- [ ] Website (GitHub Pages): Privacy Policy, Terms of Use, Support page with contact email. Linked in the app and the listing
+- [ ] Website (Vercel, `favorly-app.vercel.app`, from `site/`): Privacy Policy, Terms of Use, Support page with contact email. Linked in the app and the listing
 - [ ] App Privacy answers drafted in `docs/release/app-privacy.md` (contact info: name; location: coarse; user content: messages, requests, reviews; identifiers: user ID; none used for tracking)
 - [ ] Version `1.0.0` (build numbers count up per upload); archive a Release build
 - [ ] Editable location tag on Post (decided 2026-10-29): the tag starts as the geocoder's name and the requester can change it, for example from "Manhattan" to "Roosevelt Island". At most 40 characters, letters, spaces, hyphens, apostrophes and periods only (no digits, so no house numbers), through the content filter; the same check on the server's `create_request`; Nearby's header keeps the automatic name. Apple's geocoder returns only the borough in New York (`subLocality` "Manhattan" for Roosevelt Island), see `docs/PROGRESS.md`

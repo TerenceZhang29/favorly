@@ -43,6 +43,8 @@ These commands use your `supabase login` session, not the database password; `--
 | `supabase/migrations/` | The schema, in order: tables, read access, actions, auto-complete |
 | `supabase/tests/` | pgTAP tests, one file per area; `helpers.psql` is included by each |
 | `supabase/seed.sql` | Local seed data (empty: tests create their own users) |
+| `supabase/functions/push/` | The Edge Function that sends notifications to Apple |
+| `moderation/queries.sql` | Dashboard queries for the moderation routine in `docs/MODERATION.md` |
 
 ## How it works
 
@@ -55,6 +57,30 @@ These commands use your `supabase login` session, not the database password; `--
 - **Rate limits**: at most 5 open requests per user, 20 new requests a day, and 30 messages a minute.
 - **Blocks** hide profiles, requests and reviews in both directions, and stop pick-ups and messages between the two people.
 - **Account deletion** (`delete_my_account`) removes the profile, every request the user posted that is not completed, the messages and reviews they wrote, reviews about them, and their blocks. A request they had picked up goes back to open with its thread cleared. Completed favors stay, with the deleted person's side left empty.
+
+## Push notifications
+
+Triggers put each notification, with its final text, in `public.push_outbox`: a pick-up, a message, a completion (also an automatic one) and a review. Nobody is notified across a block or about their own action. Each insert calls the `push` Edge Function through `pg_net`, after the transaction commits; a cron job calls it again every 5 minutes for anything unsent. The function sends to APNs with a provider token signed by the team's APNs key, drops tokens Apple reports as gone, and gives up on a notification after 5 failed tries. Devices register through `register_device(token, environment)` and leave at sign-out through `unregister_device(token)`.
+
+Until the secrets below exist, nothing is sent and the outbox simply waits. One-time setup for the hosted project, run in your own Terminal from `backend/` (the values are secrets; keep them out of chats and commits):
+
+1. In the Apple developer account, Certificates, IDs & Profiles → Keys → **+**: name it "Favorly push", tick **Apple Push Notifications service (APNs)**, register, and download the `.p8` file (Apple offers it only once). Note its Key ID.
+2. Create the shared secret and set the function's secrets:
+   ```bash
+   PUSH_SECRET=$(openssl rand -hex 32)
+   supabase secrets set --project-ref dkerjrnwjvrvsuldtqwe \
+     PUSH_FUNCTION_SECRET="$PUSH_SECRET" APNS_KEY_ID=<Key ID> APNS_TEAM_ID=5B89U2CMF9 \
+     APNS_BUNDLE_ID=edu.cornelltech.team402.favorly APNS_PRIVATE_KEY="$(cat ~/Downloads/AuthKey_<Key ID>.p8)"
+   echo "$PUSH_SECRET"   # for step 3
+   ```
+3. In the dashboard's SQL Editor, store where the database calls the function, and the same secret:
+   ```sql
+   select vault.create_secret('https://dkerjrnwjvrvsuldtqwe.supabase.co/functions/v1/push', 'push_function_url');
+   select vault.create_secret('<the secret from step 2>', 'push_function_secret');
+   ```
+4. Keep the `.p8` file somewhere safe, such as a password manager; a lost key is revoked and replaced in the same Keys page.
+
+Deploy the function with `supabase functions deploy push --project-ref dkerjrnwjvrvsuldtqwe`. Locally, `supabase functions serve push --env-file <file>` serves it with the same variables.
 
 ## Error contract
 

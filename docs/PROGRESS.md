@@ -2,8 +2,8 @@
 
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
-**Current phase:** Phase 4. 4A–4E are done: Sign in with Apple on the hosted Supabase project, device location, and reporting, blocking and the word filter. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
-**Next task:** 4F (push notifications) on `phase/4f-push`
+**Current phase:** Phase 4. 4A–4E are done; 4F's code is done and tested, and sending waits on the owner's APNs key and the hosted setup. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
+**Next task:** deploy migration `20261029000007_push.sql` and the `push` function to the hosted project (owner approval); the owner creates the APNs key and sets the secrets (`backend/README.md`, Push notifications); try a notification on the owner's iPhone; then 4G
 
 ## Phase checklist
 
@@ -38,7 +38,7 @@ Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). T
 - [x] **4C.** Real accounts and shared data (`FavorlyRemote`, Sign in with Apple). The two-phone check moved to 4G
 - [x] **4D.** Real location and privacy
 - [x] **4E.** Trust and safety: report, block, content filter, moderation, terms
-- [ ] **4F.** Push notifications
+- [ ] **4F.** Push notifications. Code done; waits on the APNs key, the hosted setup and a test on a phone
 - [ ] **4G.** Release candidate and TestFlight beta
 - [ ] **4H.** App Store submission and launch, tag `v1.0.0`
 
@@ -224,6 +224,14 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 4E | `8443ae8` | fix(safety): Unblock keeps its own accessibility identifier |
 | 4E | `dcdb2ba` | test(ui): report a request, block and unblock someone, open safety tips |
 | 4E | `59859c4` | docs: moderation routine and dashboard queries |
+| 4E | `50ce8d5` | docs: record phase 4E progress |
+| 4E | `61ee4d5` | docs: safety migration deployed to the hosted project |
+| 4F | `1487abb` | feat(backend): device tokens, a push outbox filled by triggers with each notification's text, sending through pg_net |
+| 4F | `d0c8824` | feat(backend): push Edge Function sends the outbox to APNs with an ES256 provider token |
+| 4F | `9e321d4` | feat(core): push registrar and notification service protocols, with mocks |
+| 4F | `4c4983d` | feat(remote,device): register device tokens on the server; system notification permission |
+| 4F | `48883ef` | feat(features): ask for notifications after the first post or pick-up, unregister at sign-out, open tapped notifications in My Activity |
+| 4F | `6811fe1` | feat(app): app delegate for device tokens and notification taps; push entitlement |
 
 ## Confirmed decisions
 
@@ -457,6 +465,16 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-29 · 4E · Support is a web page (`LegalLinks.support`) rather than an email address · no personal address in the app; the page goes up with the privacy policy in 4G
 - 2026-10-29 · 4E · Moderation happens in the Supabase dashboard with the queries in `backend/moderation/queries.sql`, following `docs/MODERATION.md`; banning uses the dashboard's Ban user · no admin screens to build or secure in the app
 - 2026-10-29 · 4E · Migration `20261029000006_safety.sql` deployed to the hosted project after the full suite and backend CI passed on `main`; all six migrations recorded there and `supabase db diff --linked` finds no differences · owner approved
+- 2026-10-29 · 4F · Notifications go through an outbox: database triggers write each notification with its final text to `push_outbox`, and the `push` Edge Function sends what is unsent · the texts are tested in pgTAP like every other rule, nothing is lost when Apple or the function is down, and a cron job retries every 5 minutes, up to 5 attempts
+- 2026-10-29 · 4F · The outbox calls the function through `pg_net` with a shared secret (`X-Push-Secret`) kept in Vault and in the function's secrets; the function runs with `verify_jwt = false` · the database has no user JWT; the shared secret is the authentication, and without it the function answers 403
+- 2026-10-29 · 4F · APNs is called directly from the function with an ES256 provider token from the team's `.p8` key, using Web Crypto and `fetch`, no push service or SDK · free, no third-party data processor, and the app needs no Firebase
+- 2026-10-29 · 4F · Texts: "Request picked up" / "Bea picked up \"<title>\"."; "New message from Bea" / the message, cut at 120 characters; "Favor completed" / "Alex marked \"<title>\" completed." or "\"<title>\" completed automatically after 7 days."; "New review" / "Alex left you a 5-star review." Nobody is notified across a block, or about their own action · the plan's four events
+- 2026-10-29 · 4F · Message notifications show the start of the message on the lock screen · the usual chat behavior; iOS lets people hide previews in Settings
+- 2026-10-29 · 4F · Device tokens are registered as lowercase hex with an environment (`sandbox` in Debug, `production` in Release), move to whoever signed in on the device last, and are removed at sign-out; Apple's `410`/`BadDeviceToken` deletes them · TestFlight and App Store builds are Release
+- 2026-10-29 · 4F · Permission is asked after the first successful post or pick-up (`NotificationService.requestPermissionIfNeeded`), never at launch; at each sign-in the app registers again if allowed · the plan's timing; refreshed tokens reach the server
+- 2026-10-29 · 4F · A tapped notification switches to My Activity and pushes the request, plus its chat for a message (`NotificationRouter`, `ChatDestination`, a path for the My Activity stack) · one place to open from, with Back leading to the request
+- 2026-10-29 · 4F · `AppEnvironment.init` is `@MainActor` · it creates the `NotificationRouter`, a main-actor object; every caller already ran on the main actor
+- 2026-10-29 · 4F · The Edge Function has no Deno unit tests (Deno is not installed); it was checked locally with `supabase functions serve` and a throwaway P-256 key: without the secret it answers 403, and with it Apple's sandbox answered `InvalidProviderToken`, so the token signing, the HTTP/2 call and the retry count work · delivery to a phone needs the real key
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues
@@ -508,6 +526,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-10-29 · 4F (code) · Push outbox, triggers and tests (153 database tests); `push` Edge Function, checked locally against Apple's sandbox with a throwaway key; device registration, permission after the first post or pick-up, unregister at sign-out, notification taps open My Activity; push entitlement; 386 package tests · owner: APNs key and secrets; deploy migration 0007 and the function; test on a phone
 - 2026-10-29 · 4E · Report (request, message, person), block and unblock, Blocked people, Safety tips, terms, privacy and support links; offensive-word filter in the app and as server triggers, with a test that the lists match; `blocked_profiles`; mock and remote moderation with contract tests on both; `SafetyUITests`; `docs/MODERATION.md` and dashboard queries. 380 package tests, 133 database tests · deploy migration 0006 with the owner's approval, then 4F on `phase/4f-push`
 - 2026-10-29 · 4D · `FavorlyDevice` (permission, 100 m snapping, neighborhood names), Nearby header from the real fix, Open Settings when denied, presets only in demo launches, location permission text; 361 package tests; checked in the simulator against the local backend ("Near Manhattan", then denied with Open Settings); two-phone check moved to 4G · start 4E on `phase/4e-safety`
 - 2026-10-29 · 4C · Sign in with Apple (Apple's button, hashed nonce, no scopes); normal launches on the hosted project; Apple provider on and Email off on the hosted project; owner signed in on an iPhone and the profile exists on the hosted project; 4C done but the owner's two-phone check · start 4D on `phase/4d-location`

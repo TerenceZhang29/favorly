@@ -200,13 +200,13 @@ Everything the store build needs that does not depend on a server, built against
 ### 4F. Push notifications
 
 - [ ] **Owner:** create an APNs key in the developer account; store it as a Supabase secret
-- [ ] Push capability and entitlement in `project.yml`
-- [ ] Ask for notification permission after the user's first post or first pick-up, not at launch
-- [ ] Device token registered through `PushRegistrar`; removed on sign-out and account deletion
-- [ ] Edge function sends: "Bea picked up your request", "New message from Bea", "Alex marked your favor completed", "Alex left you a review"
-- [ ] Tapping a notification opens the right request or chat
-- [ ] Profile: notification settings link
-- [ ] Tests: registration and routing logic; the edge function's message text
+- [x] Push capability and entitlement in `project.yml`
+- [x] Ask for notification permission after the user's first post or first pick-up, not at launch
+- [x] Device token registered through `PushRegistrar`; removed on sign-out and account deletion
+- [x] Edge function sends: "Bea picked up your request", "New message from Bea", "Alex marked your favor completed", "Alex left you a review"
+- [x] Tapping a notification opens the right request or chat
+- [x] Profile: notification settings link
+- [x] Tests: registration and routing logic; the edge function's message text (the texts are written and tested in the database)
 
 **Done when:** on two phones, each of the four events shows a notification on the other phone, and tapping it opens the right screen.
 

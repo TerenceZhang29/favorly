@@ -476,6 +476,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-29 · 4F · `AppEnvironment.init` is `@MainActor` · it creates the `NotificationRouter`, a main-actor object; every caller already ran on the main actor
 - 2026-10-29 · 4F · The Edge Function has no Deno unit tests (Deno is not installed); it was checked locally with `supabase functions serve` and a throwaway P-256 key: without the secret it answers 403, and with it Apple's sandbox answered `InvalidProviderToken`, so the token signing, the HTTP/2 call and the retry count work · delivery to a phone needs the real key
 - 2026-10-29 · 4F · Migration `20261029000007_push.sql` and the `push` function deployed to the hosted project after the full suite and backend CI passed on `main`; seven migrations recorded, `db diff --linked` finds no differences, and the live function answers 403 without the secret · owner approved
+- 2026-10-29 · 4D follow-up · Requesters will be able to edit the location tag on Post (owner's choice of three options), planned in 4G · Apple's geocoder gives only the borough in New York: `subLocality` is "Manhattan" for Roosevelt Island and the Upper West Side, `areasOfInterest` is "Roosevelt Island" there but "Long Island" for Brooklyn and Queens, and `name` is a street address. Checked with `CLGeocoder` on 2026-10-29
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues

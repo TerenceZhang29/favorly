@@ -216,6 +216,7 @@ Everything the store build needs that does not depend on a server, built against
 - [ ] Website (GitHub Pages): Privacy Policy, Terms of Use, Support page with contact email. Linked in the app and the listing
 - [ ] App Privacy answers drafted in `docs/release/app-privacy.md` (contact info: name; location: coarse; user content: messages, requests, reviews; identifiers: user ID; none used for tracking)
 - [ ] Version `1.0.0` (build numbers count up per upload); archive a Release build
+- [ ] Editable location tag on Post (decided 2026-10-29): the tag starts as the geocoder's name and the requester can change it, for example from "Manhattan" to "Roosevelt Island". At most 40 characters, letters, spaces, hyphens, apostrophes and periods only (no digits, so no house numbers), through the content filter; the same check on the server's `create_request`; Nearby's header keeps the automatic name. Apple's geocoder returns only the borough in New York (`subLocality` "Manhattan" for Roosevelt Island), see `docs/PROGRESS.md`
 - [ ] **Owner:** App Store Connect app record; internal TestFlight for the team
 - [ ] Internal round: the team uses it for a week on Roosevelt Island; fix crashes (Xcode Organizer) and blockers
 - [ ] **Owner:** the two-phone check moved here from 4C: two Apple IDs post, pick up, chat, complete and review with each other, screens update without refreshing, and deleting one account updates the other phone

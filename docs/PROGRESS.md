@@ -2,8 +2,8 @@
 
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
-**Current phase:** Phase 4. 4A–4E are done; 4F's code is done and tested, and sending waits on the owner's APNs key and the hosted setup. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
-**Next task:** the owner creates the APNs key and sets the secrets (`backend/README.md`, Push notifications); try a notification on the owner's iPhone; then 4G
+**Current phase:** Phase 4. 4A–4F are done: Sign in with Apple on the hosted Supabase project, device location, reporting, blocking and the word filter, and push notifications, tried on the owner's iPhone. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
+**Next task:** 4G (release candidate and beta) on `phase/4g-beta`, starting with the editable location tag on Post
 
 ## Phase checklist
 
@@ -38,7 +38,7 @@ Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). T
 - [x] **4C.** Real accounts and shared data (`FavorlyRemote`, Sign in with Apple). The two-phone check moved to 4G
 - [x] **4D.** Real location and privacy
 - [x] **4E.** Trust and safety: report, block, content filter, moderation, terms
-- [ ] **4F.** Push notifications. Code done; waits on the APNs key, the hosted setup and a test on a phone
+- [x] **4F.** Push notifications
 - [ ] **4G.** Release candidate and TestFlight beta
 - [ ] **4H.** App Store submission and launch, tag `v1.0.0`
 
@@ -232,6 +232,11 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 4F | `4c4983d` | feat(remote,device): register device tokens on the server; system notification permission |
 | 4F | `48883ef` | feat(features): ask for notifications after the first post or pick-up, unregister at sign-out, open tapped notifications in My Activity |
 | 4F | `6811fe1` | feat(app): app delegate for device tokens and notification taps; push entitlement |
+| 4F | `f73e542` | docs: push setup in the backend README; 4F progress and decisions |
+| 4F | `c6a4dcc` | docs: push migration and function deployed to the hosted project |
+| 4D | `60ab8a8` | docs: plan an editable location tag on Post, after checking what the geocoder returns in New York |
+| 4F | `983a2b5` | fix(app): a notification tapped before the environment exists still opens its request; early device tokens are kept |
+| 4F | `d2589f4` | fix(app): notification delegate methods use completion handlers; the async forms crashed when a notification was tapped |
 
 ## Confirmed decisions
 
@@ -477,6 +482,9 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-29 · 4F · The Edge Function has no Deno unit tests (Deno is not installed); it was checked locally with `supabase functions serve` and a throwaway P-256 key: without the secret it answers 403, and with it Apple's sandbox answered `InvalidProviderToken`, so the token signing, the HTTP/2 call and the retry count work · delivery to a phone needs the real key
 - 2026-10-29 · 4F · Migration `20261029000007_push.sql` and the `push` function deployed to the hosted project after the full suite and backend CI passed on `main`; seven migrations recorded, `db diff --linked` finds no differences, and the live function answers 403 without the secret · owner approved
 - 2026-10-29 · 4D follow-up · Requesters will be able to edit the location tag on Post (owner's choice of three options), planned in 4G · Apple's geocoder gives only the borough in New York: `subLocality` is "Manhattan" for Roosevelt Island and the Upper West Side, `areasOfInterest` is "Roosevelt Island" there but "Long Island" for Brooklyn and Queens, and `name` is a street address. Checked with `CLGeocoder` on 2026-10-29
+- 2026-10-29 · 4F · The owner created the APNs key and set the five function secrets and the two Vault entries; a notification queued from the SQL Editor arrived on the owner's iPhone and, when tapped, opened the request with the app closed, in the background and open · the plan's "Done when" for one phone; the two-phone check is in 4G
+- 2026-10-29 · 4F · The notification router is a static on `AppDelegate`, created at launch and passed to every environment, and a device token that arrives before the environment is held until it exists · a notification tapped while the app was not running reached the delegate before SwiftUI had built the environment, and was dropped
+- 2026-10-29 · 4F · `UNUserNotificationCenterDelegate` methods use the completion-handler forms, not `async` · the `async` forms returned on a background thread and UIKit aborted the app (`_performBlockAfterCATransactionCommitSynchronizes`), seen in a crash log copied from the owner's iPhone with `xcrun devicectl device copy from --domain-type systemCrashLogs`; no automated test can tap a real notification, so the code says why
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues
@@ -504,6 +512,8 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - A CI run takes about 12 minutes, nearly all of it the UI tests on the hosted simulator.
 - The UI test suite takes a little over three minutes, mostly app launches and typing.
 - If a UI test fails, `xcodebuild` can sit for several minutes collecting diagnostics before it exits. Pass `-collect-test-diagnostics never` to skip that.
+- Crash logs from a connected iPhone: `xcrun devicectl device info files --device <udid> --domain-type systemCrashLogs` lists them, and `xcrun devicectl device copy from ... --source <file>` copies one.
+- Notification taps cannot be automated: `xcrun simctl push` can deliver one to a simulator, but nothing can tap it. Check taps by hand on a phone after changing `AppDelegate`.
 - A new test file is not in the Xcode project until `xcodegen generate` runs again; until then `-only-testing` silently skips it.
 - Demo launches (`-demo`, UI tests) still use the mock sign-in: Continue with Apple goes straight to profile setup, every sign-up is a new user, and deleting an account only forgets the user in the session. Normal launches sign in with Apple.
 - The Supabase session is kept in the keychain, which survives deleting the app, on a simulator as on a phone. Reinstalling therefore restores the last account; sign out, or run `xcrun simctl keychain <device> reset` on a simulator, to start at Welcome.
@@ -528,6 +538,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-10-29 · 4F · Push deployed and set up on the hosted project; notification arrived on the owner's iPhone; fixed a dropped tap at cold launch and a crash from the `async` delegate methods (crash log from the device); all three tap cases work; 4F done · start 4G on `phase/4g-beta` with the editable location tag
 - 2026-10-29 · 4F (code) · Push outbox, triggers and tests (153 database tests); `push` Edge Function, checked locally against Apple's sandbox with a throwaway key; device registration, permission after the first post or pick-up, unregister at sign-out, notification taps open My Activity; push entitlement; 386 package tests · owner: APNs key and secrets; deploy migration 0007 and the function; test on a phone
 - 2026-10-29 · 4E · Report (request, message, person), block and unblock, Blocked people, Safety tips, terms, privacy and support links; offensive-word filter in the app and as server triggers, with a test that the lists match; `blocked_profiles`; mock and remote moderation with contract tests on both; `SafetyUITests`; `docs/MODERATION.md` and dashboard queries. 380 package tests, 133 database tests · deploy migration 0006 with the owner's approval, then 4F on `phase/4f-push`
 - 2026-10-29 · 4D · `FavorlyDevice` (permission, 100 m snapping, neighborhood names), Nearby header from the real fix, Open Settings when denied, presets only in demo launches, location permission text; 361 package tests; checked in the simulator against the local backend ("Near Manhattan", then denied with Open Settings); two-phone check moved to 4G · start 4E on `phase/4e-safety`

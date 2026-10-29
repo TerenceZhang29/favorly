@@ -199,7 +199,7 @@ Everything the store build needs that does not depend on a server, built against
 
 ### 4F. Push notifications
 
-- [ ] **Owner:** create an APNs key in the developer account; store it as a Supabase secret
+- [x] **Owner:** create an APNs key in the developer account; store it as a Supabase secret
 - [x] Push capability and entitlement in `project.yml`
 - [x] Ask for notification permission after the user's first post or first pick-up, not at launch
 - [x] Device token registered through `PushRegistrar`; removed on sign-out and account deletion

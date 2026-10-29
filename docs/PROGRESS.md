@@ -3,7 +3,7 @@
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
 **Current phase:** Phase 4. 4A–4E are done: Sign in with Apple on the hosted Supabase project, device location, and reporting, blocking and the word filter. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
-**Next task:** deploy migration `20261029000006_safety.sql` to the hosted project (with the owner's approval), then 4F (push notifications) on `phase/4f-push`
+**Next task:** 4F (push notifications) on `phase/4f-push`
 
 ## Phase checklist
 
@@ -456,6 +456,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-29 · 4E · Report a message by long-pressing someone else's bubble (`contextMenu`) · keeps the chat uncluttered
 - 2026-10-29 · 4E · Support is a web page (`LegalLinks.support`) rather than an email address · no personal address in the app; the page goes up with the privacy policy in 4G
 - 2026-10-29 · 4E · Moderation happens in the Supabase dashboard with the queries in `backend/moderation/queries.sql`, following `docs/MODERATION.md`; banning uses the dashboard's Ban user · no admin screens to build or secure in the app
+- 2026-10-29 · 4E · Migration `20261029000006_safety.sql` deployed to the hosted project after the full suite and backend CI passed on `main`; all six migrations recorded there and `supabase db diff --linked` finds no differences · owner approved
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues

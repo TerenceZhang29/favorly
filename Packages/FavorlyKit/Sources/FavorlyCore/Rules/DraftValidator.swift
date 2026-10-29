@@ -14,9 +14,9 @@ public enum DraftValidator {
         var normalized = draft
         normalized.title = draft.title.trimmingCharacters(in: .whitespacesAndNewlines)
         normalized.details = draft.details.trimmingCharacters(in: .whitespacesAndNewlines)
-        normalized.location = TaggedLocation(
+        normalized.location = try TaggedLocation(
             point: draft.location.point,
-            label: try validateLocationLabel(draft.location.label)
+            label: validateLocationLabel(draft.location.label)
         )
 
         guard normalized.title.count >= titleLengthRange.lowerBound else {

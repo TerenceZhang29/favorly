@@ -55,8 +55,12 @@ struct DraftValidatorTests {
 
     // MARK: Neighborhood
 
-    @Test(arguments: ["Roosevelt Island", "Cornell Tech, Roosevelt Island", "Hell's Kitchen", "Bedford-Stuyvesant",
-                      "St. George", "Prospect Lefferts Gardens", "Ville-Émard", "  Harlem  "])
+    static let neighborhoods = [
+        "Roosevelt Island", "Cornell Tech, Roosevelt Island", "Hell's Kitchen", "Bedford-Stuyvesant",
+        "St. George", "Prospect Lefferts Gardens", "Ville-Émard", "  Harlem  ",
+    ]
+
+    @Test(arguments: neighborhoods)
     func ordinaryNeighborhoodsPass(label: String) throws {
         #expect(try DraftValidator.validateLocationLabel(label) == label.trimmingCharacters(in: .whitespaces))
     }
@@ -92,7 +96,10 @@ struct DraftValidatorTests {
         #expect(try DraftValidator.validate(draft).location == TaggedLocation(point: here, label: "Harlem"))
         #expect(throws: FavorlyError.validation("Use only letters for the neighborhood, not a street address.")) {
             try DraftValidator.validate(NewRequestDraft(
-                title: "Need rice", details: "", category: .other, location: TaggedLocation(point: here, label: "12 Main")
+                title: "Need rice", details: "", category: .other, location: TaggedLocation(
+                    point: here,
+                    label: "12 Main"
+                )
             ))
         }
     }

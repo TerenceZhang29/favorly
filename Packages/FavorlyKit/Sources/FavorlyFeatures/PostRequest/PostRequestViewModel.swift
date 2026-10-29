@@ -22,6 +22,10 @@ final class PostRequestViewModel {
     var title = ""
     var details = ""
     var category = RequestCategory.other
+    /// The neighborhood shown with the request. Starts as the location's name; the user may change it.
+    var locationLabel = ""
+    /// The name the last location came with, to tell whether the user changed `locationLabel`.
+    @ObservationIgnored private var suggestedLabel = ""
     private(set) var locationState: LocationState = .loading
     private(set) var isSubmitting = false
     /// Why the last submit failed.
@@ -51,20 +55,40 @@ final class PostRequestViewModel {
         validationMessage(title: "Valid title", details: details)
     }
 
-    var canSubmit: Bool {
-        taggedLocation != nil && !isSubmitting && validationMessage(title: title, details: details) == nil
+    /// What is wrong with the neighborhood, once the location is known.
+    var locationLabelMessage: String? {
+        guard taggedLocation != nil else { return nil }
+        do {
+            try DraftValidator.validateLocationLabel(locationLabel)
+            return nil
+        } catch {
+            return ErrorMessage.text(for: error)
+        }
     }
 
-    /// "Tagged at Cornell Tech, Roosevelt Island", or nil until the location is known.
+    var canSubmit: Bool {
+        taggedLocation != nil && !isSubmitting && validationMessage(title: title, details: details) == nil
+            && locationLabelMessage == nil
+    }
+
+    /// "Tagged at Cornell Tech, Roosevelt Island", following edits, or nil until the location is known.
     var locationText: String? {
-        taggedLocation.map { "Tagged at \($0.label)" }
+        guard taggedLocation != nil else { return nil }
+        let label = locationLabel.trimmingCharacters(in: .whitespacesAndNewlines)
+        return label.isEmpty ? "Tagged at your location" : "Tagged at \(label)"
     }
 
     // MARK: Loading and submitting
 
     func loadLocation() async {
         do {
-            locationState = try await .tagged(environment.locationProvider.currentLocation())
+            let location = try await environment.locationProvider.currentLocation()
+            // Follow the new name unless the user wrote their own.
+            if locationLabel.isEmpty || locationLabel == suggestedLabel {
+                locationLabel = location.label
+            }
+            suggestedLabel = location.label
+            locationState = .tagged(location)
         } catch is CancellationError {
             // A newer lookup replaced this one.
         } catch {
@@ -82,7 +106,8 @@ final class PostRequestViewModel {
         submitError = nil
 
         do {
-            let draft = NewRequestDraft(title: title, details: details, category: category, location: taggedLocation)
+            let location = TaggedLocation(point: taggedLocation.point, label: locationLabel)
+            let draft = NewRequestDraft(title: title, details: details, category: category, location: location)
             let request = try await environment.repository.create(draft, by: environment.session.currentUser.id)
             title = ""
             details = ""
@@ -104,8 +129,8 @@ final class PostRequestViewModel {
     }
 
     private func validationMessage(title: String, details: String) -> String? {
-        // The validator only looks at the text, so any location will do here.
-        let location = taggedLocation ?? TaggedLocation(point: GeoPoint(latitude: 0, longitude: 0), label: "")
+        // Only the title and details matter here; the neighborhood has its own message.
+        let location = TaggedLocation(point: GeoPoint(latitude: 0, longitude: 0), label: "Here")
         let draft = NewRequestDraft(title: title, details: details, category: category, location: location)
         do {
             try DraftValidator.validate(draft)

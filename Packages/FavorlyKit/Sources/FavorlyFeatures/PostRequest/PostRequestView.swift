@@ -44,6 +44,10 @@ struct PostRequestView: View {
                 location
             } header: {
                 SectionHeader(text: "Location")
+            } footer: {
+                if viewModel.locationText != nil {
+                    Text("Neighbors see this with your request. Keep it general: a neighborhood, not an address.")
+                }
             }
 
             if let submitError = viewModel.submitError {
@@ -86,6 +90,14 @@ struct PostRequestView: View {
                     .foregroundStyle(Theme.Colors.brand)
             }
             .accessibilityIdentifier("post.location")
+            TextField("Neighborhood", text: $viewModel.locationLabel)
+                .textContentType(.sublocality)
+                .submitLabel(.done)
+                .accessibilityLabel("Neighborhood")
+                .accessibilityIdentifier("post.locationLabel")
+            if let locationLabelMessage = viewModel.locationLabelMessage {
+                InlineMessage(text: locationLabelMessage, identifier: "post.locationLabelMessage")
+            }
         case let .failed(message):
             InlineMessage(text: message, identifier: "post.locationError")
             Button("Retry") {

@@ -153,4 +153,42 @@ struct PostRequestViewModelTests {
         _ = await viewModel.submit()
         #expect(world.notifications.permissionRequests == 1)
     }
+
+    // MARK: Neighborhood
+
+    @Test func theNeighborhoodStartsAsTheLocationsNameAndCanBeChanged() async throws {
+        await viewModel.loadLocation()
+        #expect(viewModel.locationLabel == "Cornell Tech, Roosevelt Island")
+        viewModel.locationLabel = "Roosevelt Island"
+        #expect(viewModel.locationText == "Tagged at Roosevelt Island")
+
+        viewModel.title = "Need a cup of rice"
+        let request = try #require(await viewModel.submit())
+        #expect(request.location.label == "Roosevelt Island")
+        #expect(viewModel.locationLabel == "Roosevelt Island")
+    }
+
+    @Test func anInvalidNeighborhoodBlocksPosting() async {
+        await viewModel.loadLocation()
+        viewModel.title = "Need a cup of rice"
+        viewModel.locationLabel = "549 Main St"
+        #expect(viewModel.locationLabelMessage == "Use only letters for the neighborhood, not a street address.")
+        #expect(viewModel.titleMessage == nil)
+        #expect(!viewModel.canSubmit)
+        viewModel.locationLabel = ""
+        #expect(viewModel.locationLabelMessage == "Add a neighborhood for your request.")
+        #expect(viewModel.locationText == "Tagged at your location")
+    }
+
+    @Test func aNewLocationReplacesTheNameUnlessTheUserChangedIt() async {
+        await viewModel.loadLocation()
+        world.locationSettings.selectedPreset = LocationPresets.ithaca
+        await viewModel.loadLocation()
+        #expect(viewModel.locationLabel == "Ithaca, NY")
+
+        viewModel.locationLabel = "Collegetown"
+        world.locationSettings.selectedPreset = LocationPresets.midtownEast
+        await viewModel.loadLocation()
+        #expect(viewModel.locationLabel == "Collegetown")
+    }
 }

@@ -41,6 +41,8 @@ targets:
       path: App/Favorly.entitlements
       properties:
         com.apple.developer.applesignin: [Default]
+        # Xcode switches this to production when a build is exported for TestFlight or the App Store.
+        aps-environment: development
     info:
       path: App/Info.plist
       properties:

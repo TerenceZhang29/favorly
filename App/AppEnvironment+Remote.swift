@@ -21,6 +21,8 @@ extension AppEnvironment {
             locationProvider: DeviceLocationProvider(source: CoreLocationSource(), namer: GeocoderNeighborhoodNamer()),
             session: session,
             auth: RemoteAuthService(client: client, session: session),
+            push: RemotePushRegistrar(client: client),
+            notifications: SystemNotificationService(),
             locationSettings: nil
         )
     }

@@ -12,13 +12,23 @@ struct FavorlyApp: App {
     /// `-signedOut` starts a demo launch at the Welcome screen, for the onboarding UI tests.
     private static let startsSignedOut = arguments.contains("-signedOut")
 
+    @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
     @State private var environment = makeEnvironment()
 
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environment(\.appEnvironment, environment)
-                .task { await signInAtLaunch() }
+                .task {
+                    appDelegate.environment = environment
+                    await signInAtLaunch()
+                }
+                .task(id: environment.auth.state) {
+                    // A signed-in user's device token can change; registering again keeps the server's copy fresh.
+                    if environment.auth.state == .signedIn {
+                        await environment.notifications.registerIfAllowed()
+                    }
+                }
         }
     }
 

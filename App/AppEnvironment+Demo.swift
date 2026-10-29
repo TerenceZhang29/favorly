@@ -18,6 +18,8 @@ extension AppEnvironment {
             locationProvider: MockLocationProvider(settings: locationSettings),
             session: session,
             auth: MockAuthService(session: session, startsSignedIn: startsSignedIn, artificialDelay: artificialDelay),
+            push: MockPushRegistrar(),
+            notifications: MockNotificationService(),
             locationSettings: locationSettings
         )
     }

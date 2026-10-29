@@ -3,7 +3,7 @@
 Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
 
 **Current phase:** Phase 4. 4A–4E are done; 4F's code is done and tested, and sending waits on the owner's APNs key and the hosted setup. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
-**Next task:** deploy migration `20261029000007_push.sql` and the `push` function to the hosted project (owner approval); the owner creates the APNs key and sets the secrets (`backend/README.md`, Push notifications); try a notification on the owner's iPhone; then 4G
+**Next task:** the owner creates the APNs key and sets the secrets (`backend/README.md`, Push notifications); try a notification on the owner's iPhone; then 4G
 
 ## Phase checklist
 
@@ -475,6 +475,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - 2026-10-29 · 4F · A tapped notification switches to My Activity and pushes the request, plus its chat for a message (`NotificationRouter`, `ChatDestination`, a path for the My Activity stack) · one place to open from, with Back leading to the request
 - 2026-10-29 · 4F · `AppEnvironment.init` is `@MainActor` · it creates the `NotificationRouter`, a main-actor object; every caller already ran on the main actor
 - 2026-10-29 · 4F · The Edge Function has no Deno unit tests (Deno is not installed); it was checked locally with `supabase functions serve` and a throwaway P-256 key: without the secret it answers 403, and with it Apple's sandbox answered `InvalidProviderToken`, so the token signing, the HTTP/2 call and the retry count work · delivery to a phone needs the real key
+- 2026-10-29 · 4F · Migration `20261029000007_push.sql` and the `push` function deployed to the hosted project after the full suite and backend CI passed on `main`; seven migrations recorded, `db diff --linked` finds no differences, and the live function answers 403 without the secret · owner approved
 - 2026-10-07 · 1A · Tab bar buttons are found by label in UI tests (`app.tabBars.buttons["Nearby"]`) · SwiftUI does not reliably pass a tab item's `accessibilityIdentifier` to the tab bar button
 
 ## Known issues

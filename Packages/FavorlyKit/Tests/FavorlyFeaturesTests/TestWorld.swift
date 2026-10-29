@@ -19,6 +19,8 @@ struct TestWorld {
     )
     let session: MockSessionStore
     let auth: MockAuthService
+    let push = MockPushRegistrar()
+    let notifications = MockNotificationService()
     let locationSettings = MockLocationSettings()
 
     init(startsSignedIn: Bool = true) {
@@ -37,6 +39,8 @@ struct TestWorld {
             locationProvider: MockLocationProvider(settings: locationSettings),
             session: session,
             auth: auth,
+            push: push,
+            notifications: notifications,
             locationSettings: locationSettings
         )
     }
@@ -52,6 +56,8 @@ struct TestWorld {
             locationProvider: locationProvider,
             session: session,
             auth: auth,
+            push: push,
+            notifications: notifications,
             locationSettings: nil
         )
     }

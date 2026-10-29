@@ -87,6 +87,8 @@ final class PostRequestViewModel {
             title = ""
             details = ""
             category = .other
+            // Now a notification is clearly useful: someone may pick this up.
+            await environment.notifications.requestPermissionIfNeeded()
             return request
         } catch {
             submitError = ErrorMessage.text(for: error)

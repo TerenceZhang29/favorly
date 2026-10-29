@@ -136,9 +136,10 @@ final class ProfileViewModel {
         }
     }
 
-    /// Back to the Welcome screen.
+    /// Back to the Welcome screen. The device stops receiving this account's notifications first.
     func signOut() async {
         accountError = nil
+        await environment.push.unregister()
         await environment.auth.signOut()
     }
 

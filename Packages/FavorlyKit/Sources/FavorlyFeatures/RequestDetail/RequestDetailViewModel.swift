@@ -142,6 +142,10 @@ final class RequestDetailViewModel {
 
     func pickUp() async {
         await perform(environment.repository.claim)
+        // Now a notification is clearly useful: the requester may message or complete it.
+        if request?.helperID == currentUserID {
+            await environment.notifications.requestPermissionIfNeeded()
+        }
     }
 
     func cancel() async {

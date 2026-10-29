@@ -7,11 +7,13 @@ struct MainTabView: View {
     @State private var selection: RootTab = .nearby
     /// The request just posted, highlighted in My Activity until the user leaves that tab.
     @State private var newlyPostedID: RequestID?
+    /// My Activity's stack, which opens tapped notifications.
+    @State private var activityPath = NavigationPath()
 
     var body: some View {
         TabView(selection: $selection) {
             ForEach(RootTab.visible) { tab in
-                NavigationStack {
+                NavigationStack(path: tab == .activity ? $activityPath : .constant(NavigationPath())) {
                     content(for: tab)
                         .appDestinations(environment)
                 }
@@ -28,6 +30,25 @@ struct MainTabView: View {
                 newlyPostedID = nil
             }
         }
+        .onChange(of: environment.router.pending, initial: true) { _, route in
+            guard let route else { return }
+            open(route)
+            environment.router.pending = nil
+        }
+    }
+
+    /// Shows a tapped notification in My Activity: the request, and its chat on top for a message.
+    private func open(_ route: NotificationRoute) {
+        var path = NavigationPath()
+        switch route {
+        case let .request(id):
+            path.append(id)
+        case let .chat(id):
+            path.append(id)
+            path.append(ChatDestination(requestID: id))
+        }
+        selection = .activity
+        activityPath = path
     }
 
     @ViewBuilder

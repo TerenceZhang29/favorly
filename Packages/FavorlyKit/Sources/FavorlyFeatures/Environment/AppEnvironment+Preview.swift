@@ -48,6 +48,8 @@ public extension AppEnvironment {
             locationProvider: PreviewLocationProvider(location: here),
             session: PreviewSessionStore(availableUsers: [alex, bea], currentUser: alex),
             auth: PreviewAuthService(),
+            push: PreviewPushRegistrar(),
+            notifications: PreviewNotificationService(),
             locationSettings: PreviewLocationSettings(preset: LocationPreset(id: "preview-here", location: here))
         )
     }

@@ -297,4 +297,18 @@ struct RequestDetailViewModelTests {
         await viewModel.pickUp()
         #expect(viewModel.actionError == "You can't interact with this person.")
     }
+
+    // MARK: Notifications
+
+    @Test func pickingUpAsksForNotificationsButAFailedPickUpDoesNot() async throws {
+        let viewModel = await loaded(as: DemoUsers.bea)
+        _ = try await world.repository.claim(TestWorld.eggsID, by: DemoUsers.dana.id)
+        await viewModel.pickUp()
+        #expect(world.notifications.permissionRequests == 0)
+
+        let jumpStart = await loaded(TestWorld.seedID(4), as: DemoUsers.bea)
+        await jumpStart.pickUp()
+        #expect(jumpStart.actionError == nil)
+        #expect(world.notifications.permissionRequests == 1)
+    }
 }

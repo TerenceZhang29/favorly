@@ -110,6 +110,12 @@ struct ProfileView: View {
                 Label("Blocked people", systemImage: "hand.raised")
             }
             .accessibilityIdentifier("profile.blockedPeople")
+            if let settings = SystemSettings.appURL {
+                Link(destination: settings) {
+                    Label("Notifications", systemImage: "bell")
+                }
+                .accessibilityIdentifier("profile.notifications")
+            }
             NavigationLink {
                 SafetyTipsView()
             } label: {

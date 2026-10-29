@@ -13,5 +13,8 @@ struct AppDestinations: ViewModifier {
             .navigationDestination(for: UserID.self) { id in
                 ProfileView(userID: id, environment: environment)
             }
+            .navigationDestination(for: ChatDestination.self) { destination in
+                ChatView(requestID: destination.requestID, environment: environment)
+            }
     }
 }

@@ -19,6 +19,8 @@ struct AppEnvironmentTests {
             locationProvider: MockLocationProvider(settings: locationSettings),
             session: session,
             auth: MockAuthService(session: session, startsSignedIn: true, artificialDelay: .zero),
+            push: MockPushRegistrar(),
+            notifications: MockNotificationService(),
             locationSettings: locationSettings
         )
     }

@@ -140,4 +140,17 @@ struct PostRequestViewModelTests {
         #expect(!viewModel.canSubmit)
         #expect(viewModel.reloadKey.preset == nil)
     }
+
+    // MARK: Notifications
+
+    @Test func aSuccessfulPostAsksForNotificationsAndAFailedOneDoesNot() async {
+        await viewModel.loadLocation()
+        viewModel.title = "Hi"
+        _ = await viewModel.submit()
+        #expect(world.notifications.permissionRequests == 0)
+
+        viewModel.title = "Need a cup of rice"
+        _ = await viewModel.submit()
+        #expect(world.notifications.permissionRequests == 1)
+    }
 }

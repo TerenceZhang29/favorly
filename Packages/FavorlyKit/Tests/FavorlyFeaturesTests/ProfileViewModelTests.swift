@@ -75,6 +75,8 @@ struct ProfileViewModelTests {
             locationProvider: MockLocationProvider(settings: world.locationSettings),
             session: world.session,
             auth: world.auth,
+            push: world.push,
+            notifications: world.notifications,
             locationSettings: world.locationSettings
         )
         let viewModel = ProfileViewModel(environment: environment)
@@ -179,5 +181,12 @@ struct ProfileViewModelTests {
         #expect(await viewModel.block())
         #expect(try await world.repository.blockedUsers(of: DemoUsers.alex.id) == [DemoUsers.bea])
         #expect(await !ProfileViewModel(environment: world.environment).block())
+    }
+
+    @Test func signingOutUnregistersTheDevice() async throws {
+        try await world.push.register(deviceToken: Data([1, 2, 3]))
+        let viewModel = await loadedOwnProfile(as: DemoUsers.alex)
+        await viewModel.signOut()
+        #expect(await world.push.deviceToken == nil)
     }
 }

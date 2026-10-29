@@ -28,6 +28,8 @@ struct WelcomeViewModelTests {
             locationProvider: environment.locationProvider,
             session: environment.session,
             auth: FailingAuthService(),
+            push: environment.push,
+            notifications: environment.notifications,
             locationSettings: environment.locationSettings
         ))
         await viewModel.signIn()

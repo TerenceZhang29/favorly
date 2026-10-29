@@ -20,7 +20,8 @@ extension AppEnvironment {
             auth: MockAuthService(session: session, startsSignedIn: startsSignedIn, artificialDelay: artificialDelay),
             push: MockPushRegistrar(),
             notifications: MockNotificationService(),
-            locationSettings: locationSettings
+            locationSettings: locationSettings,
+            router: AppDelegate.router
         )
     }
 }

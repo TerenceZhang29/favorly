@@ -4,8 +4,21 @@ import UserNotifications
 
 /// Receives the device token and notification taps, which SwiftUI has no hooks for.
 final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-    /// Set by `FavorlyApp` once its environment exists.
-    @MainActor var environment: AppEnvironment?
+    /// Exists from launch, before SwiftUI builds the environment, so a notification tapped while the app was not
+    /// running is kept until the tabs can open it. Every environment the app builds uses this router.
+    @MainActor static let router = NotificationRouter()
+
+    /// Set by `FavorlyApp` once its environment exists. A device token that arrived earlier is sent then.
+    @MainActor var environment: AppEnvironment? {
+        didSet {
+            if let pendingToken {
+                self.pendingToken = nil
+                register(pendingToken)
+            }
+        }
+    }
+
+    @MainActor private var pendingToken: Data?
 
     func application(
         _: UIApplication,
@@ -16,9 +29,15 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
     }
 
     func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        Task { @MainActor in
-            try? await environment?.push.register(deviceToken: deviceToken)
+        Task { @MainActor in register(deviceToken) }
+    }
+
+    @MainActor private func register(_ deviceToken: Data) {
+        guard let environment else {
+            pendingToken = deviceToken
+            return
         }
+        Task { try? await environment.push.register(deviceToken: deviceToken) }
     }
 
     func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError _: any Error) {
@@ -40,7 +59,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
     ) async {
         let route = NotificationRoute(userInfo: response.notification.request.content.userInfo)
         await MainActor.run {
-            environment?.router.pending = route
+            Self.router.pending = route
         }
     }
 }

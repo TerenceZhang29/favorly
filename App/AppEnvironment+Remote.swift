@@ -23,7 +23,8 @@ extension AppEnvironment {
             auth: RemoteAuthService(client: client, session: session),
             push: RemotePushRegistrar(client: client),
             notifications: SystemNotificationService(),
-            locationSettings: nil
+            locationSettings: nil,
+            router: AppDelegate.router
         )
     }
 }

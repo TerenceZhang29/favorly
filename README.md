@@ -143,6 +143,16 @@ TEST_RUNNER_SCREENSHOT_DIR=/tmp/favorly-shots xcodebuild test \
 
 It writes each screen and its main states (25 captures) four times: `<name>-light.png`, `<name>-dark.png`, `<name>-accessibility-large.png` and `<name>-accessibility-largest.png`. The Phase 2 set is kept in `docs/screenshots/phase-2/`, and the four images above are copies from it. The Phase 1 look is kept in `docs/screenshots/phase-1/`. The Phase 3 screens (profile, chat, review form) are captured too but not yet committed; see `docs/PROGRESS.md`.
 
+## Website
+
+The Privacy Policy, Terms of Use and Support pages are plain HTML in `site/`, published to Vercel as the project `favorly-app` at https://favorly-app.vercel.app (the app links to `/privacy`, `/terms` and `/support`). To publish a change, from the repo root:
+
+```bash
+vercel deploy site --prod
+```
+
+The first time on a Mac, run `vercel login` in your own Terminal, then `vercel link --cwd site --project favorly-app`. When the Terms change in a way users must accept again, raise `ProfileSetupRules.termsVersion` too.
+
 ## App icon
 
 The icon is drawn by a script, so it can be redrawn if the brand color changes:

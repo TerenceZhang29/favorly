@@ -1,6 +1,6 @@
 # Favorly iOS
 
-[![CI](https://github.com/TerenceZhang29/favorly-ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/TerenceZhang29/favorly-ios/actions/workflows/ci.yml)
+[![CI](https://github.com/TerenceZhang29/favorly/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/TerenceZhang29/favorly/actions/workflows/ci.yml)
 
 Favorly is a hyperlocal iOS app that lets neighbors post small help requests and pick them up. This repo holds the prototype (version 0.3.0): SwiftUI, fake data and a fake location, run in the iOS Simulator. Phase 1 built the flows, Phase 2 gave them their look, and Phase 3 added the Kindness score, profiles, chat and reviews.
 
@@ -21,8 +21,8 @@ The Phase 1 plan is in [docs/PLAN.md](docs/PLAN.md), the Phase 2 (UI refresh) pl
 The Xcode project is generated from `project.yml` and is not checked in.
 
 ```bash
-git clone git@github.com:TerenceZhang29/favorly-ios.git
-cd favorly-ios
+git clone git@github.com:TerenceZhang29/favorly.git
+cd favorly
 xcodegen generate
 ```
 

@@ -34,7 +34,7 @@ A Mac is a hard requirement: iOS apps can only be built and run in the Simulator
 
 **Accounts and repo**
 
-- [ ] A GitHub account for each teammate; create an empty repo named `favorly-ios` (no README, so the agent's first commit is clean) and add teammates as collaborators
+- [ ] A GitHub account for each teammate; create an empty repo named `favorly` (no README, so the agent's first commit is clean) and add teammates as collaborators
 - [ ] Set up SSH or `gh auth login` on the Mac so the agent can push
 - [ ] Sign in to Xcode with an Apple ID (Xcode → Settings → Accounts). A free account is enough for the Simulator
 - [ ] Not needed yet, but budget for later: Apple Developer Program ($99/year) for TestFlight and the US App Store
@@ -107,7 +107,7 @@ Swapping mocks for real services later means adding a new sibling of FavorlyData
 **Repository layout**
 
 ```
-favorly-ios/
+favorly/
 ├── README.md                  # setup, build, demo script
 ├── CLAUDE.md                  # instructions for coding agents
 ├── project.yml                # XcodeGen spec (source of truth for the Xcode project)

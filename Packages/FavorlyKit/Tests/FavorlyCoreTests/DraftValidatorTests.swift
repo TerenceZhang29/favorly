@@ -72,11 +72,11 @@ struct DraftValidatorTests {
         }
     }
 
-    @Test func anEmptyOrLongNeighborhoodIsRefused() {
+    @Test func anEmptyOrLongNeighborhoodIsRefused() throws {
         #expect(throws: FavorlyError.validation("Add a neighborhood for your request.")) {
             try DraftValidator.validateLocationLabel("   ")
         }
-        try? DraftValidator.validateLocationLabel(String(repeating: "a", count: 40))
+        #expect(try DraftValidator.validateLocationLabel(String(repeating: "a", count: 40)).count == 40)
         #expect(throws: FavorlyError.validation("Neighborhood must be 40 characters or fewer.")) {
             try DraftValidator.validateLocationLabel(String(repeating: "a", count: 41))
         }

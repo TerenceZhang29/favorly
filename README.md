@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/TerenceZhang29/favorly/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/TerenceZhang29/favorly/actions/workflows/ci.yml)
 
-Favorly is a hyperlocal iOS app that lets neighbors post small help requests and pick them up. This repo holds the prototype (version 0.3.0): SwiftUI, fake data and a fake location, run in the iOS Simulator. Phase 1 built the flows, Phase 2 gave them their look, and Phase 3 added the Kindness score, profiles, chat and reviews.
+Favorly is a hyperlocal iOS app that lets neighbors post small help requests and pick them up. This repo holds the app (version 1.0.0): SwiftUI on a Supabase backend, with Sign in with Apple, device location and push notifications. Phase 1 built the flows, Phase 2 gave them their look, Phase 3 added the Kindness score, profiles, chat and reviews, and Phase 4 turns it into an App Store app. A demo mode with fake data still runs in the Simulator.
 
 | Nearby | Request detail | My Activity | Dark mode |
 | --- | --- | --- | --- |

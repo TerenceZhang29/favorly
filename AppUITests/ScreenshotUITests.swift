@@ -187,6 +187,10 @@ final class ScreenshotUITests: UITestCase {
         chooseUser("user-dana")
         openTab("My Activity")
         let saffron = row("activity.row.", containing: "Need a pinch of saffron")
+        // Grove cards are taller, so at large text sizes the row can start below the fold.
+        for _ in 0 ..< Self.maxSwipes where !saffron.waitForExistence(timeout: Self.shortWait) {
+            app.swipeUp()
+        }
         XCTAssertTrue(saffron.waitForExistence(timeout: Self.waitTimeout))
         saffron.tap()
         scrollToAndTap(app.buttons["detail.review"])

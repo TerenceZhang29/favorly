@@ -2,13 +2,13 @@
 
 [![CI](https://github.com/TerenceZhang29/favorly/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/TerenceZhang29/favorly/actions/workflows/ci.yml)
 
-Favorly is a hyperlocal iOS app that lets neighbors post small help requests and pick them up. This repo holds the app (version 1.0.0): SwiftUI on a Supabase backend, with Sign in with Apple, device location and push notifications. Phase 1 built the flows, Phase 2 gave them their look, Phase 3 added the Kindness score, profiles, chat and reviews, and Phase 4 turns it into an App Store app. A demo mode with fake data still runs in the Simulator.
+Favorly is a hyperlocal iOS app that lets neighbors post small help requests and pick them up. This repo holds the app (version 1.0.0): SwiftUI on a Supabase backend, with Sign in with Apple, device location and push notifications. Phase 1 built the flows, Phase 2 gave them their first look, Phase 3 added the Kindness score, profiles, chat and reviews, Phase 4 turns it into an App Store app, and Phase 5 gives it the Grove look (olive and lime, set in Figtree). A demo mode with fake data still runs in the Simulator.
 
 | Nearby | Request detail | My Activity | Dark mode |
 | --- | --- | --- | --- |
 | ![Nearby list with a radius picker](docs/screenshots/nearby.png) | ![Request detail after a pick up](docs/screenshots/request-detail.png) | ![My Activity showing a claimed request](docs/screenshots/my-activity.png) | ![Nearby list in dark mode](docs/screenshots/nearby-dark.png) |
 
-The Phase 1 plan is in [docs/PLAN.md](docs/PLAN.md), the Phase 2 (UI refresh) plan in [docs/PLAN-PHASE-2.md](docs/PLAN-PHASE-2.md), the Phase 3 (Kindness score, profiles, chat and reviews) plan in [docs/PLAN-PHASE-3.md](docs/PLAN-PHASE-3.md), the Phase 4 (App Store release with a real backend) plan in [docs/PLAN-PHASE-4.md](docs/PLAN-PHASE-4.md), the layering rules in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), and the status and decision log in [docs/PROGRESS.md](docs/PROGRESS.md).
+The Phase 1 plan is in [docs/PLAN.md](docs/PLAN.md), the Phase 2 (UI refresh) plan in [docs/PLAN-PHASE-2.md](docs/PLAN-PHASE-2.md), the Phase 3 (Kindness score, profiles, chat and reviews) plan in [docs/PLAN-PHASE-3.md](docs/PLAN-PHASE-3.md), the Phase 4 (App Store release with a real backend) plan in [docs/PLAN-PHASE-4.md](docs/PLAN-PHASE-4.md), the Phase 5 (Grove UI revamp) plan in [docs/PLAN-PHASE-5.md](docs/PLAN-PHASE-5.md), the layering rules in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), and the status and decision log in [docs/PROGRESS.md](docs/PROGRESS.md).
 
 ## Prerequisites
 
@@ -141,7 +141,7 @@ TEST_RUNNER_SCREENSHOT_DIR=/tmp/favorly-shots xcodebuild test \
   -only-testing:FavorlyUITests/ScreenshotUITests
 ```
 
-It writes each screen and its main states (25 captures) four times: `<name>-light.png`, `<name>-dark.png`, `<name>-accessibility-large.png` and `<name>-accessibility-largest.png`. The Phase 2 set is kept in `docs/screenshots/phase-2/`, and the four images above are copies from it. The Phase 1 look is kept in `docs/screenshots/phase-1/`. The Phase 3 screens (profile, chat, review form) are captured too but not yet committed; see `docs/PROGRESS.md`.
+It writes each screen and its main states (25 captures) four times: `<name>-light.png`, `<name>-dark.png`, `<name>-accessibility-large.png` and `<name>-accessibility-largest.png`. The Grove set (Phase 5) is kept in `docs/screenshots/phase-5/`, and the four images above are copies from it. The look before it is in `docs/screenshots/phase-4/` (light and dark), the Phase 2 set in `docs/screenshots/phase-2/`. The Phase 1 look is kept in `docs/screenshots/phase-1/`. The Phase 3 screens (profile, chat, review form) are captured too but not yet committed; see `docs/PROGRESS.md`.
 
 ## Website
 

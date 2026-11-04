@@ -1,9 +1,9 @@
 # Progress
 
-Updated by every coding session. Read this after `docs/PLAN.md`, `docs/PLAN-PHASE-2.md`, `docs/PLAN-PHASE-3.md` and `docs/PLAN-PHASE-4.md`, and continue from the first unchecked item.
+Updated by every coding session. Read this after `docs/PLAN.md` and `docs/PLAN-PHASE-2.md` through `docs/PLAN-PHASE-5.md`, and continue from the first unchecked item.
 
 **Current phase:** Phase 4. 4A–4F are done: Sign in with Apple on the hosted Supabase project, device location, reporting, blocking and the word filter, and push notifications, tried on the owner's iPhone. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
-**Next task:** 4G (release candidate and beta) on `phase/4g-beta`, starting with the editable location tag on Post
+**Next task:** the owner's review of the Grove screens built on `phase/5-grove-ui` (Phase 5, 5A–5D done, 5E partly); then the 4G two-phone check on build 2
 
 ## Phase checklist
 
@@ -44,13 +44,18 @@ Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). T
 
 ### Phase 5 — Grove UI revamp ([plan](PLAN-PHASE-5.md))
 
-- [ ] **5A.** Grove theme, Figtree font and shared components, "before" screenshots
-- [ ] **5B.** Nearby and Request Detail, then the review gate
-- [ ] **5C.** Post, My Activity and Chat
-- [ ] **5D.** Profile, review, onboarding and safety screens
-- [ ] **5E.** Polish, accessibility, docs, version and tag
+Built on `phase/5-grove-ui` (from `phase/4g-beta`) in one session at the owner's request, not on five branches; see the decision log.
+
+- [x] **5A.** Grove theme, Figtree font and shared components, "before" screenshots
+- [x] **5B.** Nearby and Request Detail. The review gate was skipped: the owner asked for the whole revamp at once and reviews the finished screens instead
+- [x] **5C.** Post, My Activity and Chat
+- [x] **5D.** Profile, review, onboarding and safety screens
+- [ ] **5E.** Polish, accessibility, docs, version and tag. Done: consistency pass, light, dark and large-text screenshots checked by eye and committed (`docs/screenshots/phase-5/`, at half resolution; the look before is in `phase-4/`), SwiftLint and SwiftFormat clean, docs. Left: the full UI suite (run before the push), a check on a real iPhone, the version number and the tag (decision 1)
 
 ## Needs the owner's review
+
+- **Grove screens (Phase 5).** Compare `docs/screenshots/phase-5/` with the mockup (https://claude.ai/artifact/MepsaKmAH4rhe43aqw4D4w) and with `docs/screenshots/phase-4/`. This stands in for the 5B review gate. Changes asked for now are edits to `Theme` and the shared components.
+- **Phase 5 decision 1.** The revamp is built before 4H, so either merge it before the App Store screenshots (the store shows Grove) or keep it on its branch and release it as 1.1.0 after launch.
 
 - **Two-phone check (4G).** Moved from 4C on the owner's decision: done during the internal TestFlight round, when teammates install the app anyway. Steps are in `docs/PLAN-PHASE-4.md`, 4G.
 
@@ -245,6 +250,12 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 4D | `60ab8a8` | docs: plan an editable location tag on Post, after checking what the geocoder returns in New York |
 | 4F | `983a2b5` | fix(app): a notification tapped before the environment exists still opens its request; early device tokens are kept |
 | 4F | `d2589f4` | fix(app): notification delegate methods use completion handlers; the async forms crashed when a notification was tapped |
+| 5 | `d395aa8` | docs(plan): Phase 5 plan for the Grove UI revamp |
+| 5 | `26baab9` | feat(ui): Grove theme, Figtree type and restyled screens |
+| 5 | `e5b90b5` | test(ui): scroll to Dana's saffron row before the review screenshots |
+| 5 | `9fd701c` | fix(ui): Grove layouts at the largest text sizes |
+| 5 | (next commit) | test(ui): screenshot walk finds rows and the category menu at large text sizes |
+| 5 | (next commit) | docs: record Phase 5 progress, screenshots before and after |
 
 ## Confirmed decisions
 
@@ -259,6 +270,19 @@ Defaults from the plan's Preparation section. Change here if the team decides ot
 ## Decisions made during implementation
 
 Add entries as `YYYY-MM-DD · phase · decision · reason`.
+
+- 2026-11-04 · 5 · All of Phase 5 on one branch, `phase/5-grove-ui`, branched from `phase/4g-beta`, with no 5B review gate · the owner asked for the whole revamp in one go; `main` doesn't have 4G yet, so the branch can't fast-forward `main` on its own
+- 2026-11-04 · 5A · Figtree is a resource of `FavorlyFeatures` (`Resources/Fonts`, registered with Core Text by `GroveFonts`), not an app-target resource listed in `UIAppFonts` · previews and package tests load it too, `project.yml` needs no change, and the font check is a package test (`ThemeTests.figtreeIsBundledAndRegisters`) instead of a new `LaunchUITests` method
+- 2026-11-04 · 5A · The plan's `Theme.Typography` is the `TextStyle` enum, applied with `.textStyle(_:)`, which also sets letter spacing and capitals · one modifier keeps font, tracking and case together
+- 2026-11-04 · 5A · The UIKit appearance (navigation and tab bar fonts, segmented picker colors) is applied once from `RootView.init`, not from the App target · it needs the theme's internal tokens, and the App target stays unchanged
+- 2026-11-04 · 5A · Avatars share one neutral color; `UserID+AvatarColor` and `AvatarColorTests` are removed, and `AvatarView` no longer takes a color · as in the plan; the tests asserted the old per-user colors, which no longer exist
+- 2026-11-04 · 5A · `RequestCategory+Color` is removed: every category icon uses the olive tint · decision 4's default
+- 2026-11-04 · 5B · Nearby and My Activity use `.plain` lists with `cardRow()`, so each row is its own card; Request Detail, Post, Profile and the forms keep grouped lists on the Grove surface color · cards for content, plain rows for settings, as in the plan's principles
+- 2026-11-04 · 5B · At accessibility text sizes the score on Request Detail's "Posted by" and "Helper" rows goes under the name, and fact tiles stop growing at twice their size · otherwise the label broke as "Helpe / r"
+- 2026-11-04 · 5E · At the largest text sizes: section headers stop growing at `accessibility2`, review stars stop at 60 points, and a Nearby card's category tile goes above its text · otherwise the header pushed Post's Category row under the tab bar, five stars didn't fit across the screen, and "Ingredient" broke mid-word. `ScreenshotUITests` also scrolls to the Category row and to Dana's saffron row before tapping them
+- 2026-11-04 · 5C · Chat has no request card under the navigation bar · the navigation title already shows the request's title, and the card's note in the mockup is new copy (decision 3)
+- 2026-11-04 · 5C · The chat Send button is a round arrow; its VoiceOver label is still "Send" and its identifier `chat.send` · as in the mockup, with the label and identifier unchanged
+- 2026-11-04 · 5D · Welcome gets the decorative sample cards from the mockup, hidden from VoiceOver; its tagline is drawn in two colors but reads as the same sentence · as in the plan's reconciliation table
 
 - 2026-10-07 · 1A · The `Favorly` scheme's test action lists the three package test targets and `FavorlyUITests` directly, with no `.xctestplan` file · a test plan file refers to project targets by generated IDs, which would be hand-maintained against a git-ignored project; the scheme runs the same tests
 - 2026-10-07 · 1A · Optional GitHub Actions CI left out · it could not be verified from this machine, and the hosted runner's Xcode and simulator names are unknown; add it once someone can watch a run
@@ -508,6 +532,9 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 ## Known issues
 
+- 2026-11-04 · Phase 5 · On the iPhone 18 Pro simulator, `ScreenshotUITests.testCaptureScreenshotsInDarkMode` captured light screens (the simulator didn't switch appearance); the same build on iPhone 17 captured dark ones, and the old look on iPhone 17 did too. Use iPhone 17 for dark screenshots
+- 2026-11-04 · Phase 5 · The app icon is still the Phase 2 teal (decision 5)
+
 - 2026-11-04 · The CI app job (`ci.yml`) had not finished since 2026-10-27: every Phase 4 run hit its 30-minute limit, either cut off there or cancelled earlier by a newer push, and runs cut off at the limit kept no log. The UI suite grew to 32 cases, 13.4 minutes back to back on the Mac. The job limit is now 60 minutes, and the test step's is 50, so the failure and upload steps still run
 - 2026-10-29 · Under parallel UI testing on the Mac, one run failed `ProfileUITests.testAlexStartsWithAnEmptyProfile` (the simulator timed out acquiring a background assertion), `testOneMoreFavorRaisesBeasScore` and `SafetyUITests.testReportingARequest`; all three passed when rerun alone, and the runs before and after were green. Watch for a repeat
 - Last CI result on the session branch (commit `9e0d7e8`): `swift test` and `xcodebuild test` (iOS simulator on `macos-26`, all UI tests including `ProfileUITests`, `ChatUITests`, `ReviewUITests` and `DemoFlowUITests.testExtendedDemoScript`) pass, and SwiftLint `--strict` and `swiftformat --lint` are clean. The first runs failed on one SwiftLint rule (`function_parameter_count`), two SwiftFormat rules (`hoistTry`, `wrapIfExpressionBodies`), the chat UI test switching user while the keyboard covered the tab bar, and the extended demo test checking a row it had scrolled past; all fixed
@@ -544,8 +571,8 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 ## Open questions
 
-- Phase 5: when does the Grove revamp run? Default: after 4H, released as 1.1.0, so 1.0.0 ships in the current look and the beta isn't restyled halfway through.
-- Phase 5: bundle the Figtree font (OFL)? Default: yes, only through `Theme.Typography`.
+- Phase 5: when does the Grove revamp run? Partly resolved 2026-11-04: the owner asked for it to be built now, on `phase/5-grove-ui`. Whether it merges before 4H or ships as 1.1.0 after launch is still open (see *Needs the owner's review*).
+- Phase 5: bundle the Figtree font (OFL)? Default taken: yes, only through `TextStyle`.
 - Phase 5: adopt the mockup's new copy ("Neighbors who could use a hand", "Ask for a favor", "I can help")? Default: no, current strings stay.
 - Phase 5: one olive tint for every category instead of five category colors? Default: yes, as in the mockup.
 - Phase 5: new app icon from the logo concepts? Default: not in this phase.
@@ -565,6 +592,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-11-04 · 5 · Grove UI built on `phase/5-grove-ui`: Grove tokens, Figtree, card rows, badges, buttons, chat, every screen; `ThemeTests` contrast checks for every pairing (411 package tests); `ScreenshotUITests` in light, dark, large and largest text pass on iPhone 17 and were checked by eye; large-text fixes; SwiftLint and SwiftFormat clean; full UI suite not run (it runs before a push) · the owner reviews the screenshots and decides when Grove merges (before 4H or as 1.1.0)
 - 2026-11-04 · 4G (part) · Verified neighborhood and meeting spot: plan, NYC boundary script and data (247 areas, 379 names), migrations 0009 and 0010 (182 database tests), `NeighborhoodDirectory` with mock, preview and remote versions, the Post picker and meeting spot, tests (405 package tests, contract tests on both backends, `PostNeighborhoodUITests`); migrations deployed to hosted with the owner's approval (`db diff --linked` clean). Build 1.0.0 (1) can't post in NYC any more (its geocoder name is refused) ; build 1.0.0 (2) archived and uploaded with the owner's approval (`Config/ExportOptions.plist`); the owner tested it from TestFlight and confirmed the neighborhood picker and meeting spot work · the two-phone check on build 2
 - 2026-10-29 · 4G (part) · Editable neighborhood on Post (app check and migration 0008, deployed to hosted with the owner's approval after the full suite and backend CI on the branch; `db diff --linked` clean); website drafted and published to Vercel at `favorly-app.vercel.app` (home, support, privacy, terms; support mailbox favorlysupport@gmail.com); App Store privacy answers drafted; version 1.0.0 (build 1); privacy manifest; App Store Connect record (owner); build 1.0.0 (1) archived and uploaded with `xcodebuild -exportArchive` (App Store Connect, automatic signing) · internal TestFlight group and the two-phone check
 - 2026-10-29 · 4F · Push deployed and set up on the hosted project; notification arrived on the owner's iPhone; fixed a dropped tap at cold launch and a crash from the `async` delegate methods (crash log from the device); all three tap cases work; 4F done · start 4G on `phase/4g-beta` with the editable location tag

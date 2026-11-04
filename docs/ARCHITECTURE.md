@@ -43,15 +43,15 @@ The three modules are library targets of one local package, `Packages/FavorlyKit
 
 ## Theme
 
-How the app looks is decided in one place. [PLAN-PHASE-2.md](PLAN-PHASE-2.md) has the palette and the reasons behind it.
+How the app looks is decided in one place. [PLAN-PHASE-5.md](PLAN-PHASE-5.md) has the Grove look and the reasons behind it; it replaced the teal look of [PLAN-PHASE-2.md](PLAN-PHASE-2.md).
 
-- **One source of style.** Screen files never contain a literal color, corner radius, spacing number or shape. They use `Theme` and the shared components.
-- `Shared/Theme/` holds `Theme` (colors, spacing, radii, icon sizes, opacities), `AdaptiveColor` (a light and a dark value that follows the color scheme) and `RGBColor` (plain numbers, so contrast can be unit tested). Categories and statuses get their color from `RequestCategory+Color` and `RequestStatus+Color`.
-- `Shared/Components/` holds the building blocks: `CategoryIcon`, `StatusBadge`, `TagBadge`, `PrimaryButtonStyle`, `SecondaryButtonStyle`, `MessageView`, `SectionHeader`, `InlineMessage`, `ErrorBanner`, `AvatarView`, `ScoreLabel`, `GiftCardCard`, `StarRating`, `StarRatingPicker` and a few list helpers. They take plain values, never a view model, and each has a light and dark preview.
-- A colored element is the color as foreground on a 14% tint of itself. Only the one primary button on a screen is a solid fill.
-- Backgrounds and plain text use the system's colors (`.primary`, `.secondary`, list backgrounds), so dark mode and Increase Contrast work without extra code.
-- `ThemeTests` checks that every palette color reaches a 4.5:1 contrast ratio on its own tint, in both modes. A new color goes into `Theme.Colors.palette` so the test covers it.
-- The app icon is drawn by `scripts/make-app-icon.swift`. Run it again if the brand color changes.
+- **One source of style.** Screen files never contain a literal color, font, corner radius, spacing number or shadow. They use `Theme`, `TextStyle` and the shared components.
+- `Shared/Theme/` holds `Theme` (Grove colors, spacing, radii, icon sizes, shadows), `TextStyle` (the Figtree type scale, each style relative to a system text style so it follows Dynamic Type), `GroveFonts` (registers the bundled Figtree files), `GroveAppearance` (navigation bar, tab bar and segmented picker fonts and colors, applied once from `RootView`), `BadgeColors` and `RequestStatus+Color`, `AdaptiveColor` (a light and a dark value) and `RGBColor` (plain numbers, so contrast can be unit tested).
+- `Shared/Components/` holds the building blocks: `GroveBackground`, `CardBackground` and `cardRow()` (a list row drawn as its own card), `groveListBackground()` and `groveRows()` for lists and forms, `CategoryIcon`, `StatusBadge`, `TagBadge`, `PrimaryButtonStyle`, `SecondaryButtonStyle`, `MessageView`, `SectionHeader`, `InlineMessage`, `ErrorBanner`, `AvatarView`, `ScoreLabel`, `StarRating`, `StarRatingPicker` and `textStyle(_:)`. They take plain values, never a view model, and each has a light and dark preview.
+- Figtree (SIL Open Font License 1.1) ships as a resource of `FavorlyFeatures` in `Resources/Fonts/`, with its license. If it ever fails to load, SwiftUI falls back to the system font.
+- System controls stay system controls: `List`, `Form`, `TabView`, segmented and menu pickers, sheets, dialogs and Apple's sign-in button are restyled, not rebuilt.
+- `ThemeTests` checks every text-on-fill pairing the screens use, and every badge, for 4.5:1 contrast in both modes, and that the fonts register. A new pairing goes into `ThemeTests.pairs`.
+- The app icon is drawn by `scripts/make-app-icon.swift`. It still uses the Phase 2 teal; a Grove icon is a separate decision.
 
 ## Project file
 

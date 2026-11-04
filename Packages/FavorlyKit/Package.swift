@@ -22,7 +22,12 @@ let package = Package(
     targets: [
         .target(name: "FavorlyCore"),
         .target(name: "FavorlyData", dependencies: ["FavorlyCore"]),
-        .target(name: "FavorlyFeatures", dependencies: ["FavorlyCore"]),
+        .target(
+            name: "FavorlyFeatures",
+            dependencies: ["FavorlyCore"],
+            // Figtree, the Grove typeface (SIL Open Font License 1.1, license file beside the fonts).
+            resources: [.copy("Resources/Fonts")]
+        ),
         .target(
             name: "FavorlyRemote",
             dependencies: ["FavorlyCore", .product(name: "Supabase", package: "supabase-swift")]

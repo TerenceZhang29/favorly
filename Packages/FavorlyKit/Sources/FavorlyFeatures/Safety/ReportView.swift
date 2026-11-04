@@ -31,7 +31,10 @@ struct ReportView: View {
                             .accessibilityIdentifier("report.note")
                     } footer: {
                         Text("The person you report is not told who reported them.")
+                            .textStyle(.meta)
+                            .foregroundStyle(Theme.Colors.inkMuted)
                     }
+                    .groveRows()
                     if let sendError = viewModel.sendError {
                         Section {
                             InlineMessage(text: sendError, identifier: "report.error")
@@ -50,6 +53,7 @@ struct ReportView: View {
                 }
             }
             .scrollDismissesKeyboard(.interactively)
+            .groveListBackground()
             .navigationTitle(viewModel.title)
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
@@ -74,6 +78,7 @@ struct ReportView: View {
         } header: {
             SectionHeader(text: "What's wrong?")
         }
+        .groveRows()
     }
 }
 

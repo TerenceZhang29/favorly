@@ -1,30 +1,31 @@
 import SwiftUI
 
-/// A short piece of text in a color on a soft tint of that color, such as "Open" or "Claimed by Bea".
-/// Long text wraps; it is never cut off.
+/// A short piece of text in a capsule, such as "Open" or "Claimed by Bea". Long text wraps; it is never cut off.
 struct StatusBadge: View {
     let text: String
-    let color: AdaptiveColor
+    let colors: BadgeColors
 
     var body: some View {
         Text(text)
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(color)
+            .textStyle(.badge)
+            .foregroundStyle(colors.text)
             .fixedSize(horizontal: false, vertical: true)
-            .padding(.horizontal, Theme.Spacing.medium)
+            .padding(.horizontal, Theme.Spacing.medium + Theme.Spacing.small / 2)
             .padding(.vertical, Theme.Spacing.small)
-            .background(
-                color.opacity(Theme.tintOpacity),
-                in: RoundedRectangle(cornerRadius: Theme.Radius.badge, style: .continuous)
-            )
+            .background(colors.fill, in: Capsule())
+            .overlay {
+                if let outline = colors.outline {
+                    Capsule().strokeBorder(outline, lineWidth: Theme.borderWidth)
+                }
+            }
     }
 }
 
 #Preview {
     LightAndDarkPreview {
-        StatusBadge(text: "Open", color: Theme.Colors.statusOpen)
-        StatusBadge(text: "Claimed by Bea", color: Theme.Colors.statusClaimed)
-        StatusBadge(text: "Completed", color: Theme.Colors.neutral)
-        StatusBadge(text: "Cancelled", color: Theme.Colors.statusCancelled)
+        StatusBadge(text: "Open", colors: .lime)
+        StatusBadge(text: "Claimed by Bea", colors: .tint)
+        StatusBadge(text: "Completed", colors: .quiet)
+        StatusBadge(text: "Cancelled", colors: .outline)
     }
 }

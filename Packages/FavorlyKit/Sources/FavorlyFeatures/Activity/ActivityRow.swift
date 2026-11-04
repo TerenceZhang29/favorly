@@ -10,10 +10,11 @@ struct ActivityRow: View {
 
     var body: some View {
         HStack(spacing: Theme.Spacing.large) {
-            CategoryIcon(systemImage: request.category.systemImage, color: request.category.color)
-            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
+            CategoryIcon(systemImage: request.category.systemImage)
+            VStack(alignment: .leading, spacing: Theme.Spacing.small + Theme.Spacing.small / 2) {
                 Text(request.title)
-                    .fontWeight(.semibold)
+                    .textStyle(.bodyStrong)
+                    .foregroundStyle(Theme.Colors.ink)
                 if stacksBadges {
                     statusLine
                     if isNew {
@@ -31,7 +32,6 @@ struct ActivityRow: View {
                 newBadge
             }
         }
-        .padding(.vertical, Theme.Spacing.small)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(spokenLabel)
     }
@@ -39,15 +39,15 @@ struct ActivityRow: View {
     /// At accessibility text sizes the badges go under the title, so the title keeps the row's width.
     private var stacksBadges: Bool { dynamicTypeSize.isAccessibilitySize }
 
-    private var newBadge: some View { TagBadge(text: "New") }
+    private var newBadge: some View { TagBadge(text: "New", colors: .spark) }
 
     @ViewBuilder
     private var statusLine: some View {
-        StatusBadge(text: subtitleParts[0], color: request.status.color)
+        StatusBadge(text: subtitleParts[0], colors: request.status.badgeColors)
         if subtitleParts.count > 1 {
             Text(subtitleParts.dropFirst().joined(separator: Self.separator))
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+                .textStyle(.meta)
+                .foregroundStyle(Theme.Colors.inkMuted)
         }
     }
 

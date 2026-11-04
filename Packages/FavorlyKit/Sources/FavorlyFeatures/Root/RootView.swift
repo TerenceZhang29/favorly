@@ -4,19 +4,27 @@ import SwiftUI
 public struct RootView: View {
     @Environment(\.appEnvironment) private var environment
 
-    public init() {}
+    public init() {
+        #if canImport(UIKit)
+            GroveAppearance.applyIfNeeded()
+        #endif
+    }
 
     public var body: some View {
-        switch environment.auth.state {
-        case .signedOut:
-            WelcomeView(environment: environment)
-        case .needsProfile:
-            NavigationStack {
-                ProfileSetupView(environment: environment)
+        Group {
+            switch environment.auth.state {
+            case .signedOut:
+                WelcomeView(environment: environment)
+            case .needsProfile:
+                NavigationStack {
+                    ProfileSetupView(environment: environment)
+                }
+            case .signedIn:
+                MainTabView()
             }
-        case .signedIn:
-            MainTabView()
         }
+        .tint(Theme.Colors.brand)
+        .font(TextStyle.body.font)
     }
 }
 

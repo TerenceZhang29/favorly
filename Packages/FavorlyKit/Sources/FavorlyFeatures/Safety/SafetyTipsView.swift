@@ -17,6 +17,8 @@ struct SafetyTipsView: View {
                 ForEach(Self.tips, id: \.text) { tip in
                     Label {
                         Text(tip.text)
+                            .textStyle(.body)
+                            .foregroundStyle(Theme.Colors.ink)
                     } icon: {
                         Image(systemName: tip.symbol)
                             .foregroundStyle(Theme.Colors.brand)
@@ -25,8 +27,12 @@ struct SafetyTipsView: View {
                 }
             } footer: {
                 Text("Favorly connects neighbors but does not check who they are. Favors are between you and them.")
+                    .textStyle(.meta)
+                    .foregroundStyle(Theme.Colors.inkMuted)
             }
+            .groveRows()
         }
+        .groveListBackground()
         .navigationTitle("Safety tips")
         .accessibilityIdentifier("safety.tips")
     }

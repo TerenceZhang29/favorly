@@ -1,25 +1,23 @@
 import SwiftUI
 
-/// The one main action on a screen: full width, filled with the brand color.
+/// The one main action on a screen: full width, 56 points tall, filled with olive (lime in dark mode).
 struct PrimaryButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.body.weight(.semibold))
-            .foregroundStyle(Theme.Colors.onBrand)
+            .textStyle(.button)
+            .foregroundStyle(isEnabled ? Theme.Colors.onBrand : Theme.Colors.inkMuted)
             .multilineTextAlignment(.center)
-            .padding(.vertical, Theme.Spacing.xLarge)
-            .padding(.horizontal, Theme.Spacing.large)
-            .frame(maxWidth: .infinity)
-            .background(Theme.Colors.brand, in: RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
-            .opacity(opacity(isPressed: configuration.isPressed))
+            .padding(.horizontal, Theme.Spacing.xLarge)
+            .frame(maxWidth: .infinity, minHeight: Theme.controlHeight)
+            .background(
+                isEnabled ? Theme.Colors.brand : Theme.Colors.segment,
+                in: RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
+            )
+            .groveShadow(isEnabled ? Theme.Shadow.primary : Theme.Shadow.none)
+            .opacity(configuration.isPressed ? Theme.pressedOpacity : 1)
             .contentShape(Rectangle())
-    }
-
-    private func opacity(isPressed: Bool) -> Double {
-        guard isEnabled else { return Theme.disabledOpacity }
-        return isPressed ? Theme.pressedOpacity : 1
     }
 }
 

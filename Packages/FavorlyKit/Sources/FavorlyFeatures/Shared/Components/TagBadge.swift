@@ -1,17 +1,19 @@
 import SwiftUI
 
-/// A brand-colored badge for short tags such as "Yours" and "New".
+/// A badge for short tags: "Yours" on lime, "New" in the warm spark color, "Helped" on the tint.
 struct TagBadge: View {
     let text: String
+    var colors: BadgeColors = .lime
 
     var body: some View {
-        StatusBadge(text: text, color: Theme.Colors.brand)
+        StatusBadge(text: text, colors: colors)
     }
 }
 
 #Preview {
     LightAndDarkPreview {
         TagBadge(text: "Yours")
-        TagBadge(text: "New")
+        TagBadge(text: "New", colors: .spark)
+        TagBadge(text: "Helped", colors: .tint)
     }
 }

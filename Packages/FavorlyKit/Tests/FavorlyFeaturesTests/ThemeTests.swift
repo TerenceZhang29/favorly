@@ -10,78 +10,113 @@ struct ThemeTests {
     /// WCAG AA for normal-size text.
     private let minimumContrast = 4.5
 
-    /// The surfaces a colored element sits on: the system grouped background and the plain one.
-    private func backgrounds(for colorScheme: ColorScheme) -> [RGBColor] {
-        colorScheme == .dark
-            ? [RGBColor(hex: 0x1C1C1E), RGBColor(hex: 0x000000)]
-            : [RGBColor(hex: 0xF2F2F7), RGBColor(hex: 0xFFFFFF)]
+    /// A text color, a fill it sits on, and what it is, for the failure message.
+    struct Pair: CustomTestStringConvertible, Sendable {
+        let text: AdaptiveColor
+        let fill: AdaptiveColor
+        let name: String
+        var testDescription: String { name }
     }
 
-    @Test(arguments: Theme.Colors.palette, [ColorScheme.light, .dark])
-    func everyPaletteColorIsReadableOnItsOwnTint(color: AdaptiveColor, colorScheme: ColorScheme) {
-        let foreground = color.rgb(for: colorScheme)
-        for background in backgrounds(for: colorScheme) {
-            let tint = foreground.blended(over: background, opacity: Theme.tintOpacity)
-            #expect(foreground.contrastRatio(with: tint) >= minimumContrast)
-        }
+    private typealias Palette = Theme.Colors
+
+    /// Every pairing of text on a fill that the screens and components use.
+    static let pairs: [Pair] = [
+        Pair(text: Palette.ink, fill: Palette.background, name: "ink on background"),
+        Pair(text: Palette.ink, fill: Palette.surface, name: "ink on surface"),
+        Pair(text: Palette.ink, fill: Palette.tint, name: "ink on a highlighted card"),
+        Pair(text: Palette.ink, fill: Palette.segment, name: "Completed and Asked badges"),
+        Pair(text: Palette.inkMuted, fill: Palette.background, name: "muted ink on background"),
+        Pair(text: Palette.inkMuted, fill: Palette.surface, name: "muted ink on surface"),
+        Pair(text: Palette.inkMuted, fill: Palette.tint, name: "muted ink on a highlighted card"),
+        Pair(text: Palette.inkMuted, fill: Palette.segment, name: "disabled primary button label"),
+        Pair(text: Palette.brand, fill: Palette.background, name: "links on background"),
+        Pair(text: Palette.brand, fill: Palette.surface, name: "links on surface"),
+        Pair(text: Palette.onBrand, fill: Palette.brand, name: "primary button label"),
+        Pair(text: Palette.onLime, fill: Palette.lime, name: "Open and Yours badges"),
+        Pair(text: Palette.onTint, fill: Palette.tint, name: "Claimed, Helped, secondary buttons, category tiles"),
+        Pair(text: Palette.onSpark, fill: Palette.spark, name: "New badge"),
+        Pair(text: Palette.points, fill: Palette.surface, name: "points on a card"),
+        Pair(text: Palette.points, fill: Palette.tint, name: "points on a highlighted card"),
+        Pair(text: Palette.danger, fill: Palette.background, name: "errors on background"),
+        Pair(text: Palette.danger, fill: Palette.surface, name: "errors on surface"),
+        Pair(text: Palette.danger, fill: Palette.dangerTint, name: "danger buttons and banners"),
+        Pair(text: Palette.onAvatar, fill: Palette.avatar, name: "avatar initials"),
+        Pair(text: Palette.onBubbleMine, fill: Palette.bubbleMine, name: "the user's own chat bubbles"),
+    ]
+
+    @Test(arguments: pairs, [ColorScheme.light, .dark])
+    func textIsReadableOnItsFill(pair: Pair, colorScheme: ColorScheme) {
+        let ratio = pair.text.rgb(for: colorScheme).contrastRatio(with: pair.fill.rgb(for: colorScheme))
+        #expect(ratio >= minimumContrast, "\(pair.name) in \(colorScheme): \(ratio)")
     }
 
-    /// A just-posted request is highlighted with a light brand tint over the plain background (white in light
-    /// mode, black in dark mode), and its badges sit on top of that.
-    @Test(arguments: Theme.Colors.palette, [ColorScheme.light, .dark])
-    func everyPaletteColorIsReadableOnAHighlightedRow(color: AdaptiveColor, colorScheme: ColorScheme) {
-        let background = RGBColor(hex: colorScheme == .dark ? 0x000000 : 0xFFFFFF)
-        let highlight = Theme.Colors.brand.rgb(for: colorScheme)
-            .blended(over: background, opacity: Theme.highlightOpacity)
-        let foreground = color.rgb(for: colorScheme)
-        let tint = foreground.blended(over: highlight, opacity: Theme.tintOpacity)
-        #expect(foreground.contrastRatio(with: tint) >= minimumContrast)
-    }
-
+    /// The Cancelled badge has no fill of its own, so its outline must be visible against a card (3:1 for
+    /// non-text elements).
     @Test(arguments: [ColorScheme.light, .dark])
-    func primaryButtonLabelIsReadableOnTheBrandColor(colorScheme: ColorScheme) {
-        let label = Theme.Colors.onBrand.rgb(for: colorScheme)
-        let fill = Theme.Colors.brand.rgb(for: colorScheme)
-        #expect(label.contrastRatio(with: fill) >= minimumContrast)
+    func theCancelledOutlineIsVisible(colorScheme: ColorScheme) throws {
+        let outline = try #require(BadgeColors.outline.outline)
+        #expect(outline.rgb(for: colorScheme).contrastRatio(with: Palette.surface.rgb(for: colorScheme)) >= 3)
     }
 
-    @Test func primaryButtonLabelIsWhiteInLightModeAndBlackInDarkMode() {
-        #expect(Theme.Colors.onBrand == AdaptiveColor(light: 0xFFFFFF, dark: 0x000000))
+    /// Every badge's text is readable on its own fill.
+    @Test(arguments: [BadgeColors.lime, .tint, .quiet, .outline, .spark], [ColorScheme.light, .dark])
+    func everyBadgeIsReadable(colors: BadgeColors, colorScheme: ColorScheme) {
+        let ratio = colors.text.rgb(for: colorScheme).contrastRatio(with: colors.fill.rgb(for: colorScheme))
+        #expect(ratio >= minimumContrast)
     }
 
     @Test func adaptiveColorPicksTheValueForTheColorScheme() {
-        let color = AdaptiveColor(light: 0x0A6B67, dark: 0x4FD1C5)
-        #expect(color.rgb(for: .light) == RGBColor(hex: 0x0A6B67))
-        #expect(color.rgb(for: .dark) == RGBColor(hex: 0x4FD1C5))
+        let color = AdaptiveColor(light: 0x6B6D18, dark: 0xD6EF4F)
+        #expect(color.rgb(for: .light) == RGBColor(hex: 0x6B6D18))
+        #expect(color.rgb(for: .dark) == RGBColor(hex: 0xD6EF4F))
     }
 
-    @Test func everyCategoryMapsToItsColor() {
-        #expect(RequestCategory.allCases.map(\.color) == [
-            Theme.Colors.categoryIngredient,
-            Theme.Colors.categoryMoving,
-            Theme.Colors.categoryCar,
-            Theme.Colors.categoryErrand,
-            Theme.Colors.neutral,
-        ])
-        #expect(Set(RequestCategory.allCases.map(\.color)).count == RequestCategory.allCases.count)
+    @Test func theGroveColorsMatchThePlan() {
+        #expect(Palette.background == AdaptiveColor(light: 0xF8FAE6, dark: 0x141A0D))
+        #expect(Palette.brand == AdaptiveColor(light: 0x6B6D18, dark: 0xD6EF4F))
+        #expect(Palette.lime == AdaptiveColor(light: 0xD6EF4F, dark: 0xD6EF4F))
+        #expect(Palette.ink == AdaptiveColor(light: 0x1D2B12, dark: 0xF1F5E1))
     }
 
-    @Test func everyStatusMapsToItsColor() {
-        #expect(RequestStatus.open.color == Theme.Colors.brand)
-        #expect(RequestStatus.claimed.color == Theme.Colors.statusClaimed)
-        #expect(RequestStatus.completed.color == Theme.Colors.neutral)
-        #expect(RequestStatus.cancelled.color == Theme.Colors.statusCancelled)
+    @Test func everyStatusMapsToItsBadge() {
+        #expect(RequestStatus.open.badgeColors == .lime)
+        #expect(RequestStatus.claimed.badgeColors == .tint)
+        #expect(RequestStatus.completed.badgeColors == .quiet)
+        #expect(RequestStatus.cancelled.badgeColors == .outline)
+        let statuses: [RequestStatus] = [.open, .claimed, .completed, .cancelled]
+        #expect(Set(statuses.map(\.badgeColors)).count == statuses.count)
     }
 
     @Test func spacingAndRadiusMatchThePlan() {
-        #expect(Theme.Spacing.small == 4)
-        #expect(Theme.Spacing.medium == 8)
-        #expect(Theme.Spacing.large == 12)
-        #expect(Theme.Spacing.xLarge == 16)
-        #expect(Theme.Spacing.section == 24)
-        #expect(Theme.Radius.badge == 6)
-        #expect(Theme.Radius.tile == 10)
-        #expect(Theme.Radius.button == 12)
-        #expect(Theme.tintOpacity == 0.14)
+        #expect(Theme.Spacing.screen == 20)
+        #expect(Theme.Spacing.card == 16)
+        #expect(Theme.Radius.card == 22)
+        #expect(Theme.Radius.button == 18)
+        #expect(Theme.Radius.field == 14)
+        #expect(Theme.Radius.tile == 12)
+        #expect(Theme.controlHeight == 56)
+    }
+
+    @Test func theTypeScaleMatchesThePlan() {
+        #expect(TextStyle.largeTitle.size == 34)
+        #expect(TextStyle.title.size == 28)
+        #expect(TextStyle.cardTitle.size == 19)
+        #expect(TextStyle.body.size == 15)
+        #expect(TextStyle.meta.size == 13)
+        #expect(TextStyle.badge.size == 11)
+        #expect(TextStyle.badge.isUppercase)
+        #expect(TextStyle.allCases.allSatisfy { GroveFonts.all.contains($0.fontName) })
+    }
+
+    /// The Figtree files are bundled with the module and register, so `Font.custom` finds them.
+    @Test func figtreeIsBundledAndRegisters() {
+        #expect(GroveFonts.registered)
+        #if canImport(CoreText)
+            for name in GroveFonts.all {
+                let font = CTFontCreateWithName(name as CFString, 12, nil)
+                #expect(CTFontCopyPostScriptName(font) as String == name)
+            }
+        #endif
     }
 }

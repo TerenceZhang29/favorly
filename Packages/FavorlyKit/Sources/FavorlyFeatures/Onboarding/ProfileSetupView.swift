@@ -22,7 +22,10 @@ struct ProfileSetupView: View {
                 SectionHeader(text: "Your name")
             } footer: {
                 Text("Neighbors see this name on your requests and reviews.")
+                    .textStyle(.meta)
+                    .foregroundStyle(Theme.Colors.inkMuted)
             }
+            .groveRows()
 
             Section {
                 Toggle("I'm 18 or older", isOn: $viewModel.confirmedAdult)
@@ -36,6 +39,7 @@ struct ProfileSetupView: View {
             } header: {
                 SectionHeader(text: "Before you start")
             }
+            .groveRows()
 
             if let submitError = viewModel.submitError {
                 Section {
@@ -55,6 +59,7 @@ struct ProfileSetupView: View {
             }
         }
         .scrollDismissesKeyboard(.interactively)
+        .groveListBackground()
         .navigationTitle("Create your profile")
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {

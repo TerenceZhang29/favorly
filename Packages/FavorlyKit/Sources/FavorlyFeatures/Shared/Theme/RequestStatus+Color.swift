@@ -1,12 +1,12 @@
 import FavorlyCore
 
 extension RequestStatus {
-    var color: AdaptiveColor {
+    var badgeColors: BadgeColors {
         switch self {
-        case .open: Theme.Colors.statusOpen
-        case .claimed: Theme.Colors.statusClaimed
-        case .completed: Theme.Colors.neutral
-        case .cancelled: Theme.Colors.statusCancelled
+        case .open: .lime
+        case .claimed: .tint
+        case .completed: .quiet
+        case .cancelled: .outline
         }
     }
 }

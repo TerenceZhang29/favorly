@@ -25,6 +25,7 @@ struct ReviewFormView: View {
                 Section {
                     StarRatingPicker(rating: $viewModel.rating)
                         .padding(.vertical, Theme.Spacing.medium)
+                        .plainListRow()
                 } header: {
                     SectionHeader(text: "How did \(helperName) do?")
                 }
@@ -39,8 +40,11 @@ struct ReviewFormView: View {
                     }
                 } footer: {
                     Text(viewModel.commentCountText)
+                        .textStyle(.meta)
+                        .foregroundStyle(Theme.Colors.inkMuted)
                         .accessibilityIdentifier("review.count")
                 }
+                .groveRows()
 
                 if let submitError = viewModel.submitError {
                     Section {
@@ -65,6 +69,7 @@ struct ReviewFormView: View {
                 }
             }
             .scrollDismissesKeyboard(.interactively)
+            .groveListBackground()
             .navigationTitle("Leave a review")
             .toolbarTitleDisplayMode(.inline)
             .toolbar {

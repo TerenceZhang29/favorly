@@ -12,8 +12,10 @@ struct DevSettingsView: View {
                     .accessibilityIdentifier("devSettings.summary")
             } footer: {
                 Text("Prototype only. Nothing here ships to real users.")
-                    .foregroundStyle(.secondary)
+                    .textStyle(.meta)
+                    .foregroundStyle(Theme.Colors.inkMuted)
             }
+            .groveRows()
 
             if let controls = environment.session as? any DemoSessionControls {
                 Section("Current user") {
@@ -30,6 +32,7 @@ struct DevSettingsView: View {
                         .accessibilityIdentifier("devSettings.user.\(user.id.rawValue)")
                     }
                 }
+                .groveRows()
             }
 
             if let settings = environment.locationSettings {
@@ -48,6 +51,7 @@ struct DevSettingsView: View {
                     Toggle("Simulate location error", isOn: simulatesError(in: settings))
                         .accessibilityIdentifier("devSettings.simulateLocationError")
                 }
+                .groveRows()
             }
 
             Section("Data") {
@@ -58,12 +62,13 @@ struct DevSettingsView: View {
                         isResetting = false
                     }
                 }
-                .buttonStyle(SecondaryButtonStyle(color: Theme.Colors.statusCancelled))
+                .buttonStyle(SecondaryButtonStyle(isDanger: true))
                 .disabled(isResetting)
                 .accessibilityIdentifier("devSettings.resetDemoData")
                 .plainListRow()
             }
         }
+        .groveListBackground()
         .navigationTitle("Dev Settings")
     }
 

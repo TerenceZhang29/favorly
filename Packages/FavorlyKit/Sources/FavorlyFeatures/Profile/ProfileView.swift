@@ -45,6 +45,7 @@ struct ProfileView: View {
                 .plainListRow()
             }
         }
+        .groveListBackground()
         .navigationTitle(isTab ? "Profile" : viewModel.content?.user.displayName ?? "Profile")
         .toolbarTitleDisplayMode(isTab ? .automatic : .inline)
         .modifier(SafetyActions(
@@ -68,21 +69,23 @@ struct ProfileView: View {
 
     private func header(_ user: UserProfile) -> some View {
         Section {
-            HStack(spacing: Theme.Spacing.xLarge) {
-                AvatarView(name: user.displayName, color: user.id.avatarColor)
-                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
-                    Text(user.displayName)
-                        .font(.title2.bold())
-                        .accessibilityIdentifier("profile.name")
-                    if !user.neighborhood.isEmpty {
-                        Label(user.neighborhood, systemImage: "mappin")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .accessibilityIdentifier("profile.neighborhood")
-                    }
+            VStack(spacing: Theme.Spacing.medium) {
+                AvatarView(name: user.displayName)
+                Text(user.displayName)
+                    .textStyle(.title)
+                    .foregroundStyle(Theme.Colors.ink)
+                    .multilineTextAlignment(.center)
+                    .accessibilityIdentifier("profile.name")
+                if !user.neighborhood.isEmpty {
+                    Label(user.neighborhood, systemImage: "mappin")
+                        .textStyle(.body)
+                        .foregroundStyle(Theme.Colors.inkMuted)
+                        .accessibilityIdentifier("profile.neighborhood")
                 }
             }
-            .padding(.vertical, Theme.Spacing.medium)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, Theme.Spacing.small)
+            .plainListRow()
         }
     }
 
@@ -91,12 +94,15 @@ struct ProfileView: View {
             ScoreLabel(points: viewModel.content?.summary.lifetimePoints ?? 0, isLarge: true)
                 .accessibilityIdentifier("profile.score")
             Label(viewModel.favorsText, systemImage: "hands.sparkles")
+                .foregroundStyle(Theme.Colors.ink)
                 .accessibilityIdentifier("profile.favors")
             Label(viewModel.ratingText, systemImage: "star")
+                .foregroundStyle(Theme.Colors.ink)
                 .accessibilityIdentifier("profile.rating")
         } header: {
             SectionHeader(text: "Kindness score")
         }
+        .groveRows()
     }
 
     private var account: some View {
@@ -146,6 +152,7 @@ struct ProfileView: View {
         } header: {
             SectionHeader(text: "Account")
         }
+        .groveRows()
         .confirmationDialog("Delete your account?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
             Button("Delete account", role: .destructive) {
                 Task { await viewModel.deleteAccount() }
@@ -165,7 +172,7 @@ struct ProfileView: View {
         Section {
             if reviews.isEmpty {
                 Text("No reviews yet")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.Colors.inkMuted)
                     .accessibilityIdentifier("profile.reviewsEmpty")
             }
             ForEach(reviews) { review in
@@ -180,6 +187,7 @@ struct ProfileView: View {
         } header: {
             SectionHeader(text: "Reviews")
         }
+        .groveRows()
     }
 
     private func activities(_ activities: [ProfileActivity]) -> some View {
@@ -190,13 +198,14 @@ struct ProfileView: View {
             }
             ForEach(activities) { activity in
                 NavigationLink(value: activity.id) {
-                    ProfileActivityRow(request: activity.request, roleTitle: activity.role.title)
+                    ProfileActivityRow(request: activity.request, role: activity.role)
                 }
                 .accessibilityIdentifier("profile.activity.\(activity.id.rawValue.uuidString)")
             }
         } header: {
             SectionHeader(text: "Past activities")
         }
+        .groveRows()
     }
 }
 

@@ -30,6 +30,7 @@ struct PostRequestView: View {
             } header: {
                 SectionHeader(text: "What do you need?")
             }
+            .groveRows()
 
             Section {
                 Picker("Category", selection: $viewModel.category) {
@@ -39,6 +40,7 @@ struct PostRequestView: View {
                 }
                 .accessibilityIdentifier("post.category")
             }
+            .groveRows()
 
             Section {
                 location
@@ -47,8 +49,11 @@ struct PostRequestView: View {
             } footer: {
                 if viewModel.locationText != nil {
                     Text("Neighbors see these with your request. Pick a public meeting spot, never an address.")
+                        .textStyle(.meta)
+                        .foregroundStyle(Theme.Colors.inkMuted)
                 }
             }
+            .groveRows()
 
             if let submitError = viewModel.submitError {
                 Section {
@@ -72,6 +77,7 @@ struct PostRequestView: View {
             }
         }
         .scrollDismissesKeyboard(.interactively)
+        .groveListBackground()
         .navigationTitle("Post")
         .task(id: viewModel.reloadKey) { await viewModel.loadLocation() }
     }

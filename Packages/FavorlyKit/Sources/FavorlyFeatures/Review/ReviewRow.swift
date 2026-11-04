@@ -14,10 +14,12 @@ struct ReviewRow: View {
             StarRating(rating: rating)
             if !comment.isEmpty {
                 Text(comment)
+                    .textStyle(.body)
+                    .foregroundStyle(Theme.Colors.ink)
             }
             Text("\(reviewerName) · \(dateText)")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+                .textStyle(.meta)
+                .foregroundStyle(Theme.Colors.inkMuted)
         }
         .padding(.vertical, Theme.Spacing.small)
         .accessibilityElement(children: .ignore)

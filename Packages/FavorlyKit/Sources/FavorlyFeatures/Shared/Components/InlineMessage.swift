@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// A short validation or error message in the theme red, with a small warning symbol.
+/// A short validation or error message in the danger color, with a small warning symbol.
 struct InlineMessage: View {
     let text: String
     /// Identifier for the message text, so UI tests can read it.
@@ -13,8 +13,8 @@ struct InlineMessage: View {
             Text(text)
                 .accessibilityIdentifier(identifier)
         }
-        .font(.footnote)
-        .foregroundStyle(Theme.Colors.statusCancelled)
+        .textStyle(.meta)
+        .foregroundStyle(Theme.Colors.danger)
     }
 }
 

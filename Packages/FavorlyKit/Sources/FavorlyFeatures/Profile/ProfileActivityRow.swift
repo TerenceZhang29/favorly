@@ -4,15 +4,18 @@ import SwiftUI
 /// A completed request on a profile: its icon, title, "Helped" or "Asked", and the location label only.
 struct ProfileActivityRow: View {
     let request: HelpRequest
+    let role: ProfileActivity.Role
+
     /// "Helped" or "Asked".
-    let roleTitle: String
+    private var roleTitle: String { role.title }
 
     var body: some View {
         HStack(spacing: Theme.Spacing.large) {
-            CategoryIcon(systemImage: request.category.systemImage, color: request.category.color)
+            CategoryIcon(systemImage: request.category.systemImage)
             VStack(alignment: .leading, spacing: Theme.Spacing.small) {
                 Text(request.title)
-                    .fontWeight(.semibold)
+                    .textStyle(.bodyStrong)
+                    .foregroundStyle(Theme.Colors.ink)
                 ViewThatFits(in: .horizontal) {
                     HStack(spacing: Theme.Spacing.medium) { details }
                     VStack(alignment: .leading, spacing: Theme.Spacing.small) { details }
@@ -27,11 +30,14 @@ struct ProfileActivityRow: View {
 
     @ViewBuilder
     private var details: some View {
-        TagBadge(text: roleTitle)
+        TagBadge(text: roleTitle, colors: isHelped ? .tint : .quiet)
         Text(request.location.label)
-            .font(.footnote)
-            .foregroundStyle(.secondary)
+            .textStyle(.meta)
+            .foregroundStyle(Theme.Colors.inkMuted)
     }
+
+    /// "Helped" gets the olive tint, "Asked" the quiet fill.
+    private var isHelped: Bool { role == .helped }
 
     /// "Need a pinch of saffron, Ingredient, Helped, Downtown Brooklyn".
     private var spokenLabel: String {
@@ -56,7 +62,7 @@ struct ProfileActivityRow: View {
                 status: .completed,
                 createdAt: Date()
             ),
-            roleTitle: "Helped"
+            role: .helped
         )
     }
 }

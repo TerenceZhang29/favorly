@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// A Kindness score: a heart in the brand color, the number of points, and the word "points".
+/// A Kindness score: a heart, the number of points, and the word "points".
 /// VoiceOver reads it as "Kindness score, 90 points".
 struct ScoreLabel: View {
     let points: Int
@@ -9,13 +9,15 @@ struct ScoreLabel: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: Theme.Spacing.small) {
             Image(systemName: "heart.fill")
-                .foregroundStyle(Theme.Colors.brand)
+                .foregroundStyle(Theme.Colors.points)
+                .textStyle(isLarge ? .headline : .metaStrong)
             Text(points.formatted())
-                .fontWeight(isLarge ? .bold : .semibold)
+                .textStyle(isLarge ? .score : .metaStrong)
+                .foregroundStyle(isLarge ? Theme.Colors.brand : Theme.Colors.points)
             Text(points == 1 ? "point" : "points")
-                .foregroundStyle(.secondary)
+                .textStyle(.meta)
+                .foregroundStyle(Theme.Colors.inkMuted)
         }
-        .font(isLarge ? .title2 : .subheadline)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Kindness score")
         .accessibilityValue(pointsText)

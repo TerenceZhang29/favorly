@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// An empty or error state: a symbol, a message and, when `onRetry` is given, a button (Retry unless named).
+/// An empty or error state: a symbol on a soft tile, a message and, when `onRetry` is given, a button
+/// (Retry unless named).
 struct MessageView: View {
     let systemImage: String
     let message: String
@@ -12,22 +13,22 @@ struct MessageView: View {
 
     var body: some View {
         VStack(spacing: Theme.Spacing.large) {
-            Image(systemName: systemImage)
-                .font(.largeTitle)
-                .foregroundStyle(Theme.Colors.neutral)
-                .accessibilityHidden(true)
+            CategoryIcon(systemImage: systemImage, isLarge: true)
             Text(message)
-                .foregroundStyle(.secondary)
+                .textStyle(.body)
+                .foregroundStyle(Theme.Colors.inkMuted)
                 .multilineTextAlignment(.center)
                 .accessibilityIdentifier(messageIdentifier)
             if let onRetry {
                 Button(actionTitle, action: onRetry)
-                    .buttonStyle(.bordered)
+                    .buttonStyle(SecondaryButtonStyle())
+                    .fixedSize()
                     .accessibilityIdentifier(retryIdentifier)
             }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, Theme.Spacing.section)
+        .padding(.horizontal, Theme.Spacing.screen)
     }
 }
 

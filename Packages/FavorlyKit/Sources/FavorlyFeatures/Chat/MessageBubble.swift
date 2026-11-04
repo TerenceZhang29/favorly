@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// One chat message: the signed-in user's on the right on a brand tint, the other person's on the left on gray.
+/// One chat message: the signed-in user's on the right in ink, the other person's on the left on a card.
 struct MessageBubble: View {
     let text: String
     /// "You" or the sender's name.
@@ -12,15 +12,19 @@ struct MessageBubble: View {
     var body: some View {
         VStack(alignment: isMine ? .trailing : .leading, spacing: Theme.Spacing.small) {
             Text(text)
-                .padding(.horizontal, Theme.Spacing.large)
-                .padding(.vertical, Theme.Spacing.medium)
-                .background(
-                    color.opacity(Theme.tintOpacity),
-                    in: RoundedRectangle(cornerRadius: Theme.Radius.bubble, style: .continuous)
-                )
+                .textStyle(.body)
+                .foregroundStyle(isMine ? Theme.Colors.onBubbleMine : Theme.Colors.ink)
+                .padding(.horizontal, Theme.Spacing.large + Theme.Spacing.small / 2)
+                .padding(.vertical, Theme.Spacing.medium + Theme.Spacing.small / 2)
+                .background(isMine ? Theme.Colors.bubbleMine : Theme.Colors.surface, in: shape)
+                .overlay {
+                    if !isMine {
+                        shape.strokeBorder(Theme.Colors.surfaceBorder, lineWidth: Theme.borderWidth)
+                    }
+                }
             Text("\(senderName) · \(timeText)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .textStyle(.meta)
+                .foregroundStyle(Theme.Colors.inkMuted)
         }
         .frame(maxWidth: .infinity, alignment: isMine ? .trailing : .leading)
         .padding(.leading, isMine ? Theme.Spacing.bubbleInset : Theme.Spacing.xLarge)
@@ -30,8 +34,15 @@ struct MessageBubble: View {
         .accessibilityLabel("\(senderName) said: \(text), at \(timeText)")
     }
 
-    private var color: AdaptiveColor {
-        isMine ? Theme.Colors.brand : Theme.Colors.neutral
+    /// Rounded on every corner but the one nearest the sender, which is tighter, like a speech tail.
+    private var shape: UnevenRoundedRectangle {
+        UnevenRoundedRectangle(
+            topLeadingRadius: Theme.Radius.bubble,
+            bottomLeadingRadius: isMine ? Theme.Radius.bubble : Theme.Radius.bubbleTail,
+            bottomTrailingRadius: isMine ? Theme.Radius.bubbleTail : Theme.Radius.bubble,
+            topTrailingRadius: Theme.Radius.bubble,
+            style: .continuous
+        )
     }
 }
 

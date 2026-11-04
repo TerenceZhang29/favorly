@@ -12,7 +12,7 @@ struct LightAndDarkPreview<Content: View>: View {
                 }
                 .padding(Theme.Spacing.section)
                 .frame(maxWidth: .infinity)
-                .background(.background)
+                .background(GroveBackground())
                 .environment(\.colorScheme, colorScheme)
             }
         }

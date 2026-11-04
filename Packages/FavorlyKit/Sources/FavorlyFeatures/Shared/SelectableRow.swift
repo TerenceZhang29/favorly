@@ -10,11 +10,12 @@ struct SelectableRow: View {
         HStack {
             VStack(alignment: .leading) {
                 Text(title)
-                    .foregroundStyle(Color.primary)
+                    .textStyle(.body)
+                    .foregroundStyle(Theme.Colors.ink)
                 if let subtitle {
                     Text(subtitle)
-                        .font(.footnote)
-                        .foregroundStyle(Color.secondary)
+                        .textStyle(.meta)
+                        .foregroundStyle(Theme.Colors.inkMuted)
                 }
             }
             Spacer()

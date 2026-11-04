@@ -19,7 +19,12 @@ struct AdaptiveColor: ShapeStyle, Hashable, Sendable {
     }
 
     func resolve(in environment: EnvironmentValues) -> Color {
-        let rgb = rgb(for: environment.colorScheme)
+        color(for: environment.colorScheme)
+    }
+
+    /// The plain SwiftUI color for one color scheme, for places that take a `Color`, such as a shadow.
+    func color(for colorScheme: ColorScheme) -> Color {
+        let rgb = rgb(for: colorScheme)
         return Color(.sRGB, red: rgb.red, green: rgb.green, blue: rgb.blue)
     }
 }

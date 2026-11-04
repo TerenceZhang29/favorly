@@ -6,16 +6,23 @@ import SwiftUI
 struct StarRatingPicker: View {
     @Binding var rating: Int
     var maximum = ReviewRules.ratingRange.upperBound
+    @ScaledMetric private var side = Theme.controlHeight
 
     var body: some View {
-        HStack(spacing: Theme.Spacing.medium) {
+        HStack(spacing: Theme.Spacing.small) {
             ForEach(1 ... maximum, id: \.self) { star in
+                let isFilled = star <= rating
                 Button {
                     rating = star
                 } label: {
-                    Image(systemName: star <= rating ? "star.fill" : "star")
-                        .font(.largeTitle)
-                        .foregroundStyle(Theme.Colors.brand)
+                    Image(systemName: isFilled ? "star.fill" : "star")
+                        .font(.title)
+                        .foregroundStyle(isFilled ? Theme.Colors.star : Theme.Colors.starEmpty)
+                        .frame(width: side, height: side)
+                        .background(
+                            isFilled ? Theme.Colors.tint : Theme.Colors.surface,
+                            in: RoundedRectangle(cornerRadius: Theme.Radius.field, style: .continuous)
+                        )
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(star == 1 ? "1 star" : "\(star) stars")

@@ -21,12 +21,22 @@ struct ActivityView: View {
                 }
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("activity.segment")
+                .listRowInsets(EdgeInsets(
+                    top: Theme.Spacing.small,
+                    leading: Theme.Spacing.screen,
+                    bottom: Theme.Spacing.medium,
+                    trailing: Theme.Spacing.screen
+                ))
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
             }
 
             Section {
                 results
             }
         }
+        .listStyle(.plain)
+        .groveListBackground()
         .navigationTitle("My Activity")
         .refreshable { await viewModel.load() }
         .task(id: viewModel.reloadKey) { await viewModel.load() }
@@ -64,7 +74,7 @@ struct ActivityView: View {
                 NavigationLink(value: request.id) {
                     ActivityRow(request: request, subtitle: viewModel.subtitle(for: request), isNew: isNew)
                 }
-                .listRowBackground(isNew ? HighlightedRowBackground() : nil)
+                .cardRow(isHighlighted: isNew)
                 .accessibilityIdentifier("activity.row.\(request.id.rawValue.uuidString)")
             }
         } else {

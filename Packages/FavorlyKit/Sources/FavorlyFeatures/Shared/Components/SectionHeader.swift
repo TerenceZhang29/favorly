@@ -1,13 +1,13 @@
 import SwiftUI
 
-/// A list section header in sentence case, a little larger and darker than the system default.
+/// A list section header in sentence case and the Grove headline style.
 struct SectionHeader: View {
     let text: String
 
     var body: some View {
         Text(text)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(Color.primary)
+            .textStyle(.headline)
+            .foregroundStyle(Theme.Colors.ink)
             .textCase(nil)
     }
 }

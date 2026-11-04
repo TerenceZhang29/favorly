@@ -7,6 +7,7 @@ struct RequestDetailView: View {
     @State private var isConfirmingPickUp = false
     @State private var isShowingChat = false
     @State private var isReviewing = false
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     init(requestID: RequestID, environment: AppEnvironment) {
         self.environment = environment
@@ -41,6 +42,7 @@ struct RequestDetailView: View {
                 .plainListRow()
             }
         }
+        .groveListBackground()
         .navigationTitle("Request")
         .toolbarTitleDisplayMode(.inline)
         .modifier(SafetyActions(
@@ -81,24 +83,28 @@ struct RequestDetailView: View {
     private func summary(of request: HelpRequest) -> some View {
         Section {
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
-                CategoryIcon(
-                    systemImage: request.category.systemImage,
-                    color: request.category.color,
-                    isLarge: true
-                )
+                HStack(spacing: Theme.Spacing.medium + Theme.Spacing.small / 2) {
+                    CategoryIcon(systemImage: request.category.systemImage)
+                    // The Status row below is what VoiceOver and the UI tests read.
+                    StatusBadge(text: viewModel.statusText, colors: request.status.badgeColors)
+                        .accessibilityHidden(true)
+                }
                 Text(request.title)
-                    .font(.title2.bold())
+                    .textStyle(.title)
+                    .foregroundStyle(Theme.Colors.ink)
                     .accessibilityIdentifier("detail.title")
-                // The Status row below is what VoiceOver and the UI tests read.
-                StatusBadge(text: viewModel.statusText, color: request.status.color)
-                    .accessibilityHidden(true)
                 if !request.details.isEmpty {
                     Text(request.details)
+                        .textStyle(.body)
+                        .foregroundStyle(Theme.Colors.inkMuted)
                         .lineSpacing(Theme.Spacing.small)
                         .accessibilityIdentifier("detail.details")
                 }
             }
-            .padding(.vertical, Theme.Spacing.medium)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, Theme.Spacing.screen + Theme.Spacing.small)
+            .padding(.vertical, Theme.Spacing.small)
+            .plainListRow()
         }
     }
 
@@ -130,6 +136,7 @@ struct RequestDetailView: View {
                 )
             }
         }
+        .groveRows()
     }
 
     /// Each action is its own section, so each full-width button gets the same corners as the cards above.
@@ -191,8 +198,8 @@ struct RequestDetailView: View {
             if let autoCompleteNote = viewModel.autoCompleteNote {
                 Section {
                     Label(autoCompleteNote, systemImage: "clock")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .textStyle(.meta)
+                        .foregroundStyle(Theme.Colors.inkMuted)
                         .frame(maxWidth: .infinity)
                         .plainListRow()
                         .accessibilityIdentifier("detail.autoCompleteNote")
@@ -204,7 +211,7 @@ struct RequestDetailView: View {
                     Button("Cancel request", role: .destructive) {
                         Task { await viewModel.cancel() }
                     }
-                    .buttonStyle(SecondaryButtonStyle(color: Theme.Colors.statusCancelled))
+                    .buttonStyle(SecondaryButtonStyle(isDanger: true))
                     .accessibilityIdentifier("detail.cancel")
                     .plainListRow()
                 }
@@ -212,29 +219,6 @@ struct RequestDetailView: View {
             }
         }
         .disabled(viewModel.isWorking)
-    }
-
-    /// The requester's review of the helper, shown once it exists.
-    private func reviewSection(_ review: Review) -> some View {
-        Section {
-            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
-                StarRating(rating: review.rating)
-                if !review.comment.isEmpty {
-                    Text(review.comment)
-                }
-            }
-            .padding(.vertical, Theme.Spacing.small)
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(viewModel.reviewTitle)
-            .accessibilityValue(
-                review.comment.isEmpty
-                    ? "\(review.rating) out of \(ReviewRules.ratingRange.upperBound) stars"
-                    : "\(review.rating) out of \(ReviewRules.ratingRange.upperBound) stars: \(review.comment)"
-            )
-            .accessibilityIdentifier("detail.reviewSummary")
-        } header: {
-            SectionHeader(text: viewModel.reviewTitle)
-        }
     }
 
     /// A requester or helper row with their Kindness score. Tapping it opens their profile.
@@ -248,7 +232,11 @@ struct RequestDetailView: View {
     ) -> some View {
         let score = user.score
         return NavigationLink(value: user.id) {
-            HStack(spacing: Theme.Spacing.medium) {
+            // At accessibility text sizes the score goes under the name, so the label keeps the row's width.
+            let layout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: Theme.Spacing.small))
+                : AnyLayout(HStackLayout(spacing: Theme.Spacing.medium))
+            layout {
                 FactRow(label: label, value: name, systemImage: systemImage)
                 if let score {
                     ScoreLabel(points: score)
@@ -265,6 +253,32 @@ struct RequestDetailView: View {
 }
 
 private extension RequestDetailView {
+    /// The requester's review of the helper, shown once it exists.
+    func reviewSection(_ review: Review) -> some View {
+        Section {
+            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
+                StarRating(rating: review.rating)
+                if !review.comment.isEmpty {
+                    Text(review.comment)
+                        .textStyle(.body)
+                        .foregroundStyle(Theme.Colors.ink)
+                }
+            }
+            .padding(.vertical, Theme.Spacing.small)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(viewModel.reviewTitle)
+            .accessibilityValue(
+                review.comment.isEmpty
+                    ? "\(review.rating) out of \(ReviewRules.ratingRange.upperBound) stars"
+                    : "\(review.rating) out of \(ReviewRules.ratingRange.upperBound) stars: \(review.comment)"
+            )
+            .accessibilityIdentifier("detail.reviewSummary")
+        } header: {
+            SectionHeader(text: viewModel.reviewTitle)
+        }
+        .groveRows()
+    }
+
     func fact(_ label: String, _ value: String, id: String, systemImage: String) -> some View {
         FactRow(label: label, value: value, systemImage: systemImage)
             .accessibilityIdentifier("detail.\(id)")

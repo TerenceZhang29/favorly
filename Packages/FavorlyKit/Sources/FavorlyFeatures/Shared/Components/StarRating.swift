@@ -1,19 +1,19 @@
 import FavorlyCore
 import SwiftUI
 
-/// A read-only row of stars in the brand color, such as 4 of 5 filled. VoiceOver reads "4 out of 5 stars".
+/// A read-only row of stars, such as 4 of 5 filled. VoiceOver reads "4 out of 5 stars".
 struct StarRating: View {
     let rating: Int
     var maximum = ReviewRules.ratingRange.upperBound
 
     var body: some View {
-        HStack(spacing: Theme.Spacing.small) {
+        HStack(spacing: Theme.Spacing.small / 2) {
             ForEach(1 ... maximum, id: \.self) { star in
                 Image(systemName: star <= rating ? "star.fill" : "star")
+                    .foregroundStyle(star <= rating ? Theme.Colors.star : Theme.Colors.starEmpty)
             }
         }
-        .font(.subheadline)
-        .foregroundStyle(Theme.Colors.brand)
+        .textStyle(.meta)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(rating) out of \(maximum) stars")
     }

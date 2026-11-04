@@ -1,20 +1,19 @@
 import SwiftUI
 
-/// Any other action: full width, a colored label on a soft tint of the same color.
+/// Any other action: full width, a colored label on a soft fill. The danger version is for Cancel and Delete.
 struct SecondaryButtonStyle: ButtonStyle {
-    var color = Theme.Colors.brand
+    var isDanger = false
     @Environment(\.isEnabled) private var isEnabled
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.body.weight(.semibold))
-            .foregroundStyle(color)
+            .textStyle(.button)
+            .foregroundStyle(isDanger ? Theme.Colors.danger : Theme.Colors.onTint)
             .multilineTextAlignment(.center)
-            .padding(.vertical, Theme.Spacing.xLarge)
-            .padding(.horizontal, Theme.Spacing.large)
-            .frame(maxWidth: .infinity)
+            .padding(.horizontal, Theme.Spacing.xLarge)
+            .frame(maxWidth: .infinity, minHeight: Theme.controlHeight)
             .background(
-                color.opacity(Theme.tintOpacity),
+                isDanger ? Theme.Colors.dangerTint : Theme.Colors.tint,
                 in: RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
             )
             .opacity(opacity(isPressed: configuration.isPressed))
@@ -29,12 +28,12 @@ struct SecondaryButtonStyle: ButtonStyle {
 
 #Preview {
     LightAndDarkPreview {
-        Button("Mark completed") {}
+        Button("Message Bea") {}
             .buttonStyle(SecondaryButtonStyle())
         Button("Cancel request") {}
-            .buttonStyle(SecondaryButtonStyle(color: Theme.Colors.statusCancelled))
+            .buttonStyle(SecondaryButtonStyle(isDanger: true))
         Button("Reset demo data") {}
-            .buttonStyle(SecondaryButtonStyle(color: Theme.Colors.statusCancelled))
+            .buttonStyle(SecondaryButtonStyle(isDanger: true))
             .disabled(true)
     }
 }

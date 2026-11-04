@@ -11,22 +11,29 @@ struct WelcomeView: View {
     }
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.section) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.section) {
             Spacer()
-            Image(systemName: "hands.sparkles.fill")
-                .font(.largeTitle)
-                .imageScale(.large)
-                .foregroundStyle(Theme.Colors.brand)
+            Image(systemName: "heart.fill")
+                .textStyle(.title)
+                .foregroundStyle(Theme.Colors.onLime)
+                .frame(width: Theme.IconSize.large, height: Theme.IconSize.large)
+                .background(
+                    Theme.Colors.lime,
+                    in: RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
+                )
                 .accessibilityHidden(true)
-            VStack(spacing: Theme.Spacing.medium) {
+            VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                 Text("Favorly")
-                    .font(.largeTitle.bold())
+                    .textStyle(.largeTitle)
+                    .foregroundStyle(Theme.Colors.ink)
                     .accessibilityIdentifier("welcome.title")
-                Text("Ask neighbors for a small favor, or lend a hand nearby.")
-                    .font(.title3)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
+                (Text("Ask neighbors for a small favor, or ")
+                    + Text("lend a hand").foregroundStyle(Theme.Colors.brand)
+                    + Text(" nearby."))
+                    .textStyle(.cardTitle)
+                    .foregroundStyle(Theme.Colors.ink)
             }
+            WelcomeSamples()
             Spacer()
             VStack(spacing: Theme.Spacing.large) {
                 if let errorMessage = viewModel.errorMessage {
@@ -47,6 +54,7 @@ struct WelcomeView: View {
             }
         }
         .padding(Theme.Spacing.section)
+        .background(GroveBackground())
     }
 
     /// Apple's own button, as App Review expects. It asks for no name or email: the profile asks for a name.
@@ -65,6 +73,7 @@ struct WelcomeView: View {
         }
         .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
         .frame(height: Theme.appleButtonHeight)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.field, style: .continuous))
         .disabled(viewModel.isSigningIn)
         .accessibilityIdentifier("welcome.signIn")
     }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// An error message with a warning symbol, in the theme red on a soft red tint.
+/// An error message with a warning symbol, in the danger color on its soft tint.
 struct ErrorBanner: View {
     let message: String
     /// Identifier for the message text, so UI tests can read it.
@@ -14,13 +14,11 @@ struct ErrorBanner: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .accessibilityHidden(true)
         }
-        .foregroundStyle(Theme.Colors.statusCancelled)
+        .textStyle(.bodyStrong)
+        .foregroundStyle(Theme.Colors.danger)
         .padding(Theme.Spacing.xLarge)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            Theme.Colors.statusCancelled.opacity(Theme.tintOpacity),
-            in: RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
-        )
+        .background(Theme.Colors.dangerTint, in: RoundedRectangle(cornerRadius: Theme.Radius.field, style: .continuous))
     }
 }
 

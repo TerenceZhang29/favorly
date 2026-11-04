@@ -7,6 +7,7 @@ struct ChatView: View {
     @State private var viewModel: ChatViewModel
     /// The message being reported, if any.
     @State private var reporting: MessageID?
+    @ScaledMetric private var composerHeight = Theme.composerHeight
 
     init(requestID: RequestID, environment: AppEnvironment) {
         self.environment = environment
@@ -19,6 +20,7 @@ struct ChatView: View {
                 content
             }
             .listStyle(.plain)
+            .groveListBackground()
             .scrollDismissesKeyboard(.interactively)
             .onChange(of: viewModel.messages?.last?.id) { _, lastID in
                 if let lastID {
@@ -85,8 +87,8 @@ struct ChatView: View {
             }
             if let closedText = viewModel.closedText {
                 Label(closedText, systemImage: "lock")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .textStyle(.meta)
+                    .foregroundStyle(Theme.Colors.inkMuted)
                     .frame(maxWidth: .infinity)
                     .padding(Theme.Spacing.xLarge)
                     .plainListRow()
@@ -116,26 +118,40 @@ struct ChatView: View {
             HStack(alignment: .bottom, spacing: Theme.Spacing.medium) {
                 TextField("Message", text: $viewModel.draft, axis: .vertical)
                     .lineLimit(1 ... 4)
-                    .textFieldStyle(.roundedBorder)
+                    .textStyle(.body)
+                    .padding(.horizontal, Theme.Spacing.xLarge)
+                    .padding(.vertical, Theme.Spacing.medium + Theme.Spacing.small / 2)
+                    .frame(minHeight: composerHeight)
+                    .background(Theme.Colors.surface, in: RoundedRectangle(cornerRadius: composerHeight / 2))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: composerHeight / 2)
+                            .strokeBorder(Theme.Colors.surfaceBorder, lineWidth: Theme.borderWidth)
+                    }
                     .accessibilityIdentifier("chat.input")
-                Button("Send") {
+                Button {
                     Task { await viewModel.send() }
+                } label: {
+                    Label("Send", systemImage: "arrow.up")
+                        .labelStyle(.iconOnly)
+                        .textStyle(.button)
+                        .foregroundStyle(viewModel.canSend ? Theme.Colors.onBrand : Theme.Colors.inkMuted)
+                        .frame(width: composerHeight, height: composerHeight)
+                        .background(viewModel.canSend ? Theme.Colors.brand : Theme.Colors.segment, in: Circle())
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(Theme.Colors.brand)
+                .buttonStyle(.plain)
                 .disabled(!viewModel.canSend)
                 .accessibilityIdentifier("chat.send")
             }
             if let draftCountText = viewModel.draftCountText {
                 Text(draftCountText)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .textStyle(.meta)
+                    .foregroundStyle(Theme.Colors.inkMuted)
                     .accessibilityIdentifier("chat.count")
             }
         }
         .padding(.horizontal, Theme.Spacing.xLarge)
         .padding(.vertical, Theme.Spacing.medium)
-        .background(.bar)
+        .background(Theme.Colors.background)
     }
 }
 

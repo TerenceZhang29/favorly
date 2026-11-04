@@ -28,7 +28,7 @@ final class RiceStoryDemoUITests: UITestCase {
     @MainActor
     private func alexIsOutOfRice() {
         openTab("Post")
-        waitFor(element("post.location"), toRead: "Tagged at Cornell Tech, Roosevelt Island")
+        waitFor(element("post.location"), toRead: "Tagged at Roosevelt Island")
         hold()
         app.textFields["post.title"].tap()
         typeSlowly("Need a cup of rice")

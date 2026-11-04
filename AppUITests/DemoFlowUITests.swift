@@ -36,7 +36,7 @@ final class DemoFlowUITests: UITestCase {
     @MainActor
     private func postARequestAsAlex() {
         openTab("Post")
-        waitFor(element("post.location"), toRead: "Tagged at Cornell Tech, Roosevelt Island")
+        waitFor(element("post.location"), toRead: "Tagged at Roosevelt Island")
         XCTAssertFalse(app.buttons["post.submit"].isEnabled)
         app.textFields["post.title"].tap()
         app.typeText("ab")
@@ -142,7 +142,7 @@ final class DemoFlowUITests: UITestCase {
     @MainActor
     private func alexPostsAndBeaHas90() {
         openTab("Post")
-        waitFor(element("post.location"), toRead: "Tagged at Cornell Tech, Roosevelt Island")
+        waitFor(element("post.location"), toRead: "Tagged at Roosevelt Island")
         app.textFields["post.title"].tap()
         app.typeText("Need a cup of rice\n")
         app.buttons["post.category"].tap()

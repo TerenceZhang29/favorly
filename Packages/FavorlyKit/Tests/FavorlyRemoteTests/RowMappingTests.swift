@@ -14,6 +14,7 @@ struct RowMappingTests {
     {"id": "5a3dac11-dd4c-453a-a9c5-1f88f82693ef", "title": "Need a cup of rice", "details": "Cooking tonight",
      "category": "ingredient", "latitude": 40.755, "longitude": -73.956,
      "location": "0101000020E610000077BE9F1A2F7D52C0713D0AD7A3604440", "location_label": "Roosevelt Island",
+     "meeting_spot": "Cornell Tech lobby",
      "requester_id": "9F77130F-1396-4761-B317-9B422B16C155", "helper_id": null, "status": "open",
      "created_at": "2026-10-28T18:35:14.665619+00:00", "claimed_at": null
     """
@@ -26,6 +27,7 @@ struct RowMappingTests {
         #expect(request.location == TaggedLocation(
             point: GeoPoint(latitude: 40.755, longitude: -73.956), label: "Roosevelt Island"
         ))
+        #expect(request.meetingSpot == "Cornell Tech lobby")
         #expect(request.requesterID == UserID(rawValue: "9f77130f-1396-4761-b317-9b422b16c155"))
         #expect(request.helperID == nil)
         #expect(request.status == .open)

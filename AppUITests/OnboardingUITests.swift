@@ -4,7 +4,7 @@ import XCTest
 final class OnboardingUITests: UITestCase {
     @MainActor
     private func launchSignedOut() {
-        app.launchArguments = ["-uiTesting", "-signedOut"]
+        app.launchArguments = ["-uiTesting", "-signedOut"] + Self.freshDefaults
         app.launch()
     }
 

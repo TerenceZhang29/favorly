@@ -78,7 +78,7 @@ struct ActivityViewModelTests {
             title: "Need a cup of rice",
             details: "",
             category: .ingredient,
-            location: LocationPresets.cornellTech.location
+            location: TaggedLocation(point: LocationPresets.cornellTech.location.point, label: "Roosevelt Island")
         )
         let created = try await world.repository.create(draft, by: DemoUsers.alex.id)
         #expect(await TestWorld.eventually { viewModel.items?.map(\.id) == [created.id] })

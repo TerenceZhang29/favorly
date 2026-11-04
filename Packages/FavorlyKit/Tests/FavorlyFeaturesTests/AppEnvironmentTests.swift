@@ -16,6 +16,7 @@ struct AppEnvironmentTests {
             reviews: repository,
             chat: repository,
             moderation: repository,
+            neighborhoods: repository,
             locationProvider: MockLocationProvider(settings: locationSettings),
             session: session,
             auth: MockAuthService(session: session, startsSignedIn: true, artificialDelay: .zero),

@@ -103,4 +103,44 @@ struct DraftValidatorTests {
             ))
         }
     }
+
+    // MARK: Meeting spot
+
+    @Test func theMeetingSpotIsOptionalAndTrimmed() throws {
+        #expect(try DraftValidator.validateMeetingSpot("   ") == "")
+        #expect(try DraftValidator.validateMeetingSpot(" Cornell Tech lobby ") == "Cornell Tech lobby")
+        let draft = NewRequestDraft(
+            title: "Need rice", details: "", category: .other,
+            location: TaggedLocation(point: GeoPoint(latitude: 40.755, longitude: -73.956), label: "Roosevelt Island"),
+            meetingSpot: " Outside Gristedes "
+        )
+        #expect(try DraftValidator.validate(draft).meetingSpot == "Outside Gristedes")
+    }
+
+    @Test(arguments: ["549 Main St", "Apt 4B", "Pier 17", "me@home.com"])
+    func addressesInTheMeetingSpotAreRefused(spot: String) {
+        #expect(throws: FavorlyError.validation("Use only letters for the meeting spot, not a street address.")) {
+            try DraftValidator.validateMeetingSpot(spot)
+        }
+    }
+
+    @Test func aLongOrOffensiveMeetingSpotIsRefused() throws {
+        #expect(try DraftValidator.validateMeetingSpot(String(repeating: "a", count: 40)).count == 40)
+        #expect(throws: FavorlyError.validation("Meeting spot must be 40 characters or fewer.")) {
+            try DraftValidator.validateMeetingSpot(String(repeating: "a", count: 41))
+        }
+        #expect(throws: FavorlyError.validation(ContentFilter.message)) {
+            try DraftValidator.validateMeetingSpot("Shit corner")
+        }
+    }
+
+    // MARK: Offered neighborhoods
+
+    @Test func onlyAnOfferedNeighborhoodPasses() throws {
+        try DraftValidator.validateNeighborhood("Roosevelt Island", among: ["Upper East Side", "Roosevelt Island"])
+        #expect(throws: FavorlyError.validation("Choose a neighborhood near you.")) {
+            try DraftValidator.validateNeighborhood("Seattle", among: ["Upper East Side", "Roosevelt Island"])
+        }
+        try DraftValidator.validateNeighborhood("Seattle", among: [])
+    }
 }

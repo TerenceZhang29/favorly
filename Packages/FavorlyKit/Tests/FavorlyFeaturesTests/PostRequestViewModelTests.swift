@@ -1,15 +1,18 @@
 import FavorlyCore
 import FavorlyData
 @testable import FavorlyFeatures
+import Foundation
 import Testing
 
 @MainActor
 struct PostRequestViewModelTests {
     let world = TestWorld()
+    /// A fresh store per test, so the last picked neighborhood never leaks between tests.
+    let defaults = UserDefaults(suiteName: "PostRequestViewModelTests-\(UUID().uuidString)")!
     let viewModel: PostRequestViewModel
 
     init() {
-        viewModel = PostRequestViewModel(environment: world.environment)
+        viewModel = PostRequestViewModel(environment: world.environment, defaults: defaults)
     }
 
     @Test func startsEmptyAndCannotSubmit() {
@@ -25,7 +28,9 @@ struct PostRequestViewModelTests {
     @Test func loadsTheTaggedLocation() async {
         await viewModel.loadLocation()
         #expect(viewModel.locationState == .tagged(LocationPresets.cornellTech.location))
-        #expect(viewModel.locationText == "Tagged at Cornell Tech, Roosevelt Island")
+        #expect(viewModel
+            .neighborhoodState == .loaded(DemoNeighborhoods.names(near: LocationPresets.cornellTech.location.point)))
+        #expect(viewModel.locationText == "Tagged at Roosevelt Island")
     }
 
     @Test func titleIsValidatedAsTheUserTypes() async {
@@ -83,7 +88,10 @@ struct PostRequestViewModelTests {
         #expect(created.title == "Need a cup of rice")
         #expect(created.details == "Any kind works.")
         #expect(created.category == .ingredient)
-        #expect(created.location == LocationPresets.midtownEast.location)
+        #expect(created.location == TaggedLocation(
+            point: LocationPresets.midtownEast.location.point,
+            label: "East Midtown"
+        ))
         #expect(created.requesterID == DemoUsers.alex.id)
         #expect(created.status == .open)
         #expect(try await world.repository.requests(postedBy: DemoUsers.alex.id) == [created])
@@ -129,8 +137,10 @@ struct PostRequestViewModelTests {
     // MARK: Device location
 
     @Test func aDeniedLocationOffersSettingsAndBlocksSubmit() async {
-        let viewModel = PostRequestViewModel(environment: world
-            .deviceEnvironment(locationProvider: DeniedLocationProvider()))
+        let viewModel = PostRequestViewModel(
+            environment: world.deviceEnvironment(locationProvider: DeniedLocationProvider()),
+            defaults: defaults
+        )
         viewModel.title = "Need a cup of rice"
         await viewModel.loadLocation()
         #expect(viewModel.locationState == .denied(
@@ -154,41 +164,107 @@ struct PostRequestViewModelTests {
         #expect(world.notifications.permissionRequests == 1)
     }
 
-    // MARK: Neighborhood
+    // MARK: Neighborhood and meeting spot
 
-    @Test func theNeighborhoodStartsAsTheLocationsNameAndCanBeChanged() async throws {
+    @Test func theNeighborhoodIsPickedFromTheOfferedNames() async throws {
         await viewModel.loadLocation()
-        #expect(viewModel.locationLabel == "Cornell Tech, Roosevelt Island")
-        viewModel.locationLabel = "Roosevelt Island"
-        #expect(viewModel.locationText == "Tagged at Roosevelt Island")
+        #expect(viewModel.neighborhood == "Roosevelt Island")
+        viewModel.neighborhood = "Long Island City"
+        #expect(viewModel.locationText == "Tagged at Long Island City")
 
         viewModel.title = "Need a cup of rice"
         let request = try #require(await viewModel.submit())
-        #expect(request.location.label == "Roosevelt Island")
-        #expect(viewModel.locationLabel == "Roosevelt Island")
+        #expect(request.location.label == "Long Island City")
     }
 
-    @Test func anInvalidNeighborhoodBlocksPosting() async {
+    @Test func aNameThatIsNotOfferedBlocksPosting() async {
         await viewModel.loadLocation()
         viewModel.title = "Need a cup of rice"
-        viewModel.locationLabel = "549 Main St"
-        #expect(viewModel.locationLabelMessage == "Use only letters for the neighborhood, not a street address.")
-        #expect(viewModel.titleMessage == nil)
+        viewModel.neighborhood = "Seattle"
         #expect(!viewModel.canSubmit)
-        viewModel.locationLabel = ""
-        #expect(viewModel.locationLabelMessage == "Add a neighborhood for your request.")
-        #expect(viewModel.locationText == "Tagged at your location")
     }
 
-    @Test func aNewLocationReplacesTheNameUnlessTheUserChangedIt() async {
+    @Test func theLastPostsNeighborhoodIsOfferedFirstNextTime() async throws {
         await viewModel.loadLocation()
-        world.locationSettings.selectedPreset = LocationPresets.ithaca
-        await viewModel.loadLocation()
-        #expect(viewModel.locationLabel == "Ithaca, NY")
+        viewModel.neighborhood = "Turtle Bay"
+        viewModel.title = "Need a cup of rice"
+        _ = try #require(await viewModel.submit())
+        #expect(defaults.string(forKey: PostRequestViewModel.lastNeighborhoodKey) == "Turtle Bay")
 
-        viewModel.locationLabel = "Collegetown"
+        let next = PostRequestViewModel(environment: world.environment, defaults: defaults)
+        await next.loadLocation()
+        #expect(next.neighborhood == "Turtle Bay")
+
+        // Somewhere it is not offered, the first name is.
+        world.locationSettings.selectedPreset = LocationPresets.longIslandCity
+        await next.loadLocation()
+        #expect(next.neighborhood == "Long Island City")
+    }
+
+    @Test func aNewLocationKeepsThePickIfStillOffered() async {
+        await viewModel.loadLocation()
+        viewModel.neighborhood = "Queensbridge"
+        world.locationSettings.selectedPreset = LocationPresets.rooseveltIslandNorth
+        await viewModel.loadLocation()
+        #expect(viewModel.neighborhood == "Queensbridge")
+
         world.locationSettings.selectedPreset = LocationPresets.midtownEast
         await viewModel.loadLocation()
-        #expect(viewModel.locationLabel == "Collegetown")
+        #expect(viewModel.neighborhood == "East Midtown")
+    }
+
+    @Test func withoutDataTheLocationsOwnNameIsTheOnlyChoice() async {
+        world.locationSettings.selectedPreset = LocationPresets.ithaca
+        await viewModel.loadLocation()
+        #expect(viewModel.neighborhoodChoices == ["Ithaca, NY"])
+        #expect(viewModel.neighborhood == "Ithaca, NY")
+    }
+
+    @Test func aFailedLookupBlocksPostingUntilTryAgainWorks() async {
+        let neighborhoods = FlakyNeighborhoods()
+        let viewModel = PostRequestViewModel(environment: environment(neighborhoods: neighborhoods), defaults: defaults)
+        viewModel.title = "Need a cup of rice"
+        await viewModel.loadLocation()
+        #expect(viewModel.neighborhoodState == .failed("Can't reach Favorly. Check your connection and try again."))
+        #expect(viewModel.locationText == nil)
+        #expect(!viewModel.canSubmit)
+
+        await neighborhoods.recover()
+        await viewModel.loadNeighborhoods()
+        #expect(viewModel.neighborhoodChoices == ["Roosevelt Island"])
+        #expect(viewModel.canSubmit)
+    }
+
+    @Test func theMeetingSpotIsOptionalCheckedAndCleared() async throws {
+        await viewModel.loadLocation()
+        viewModel.title = "Need a cup of rice"
+        #expect(viewModel.meetingSpotMessage == nil)
+
+        viewModel.meetingSpot = "Apt 4B"
+        #expect(viewModel.meetingSpotMessage == "Use only letters for the meeting spot, not a street address.")
+        #expect(!viewModel.canSubmit)
+
+        viewModel.meetingSpot = "  Cornell Tech lobby "
+        let request = try #require(await viewModel.submit())
+        #expect(request.meetingSpot == "Cornell Tech lobby")
+        #expect(viewModel.meetingSpot.isEmpty)
+    }
+
+    private func environment(neighborhoods: any NeighborhoodDirectory) -> AppEnvironment {
+        let base = world.environment
+        return AppEnvironment(
+            repository: base.repository,
+            kindness: base.kindness,
+            reviews: base.reviews,
+            chat: base.chat,
+            moderation: base.moderation,
+            neighborhoods: neighborhoods,
+            locationProvider: base.locationProvider,
+            session: base.session,
+            auth: base.auth,
+            push: base.push,
+            notifications: base.notifications,
+            locationSettings: base.locationSettings
+        )
     }
 }

@@ -106,6 +106,9 @@ struct RequestDetailView: View {
         Section {
             fact("Category", request.category.title, id: "category", systemImage: "tag")
             fact("Location", request.location.label, id: "location", systemImage: "mappin")
+            if !request.meetingSpot.isEmpty {
+                fact("Meeting spot", request.meetingSpot, id: "meetingSpot", systemImage: "figure.wave")
+            }
             if let distanceText = viewModel.distanceText {
                 fact("Distance", distanceText, id: "distance", systemImage: "ruler")
             }
@@ -259,8 +262,10 @@ struct RequestDetailView: View {
         .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier("detail.\(id)")
     }
+}
 
-    private func fact(_ label: String, _ value: String, id: String, systemImage: String) -> some View {
+private extension RequestDetailView {
+    func fact(_ label: String, _ value: String, id: String, systemImage: String) -> some View {
         FactRow(label: label, value: value, systemImage: systemImage)
             .accessibilityIdentifier("detail.\(id)")
     }

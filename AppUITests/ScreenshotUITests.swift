@@ -58,7 +58,7 @@ final class ScreenshotUITests: UITestCase {
         self.folder = folder
         self.suffix = suffix
         XCUIDevice.shared.appearance = appearance
-        app.launchArguments = ["-uiTesting"] + extraArguments
+        app.launchArguments = ["-uiTesting"] + Self.freshDefaults + extraArguments
         app.launch()
 
         try alexPostsARequest()

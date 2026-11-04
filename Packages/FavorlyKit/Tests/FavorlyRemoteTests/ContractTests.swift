@@ -220,4 +220,47 @@ struct ContractTests {
             try await alex.requests.create(world.draft("Need shit"), by: alex.id)
         }
     }
+
+    // MARK: Neighborhoods
+
+    @Test(arguments: ContractBackend.enabled)
+    func onlyNearbyNeighborhoodsAreAccepted(backend: ContractBackend) async throws {
+        let world = ContractWorld(backend)
+        let alex = try await world.signUp("Alex")
+        let offered = try await alex.neighborhoods.neighborhoods(near: ContractWorld.cornellTech)
+        #expect(offered.contains("Roosevelt Island"))
+        #expect(offered.contains("Long Island City"))
+        #expect(!offered.contains("Seattle"))
+        #expect(offered.count <= 8)
+        await #expect(throws: FavorlyError.validation("Choose a neighborhood near you.")) {
+            try await alex.requests.create(
+                world.draft("Need rice", at: TaggedLocation(point: ContractWorld.cornellTech, label: "Seattle")),
+                by: alex.id
+            )
+        }
+    }
+
+    @Test(arguments: ContractBackend.enabled)
+    func withoutNeighborhoodDataAnyCleanLabelIsKept(backend: ContractBackend) async throws {
+        let world = ContractWorld(backend)
+        let alex = try await world.signUp("Alex")
+        #expect(try await alex.neighborhoods.neighborhoods(near: world.here.point).isEmpty)
+        let rice = try await alex.requests.create(
+            world.draft("Need rice", meetingSpot: " By the mailboxes "),
+            by: alex.id
+        )
+        #expect(rice.location.label == "Test block")
+        #expect(rice.meetingSpot == "By the mailboxes")
+        #expect(try await alex.requests.nearby(around: world.here.point, radiusMeters: 500).first?.request.meetingSpot
+            == "By the mailboxes")
+    }
+
+    @Test(arguments: ContractBackend.enabled)
+    func anAddressInTheMeetingSpotIsRefused(backend: ContractBackend) async throws {
+        let world = ContractWorld(backend)
+        let alex = try await world.signUp("Alex")
+        await #expect(throws: FavorlyError.validation("Use only letters for the meeting spot, not a street address.")) {
+            try await alex.requests.create(world.draft("Need rice", meetingSpot: "Apt 4B"), by: alex.id)
+        }
+    }
 }

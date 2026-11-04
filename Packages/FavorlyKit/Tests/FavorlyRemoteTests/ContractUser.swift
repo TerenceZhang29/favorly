@@ -8,4 +8,5 @@ struct ContractUser: Sendable {
     let reviews: any ReviewRepository
     let kindness: any KindnessRepository
     let moderation: any ModerationRepository
+    let neighborhoods: any NeighborhoodDirectory
 }

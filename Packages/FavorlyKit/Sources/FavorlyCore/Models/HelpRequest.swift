@@ -6,6 +6,8 @@ public struct HelpRequest: Identifiable, Hashable, Codable, Sendable {
     public var details: String
     public var category: RequestCategory
     public var location: TaggedLocation
+    /// Where to meet, such as "Cornell Tech lobby"; empty when not given.
+    public var meetingSpot: String
     public let requesterID: UserID
     /// Set when claimed.
     public var helperID: UserID?
@@ -19,6 +21,7 @@ public struct HelpRequest: Identifiable, Hashable, Codable, Sendable {
         details: String,
         category: RequestCategory,
         location: TaggedLocation,
+        meetingSpot: String = "",
         requesterID: UserID,
         helperID: UserID? = nil,
         status: RequestStatus = .open,
@@ -30,6 +33,7 @@ public struct HelpRequest: Identifiable, Hashable, Codable, Sendable {
         self.details = details
         self.category = category
         self.location = location
+        self.meetingSpot = meetingSpot
         self.requesterID = requesterID
         self.helperID = helperID
         self.status = status

@@ -81,12 +81,17 @@ public actor MockRequestRepository: RequestRepository {
     public func create(_ draft: NewRequestDraft, by user: UserID) async throws -> HelpRequest {
         try await beginOperation()
         let draft = try DraftValidator.validate(draft)
+        try DraftValidator.validateNeighborhood(
+            draft.location.label,
+            among: DemoNeighborhoods.names(near: LocationPrivacy.snapped(draft.location.point))
+        )
         let request = HelpRequest(
             id: RequestID(rawValue: UUID()),
             title: draft.title,
             details: draft.details,
             category: draft.category,
             location: draft.location,
+            meetingSpot: draft.meetingSpot,
             requesterID: user,
             createdAt: now()
         )

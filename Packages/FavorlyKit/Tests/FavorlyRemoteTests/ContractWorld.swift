@@ -28,15 +28,32 @@ final class ContractWorld {
         )
     }
 
-    func draft(_ title: String, at location: TaggedLocation? = nil) -> NewRequestDraft {
-        NewRequestDraft(title: title, details: "", category: .ingredient, location: location ?? here)
+    func draft(_ title: String, at location: TaggedLocation? = nil, meetingSpot: String = "") -> NewRequestDraft {
+        NewRequestDraft(
+            title: title,
+            details: "",
+            category: .ingredient,
+            location: location ?? here,
+            meetingSpot: meetingSpot
+        )
     }
+
+    /// Cornell Tech, where both backends know the neighborhoods.
+    static let cornellTech = GeoPoint(latitude: 40.7553, longitude: -73.9562)
 
     func signUp(_ name: String) async throws -> ContractUser {
         switch backend {
         case .mock:
             let id = UserID(rawValue: "user-\(name.lowercased())-\(UUID().uuidString.prefix(8))")
-            return ContractUser(id: id, requests: mock, chat: mock, reviews: mock, kindness: mock, moderation: mock)
+            return ContractUser(
+                id: id,
+                requests: mock,
+                chat: mock,
+                reviews: mock,
+                kindness: mock,
+                moderation: mock,
+                neighborhoods: mock
+            )
         case .remote:
             let environment = ProcessInfo.processInfo.environment
             guard let url = environment["FAVORLY_SUPABASE_URL"].flatMap(URL.init(string:)),
@@ -64,7 +81,8 @@ final class ContractWorld {
                 chat: repository,
                 reviews: repository,
                 kindness: repository,
-                moderation: repository
+                moderation: repository,
+                neighborhoods: repository
             )
         }
     }

@@ -46,7 +46,7 @@ struct PostRequestView: View {
                 SectionHeader(text: "Location")
             } footer: {
                 if viewModel.locationText != nil {
-                    Text("Neighbors see this with your request. Keep it general: a neighborhood, not an address.")
+                    Text("Neighbors see these with your request. Pick a public meeting spot, never an address.")
                 }
             }
 
@@ -83,20 +83,22 @@ struct PostRequestView: View {
             ProgressView()
                 .accessibilityIdentifier("post.locationLoading")
         case .tagged:
-            Label {
-                Text(viewModel.locationText ?? "")
-            } icon: {
-                Image(systemName: "mappin.and.ellipse")
-                    .foregroundStyle(Theme.Colors.brand)
+            if let locationText = viewModel.locationText {
+                Label {
+                    Text(locationText)
+                } icon: {
+                    Image(systemName: "mappin.and.ellipse")
+                        .foregroundStyle(Theme.Colors.brand)
+                }
+                .accessibilityIdentifier("post.location")
             }
-            .accessibilityIdentifier("post.location")
-            TextField("Neighborhood", text: $viewModel.locationLabel)
-                .textContentType(.sublocality)
+            neighborhood
+            TextField("Meeting spot (optional)", text: $viewModel.meetingSpot)
                 .submitLabel(.done)
-                .accessibilityLabel("Neighborhood")
-                .accessibilityIdentifier("post.locationLabel")
-            if let locationLabelMessage = viewModel.locationLabelMessage {
-                InlineMessage(text: locationLabelMessage, identifier: "post.locationLabelMessage")
+                .accessibilityLabel("Meeting spot")
+                .accessibilityIdentifier("post.meetingSpot")
+            if let meetingSpotMessage = viewModel.meetingSpotMessage {
+                InlineMessage(text: meetingSpotMessage, identifier: "post.meetingSpotMessage")
             }
         case let .failed(message):
             InlineMessage(text: message, identifier: "post.locationError")
@@ -112,6 +114,29 @@ struct PostRequestView: View {
                 }
             }
             .accessibilityIdentifier("post.openSettings")
+        }
+    }
+
+    @ViewBuilder
+    private var neighborhood: some View {
+        switch viewModel.neighborhoodState {
+        case .loading:
+            ProgressView("Finding neighborhoods…")
+                .accessibilityIdentifier("post.neighborhoodLoading")
+        case .loaded:
+            Picker("Neighborhood", selection: $viewModel.neighborhood) {
+                ForEach(viewModel.neighborhoodChoices, id: \.self) { name in
+                    Text(name).tag(name)
+                }
+            }
+            .pickerStyle(.menu)
+            .accessibilityIdentifier("post.neighborhood")
+        case let .failed(message):
+            InlineMessage(text: message, identifier: "post.neighborhoodError")
+            Button("Try again") {
+                Task { await viewModel.loadNeighborhoods() }
+            }
+            .accessibilityIdentifier("post.neighborhood.retry")
         }
     }
 }

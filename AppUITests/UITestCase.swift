@@ -5,6 +5,9 @@ class UITestCase: XCTestCase {
     /// Generous, because hosted CI machines are several times slower than a laptop.
     static let waitTimeout: TimeInterval = 20
 
+    /// Hides the neighborhood an earlier test posted with (Post offers it first), so each test starts the same.
+    static let freshDefaults = ["-lastNeighborhood", ""]
+
     @MainActor lazy var app = XCUIApplication()
 
     override func setUp() {
@@ -13,7 +16,7 @@ class UITestCase: XCTestCase {
 
     @MainActor
     func launchApp() {
-        app.launchArguments = ["-uiTesting"]
+        app.launchArguments = ["-uiTesting"] + Self.freshDefaults
         app.launch()
     }
 

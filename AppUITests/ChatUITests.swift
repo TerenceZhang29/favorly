@@ -63,7 +63,7 @@ final class ChatUITests: UITestCase {
     @MainActor
     private func postRiceRequestAsAlex() {
         openTab("Post")
-        waitFor(element("post.location"), toRead: "Tagged at Cornell Tech, Roosevelt Island")
+        waitFor(element("post.location"), toRead: "Tagged at Roosevelt Island")
         app.textFields["post.title"].tap()
         app.typeText("Need a cup of rice\n")
         app.buttons["post.submit"].tap()

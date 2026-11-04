@@ -25,7 +25,7 @@ struct MockRequestRepositoryTests {
             title: "  Need a cup of rice ",
             details: "",
             category: .ingredient,
-            location: LocationPresets.cornellTech.location
+            location: TaggedLocation(point: LocationPresets.cornellTech.location.point, label: "Roosevelt Island")
         )
     }
 
@@ -97,7 +97,7 @@ struct MockRequestRepositoryTests {
         #expect(created.createdAt == Self.now)
         #expect(created.helperID == nil)
         #expect(created.title == "Need a cup of rice")
-        #expect(created.location == LocationPresets.cornellTech.location)
+        #expect(created.location == draft.location)
         #expect(try await repository.request(id: created.id) == created)
         #expect(try await nearby(miles: 1).first?.id == created.id)
     }

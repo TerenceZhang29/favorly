@@ -7,6 +7,8 @@ public struct AppEnvironment: Sendable {
     public let reviews: any ReviewRepository
     public let chat: any ChatRepository
     public let moderation: any ModerationRepository
+    /// The neighborhood names Post offers for the request's location.
+    public let neighborhoods: any NeighborhoodDirectory
     public let locationProvider: any LocationProvider
     public let session: any SessionStore
     public let auth: any AuthService
@@ -24,6 +26,7 @@ public struct AppEnvironment: Sendable {
         reviews: any ReviewRepository,
         chat: any ChatRepository,
         moderation: any ModerationRepository,
+        neighborhoods: any NeighborhoodDirectory,
         locationProvider: any LocationProvider,
         session: any SessionStore,
         auth: any AuthService,
@@ -37,6 +40,7 @@ public struct AppEnvironment: Sendable {
         self.reviews = reviews
         self.chat = chat
         self.moderation = moderation
+        self.neighborhoods = neighborhoods
         self.locationProvider = locationProvider
         self.session = session
         self.auth = auth

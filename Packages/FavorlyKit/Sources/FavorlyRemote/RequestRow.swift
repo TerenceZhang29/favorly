@@ -10,6 +10,7 @@ struct RequestRow: Decodable, Sendable {
     let latitude: Double
     let longitude: Double
     let locationLabel: String
+    let meetingSpot: String
     /// Nil once that person deleted their account.
     let requesterID: UUID?
     let helperID: UUID?
@@ -20,6 +21,7 @@ struct RequestRow: Decodable, Sendable {
     enum CodingKeys: String, CodingKey {
         case id, title, details, category, latitude, longitude, status
         case locationLabel = "location_label"
+        case meetingSpot = "meeting_spot"
         case requesterID = "requester_id"
         case helperID = "helper_id"
         case createdAt = "created_at"
@@ -36,6 +38,7 @@ struct RequestRow: Decodable, Sendable {
             details: details,
             category: category,
             location: TaggedLocation(point: GeoPoint(latitude: latitude, longitude: longitude), label: locationLabel),
+            meetingSpot: meetingSpot,
             requesterID: requesterID.map(UserID.init(remote:)) ?? .deletedUser,
             helperID: helperID.map(UserID.init(remote:)),
             status: status,

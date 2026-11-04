@@ -65,6 +65,7 @@ public actor RemoteRepository: RequestRepository {
             "latitude": .double(draft.location.point.latitude),
             "longitude": .double(draft.location.point.longitude),
             "location_label": .string(draft.location.label),
+            "meeting_spot": .string(draft.meetingSpot),
         ]
         return try await write { try await client.rpc("create_request", params: params).execute().value }
     }

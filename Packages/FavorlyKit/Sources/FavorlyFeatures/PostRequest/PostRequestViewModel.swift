@@ -1,4 +1,5 @@
 import FavorlyCore
+import Foundation
 import Observation
 
 @MainActor
@@ -19,22 +20,34 @@ final class PostRequestViewModel {
         let simulatesError: Bool
     }
 
+    /// The names Post offers for the location, from `NeighborhoodDirectory`.
+    enum NeighborhoodState: Equatable {
+        case loading
+        case loaded([String])
+        case failed(String)
+    }
+
     var title = ""
     var details = ""
     var category = RequestCategory.other
-    /// The neighborhood shown with the request. Starts as the location's name; the user may change it.
-    var locationLabel = ""
-    /// The name the last location came with, to tell whether the user changed `locationLabel`.
-    @ObservationIgnored private var suggestedLabel = ""
+    /// The neighborhood shown with the request, one of the offered names.
+    var neighborhood = ""
+    /// Where to meet, such as "Cornell Tech lobby"; optional.
+    var meetingSpot = ""
     private(set) var locationState: LocationState = .loading
+    private(set) var neighborhoodState: NeighborhoodState = .loading
     private(set) var isSubmitting = false
     /// Why the last submit failed.
     private(set) var submitError: String?
 
     @ObservationIgnored private let environment: AppEnvironment
+    /// Remembers the neighborhood of the last post, to offer it first next time. Never leaves the device.
+    @ObservationIgnored private let defaults: UserDefaults
+    static let lastNeighborhoodKey = "lastNeighborhood"
 
-    init(environment: AppEnvironment) {
+    init(environment: AppEnvironment, defaults: UserDefaults = .standard) {
         self.environment = environment
+        self.defaults = defaults
     }
 
     var reloadKey: ReloadKey {
@@ -55,27 +68,30 @@ final class PostRequestViewModel {
         validationMessage(title: "Valid title", details: details)
     }
 
-    /// What is wrong with the neighborhood, once the location is known.
-    var locationLabelMessage: String? {
-        guard taggedLocation != nil else { return nil }
+    var meetingSpotMessage: String? {
         do {
-            try DraftValidator.validateLocationLabel(locationLabel)
+            try DraftValidator.validateMeetingSpot(meetingSpot)
             return nil
         } catch {
             return ErrorMessage.text(for: error)
         }
     }
 
-    var canSubmit: Bool {
-        taggedLocation != nil && !isSubmitting && validationMessage(title: title, details: details) == nil
-            && locationLabelMessage == nil
+    /// The offered names, once they are known.
+    var neighborhoodChoices: [String] {
+        guard case let .loaded(choices) = neighborhoodState else { return [] }
+        return choices
     }
 
-    /// "Tagged at Cornell Tech, Roosevelt Island", following edits, or nil until the location is known.
+    var canSubmit: Bool {
+        taggedLocation != nil && neighborhoodChoices.contains(neighborhood) && !isSubmitting
+            && validationMessage(title: title, details: details) == nil && meetingSpotMessage == nil
+    }
+
+    /// "Tagged at Roosevelt Island", following the picked neighborhood, or nil until the names are known.
     var locationText: String? {
-        guard taggedLocation != nil else { return nil }
-        let label = locationLabel.trimmingCharacters(in: .whitespacesAndNewlines)
-        return label.isEmpty ? "Tagged at your location" : "Tagged at \(label)"
+        guard taggedLocation != nil, !neighborhoodChoices.isEmpty else { return nil }
+        return "Tagged at \(neighborhood)"
     }
 
     // MARK: Loading and submitting
@@ -83,18 +99,34 @@ final class PostRequestViewModel {
     func loadLocation() async {
         do {
             let location = try await environment.locationProvider.currentLocation()
-            // Follow the new name unless the user wrote their own.
-            if locationLabel.isEmpty || locationLabel == suggestedLabel {
-                locationLabel = location.label
-            }
-            suggestedLabel = location.label
             locationState = .tagged(location)
+            await loadNeighborhoods()
         } catch is CancellationError {
             // A newer lookup replaced this one.
         } catch {
             locationState = error as? FavorlyError == .locationPermissionDenied
                 ? .denied(ErrorMessage.text(for: error))
                 : .failed(ErrorMessage.text(for: error))
+        }
+    }
+
+    /// Asks for the names around the location. Where the directory has none (outside NYC), the location's own
+    /// name is the only choice. Keeps the picked name if it is still offered, else the last post's, else the first.
+    func loadNeighborhoods() async {
+        guard let taggedLocation else { return }
+        neighborhoodState = .loading
+        do {
+            var choices = try await environment.neighborhoods.neighborhoods(near: taggedLocation.point)
+            if choices.isEmpty {
+                choices = [taggedLocation.label]
+            }
+            let preferred = [neighborhood, defaults.string(forKey: Self.lastNeighborhoodKey)].compactMap(\.self)
+            neighborhood = preferred.first(where: choices.contains) ?? choices[0]
+            neighborhoodState = .loaded(choices)
+        } catch is CancellationError {
+            // A newer lookup replaced this one.
+        } catch {
+            neighborhoodState = .failed(ErrorMessage.text(for: error))
         }
     }
 
@@ -106,12 +138,20 @@ final class PostRequestViewModel {
         submitError = nil
 
         do {
-            let location = TaggedLocation(point: taggedLocation.point, label: locationLabel)
-            let draft = NewRequestDraft(title: title, details: details, category: category, location: location)
+            let location = TaggedLocation(point: taggedLocation.point, label: neighborhood)
+            let draft = NewRequestDraft(
+                title: title,
+                details: details,
+                category: category,
+                location: location,
+                meetingSpot: meetingSpot
+            )
             let request = try await environment.repository.create(draft, by: environment.session.currentUser.id)
+            defaults.set(neighborhood, forKey: Self.lastNeighborhoodKey)
             title = ""
             details = ""
             category = .other
+            meetingSpot = ""
             // Now a notification is clearly useful: someone may pick this up.
             await environment.notifications.requestPermissionIfNeeded()
             return request
@@ -129,7 +169,7 @@ final class PostRequestViewModel {
     }
 
     private func validationMessage(title: String, details: String) -> String? {
-        // Only the title and details matter here; the neighborhood has its own message.
+        // Only the title and details matter here; the neighborhood is picked and the meeting spot has its own message.
         let location = TaggedLocation(point: GeoPoint(latitude: 0, longitude: 0), label: "Here")
         let draft = NewRequestDraft(title: title, details: details, category: category, location: location)
         do {

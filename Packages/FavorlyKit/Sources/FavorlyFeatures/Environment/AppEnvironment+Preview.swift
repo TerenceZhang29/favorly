@@ -8,7 +8,7 @@ public extension AppEnvironment {
     /// Fixed sample data for SwiftUI previews.
     @MainActor
     static func preview() -> AppEnvironment {
-        let here = TaggedLocation(point: GeoPoint(latitude: 40.7553, longitude: -73.9562), label: "Cornell Tech")
+        let here = TaggedLocation(point: GeoPoint(latitude: 40.7553, longitude: -73.9562), label: "Roosevelt Island")
         let alex = UserProfile(
             id: UserID(rawValue: "preview-alex"),
             displayName: "Alex",
@@ -45,6 +45,7 @@ public extension AppEnvironment {
             reviews: repository,
             chat: repository,
             moderation: repository,
+            neighborhoods: repository,
             locationProvider: PreviewLocationProvider(location: here),
             session: PreviewSessionStore(availableUsers: [alex, bea], currentUser: alex),
             auth: PreviewAuthService(),

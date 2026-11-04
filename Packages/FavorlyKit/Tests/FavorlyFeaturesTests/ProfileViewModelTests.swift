@@ -72,6 +72,7 @@ struct ProfileViewModelTests {
             reviews: repository,
             chat: repository,
             moderation: repository,
+            neighborhoods: repository,
             locationProvider: MockLocationProvider(settings: world.locationSettings),
             session: world.session,
             auth: world.auth,

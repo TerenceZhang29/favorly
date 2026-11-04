@@ -44,6 +44,7 @@ Each has a default the plan assumes. Record the answer in `docs/PROGRESS.md`; it
 | Launch area | US only; the beta and first marketing focus on Roosevelt Island | A hyperlocal app with an empty map in every other city feels broken; one dense area avoids that |
 | Sign-in methods | Sign in with Apple only | Satisfies guideline 4.8 with one method, and hides users' emails |
 | How exact is location? | Requests store a point snapped to about 100 m, and show the neighborhood name, never an address | Safety: nobody can find where a requester lives from the app |
+| Who names the neighborhood? (decided 2026-11-04) | The requester picks it from a short list the server derives from the request's point (NYC's neighborhood boundaries); an optional free-text meeting spot carries details like "Cornell Tech lobby" | A typed tag let a request on Roosevelt Island claim "Seattle"; a server-derived list can't be faked, even by a modified app |
 | What happens on account deletion? | Profile, open requests, messages and reviews they wrote are deleted; their completed favors stay, shown as "Deleted user", so the other person's history and points survive | Guideline 5.1.1(v) requires deletion in the app |
 | Who moderates? | The owner checks the report queue daily during beta and launch, in the Supabase dashboard | Guideline 1.2 expects reports to be acted on promptly (Apple's guidance is 24 hours) |
 | Legal | Terms of Use and Privacy Policy written from a template; ask Cornell Tech's legal resources to look them over before 4H | The app arranges in-person favors between strangers |
@@ -216,7 +217,8 @@ Everything the store build needs that does not depend on a server, built against
 - [ ] Website (Vercel, `favorly-app.vercel.app`, from `site/`): Privacy Policy, Terms of Use, Support page with contact email. Linked in the app and the listing
 - [ ] App Privacy answers drafted in `docs/release/app-privacy.md` (contact info: name; location: coarse; user content: messages, requests, reviews; identifiers: user ID; none used for tracking)
 - [ ] Version `1.0.0` (build numbers count up per upload); archive a Release build
-- [ ] Editable location tag on Post (decided 2026-10-29): the tag starts as the geocoder's name and the requester can change it, for example from "Manhattan" to "Roosevelt Island". At most 40 characters, letters, spaces, hyphens, apostrophes and periods only (no digits, so no house numbers), through the content filter; the same check on the server's `create_request`; Nearby's header keeps the automatic name. Apple's geocoder returns only the borough in New York (`subLocality` "Manhattan" for Roosevelt Island), see `docs/PROGRESS.md`
+- [x] Editable location tag on Post (decided 2026-10-29, built in `87264f6` and migration 0008): the tag starts as the geocoder's name and the requester can change it, for example from "Manhattan" to "Roosevelt Island". Apple's geocoder returns only the borough in New York (`subLocality` "Manhattan" for Roosevelt Island), see `docs/PROGRESS.md`. **Replaced by the verified neighborhood below**, because any typed name was accepted, "Seattle" included
+- [ ] **Verified neighborhood and meeting spot** (decided 2026-11-04; see *Verified neighborhood* below): the neighborhood is picked from server-derived choices around the request's point, never typed; an optional meeting spot holds the free text
 - [ ] **Owner:** App Store Connect app record; internal TestFlight for the team
 - [ ] Internal round: the team uses it for a week on Roosevelt Island; fix crashes (Xcode Organizer) and blockers
 - [ ] **Owner:** the two-phone check moved here from 4C: two Apple IDs post, pick up, chat, complete and review with each other, screens update without refreshing, and deleting one account updates the other phone
@@ -225,6 +227,57 @@ Everything the store build needs that does not depend on a server, built against
 - [ ] Cold-start plan: team members post real requests in the pilot area so the first users see activity
 
 **Done when:** the external beta ran for two weeks with no open launch blockers and no crash affecting more than one tester; the privacy policy, terms and support pages are live.
+
+#### Verified neighborhood
+
+The problem: with a typed tag, a request posted on Roosevelt Island could be labeled "Seattle". The distance was always true (it comes from the snapped point), but the label wasn't. The fix splits the field in two: a **neighborhood** the server vouches for, and an optional **meeting spot** the requester types.
+
+**Data.** NYC's 2020 Neighborhood Tabulation Areas (NYC Open Data, dataset `9nt8-h7nd`, free to use, credited in `backend/README.md`): 262 areas, each a polygon with a name. The names combine neighborhoods ("Upper East Side-Lenox Hill-Roosevelt Island"), so each area name is split into its parts:
+
+- split on `-`, except inside names that really contain one (`Bedford-Stuyvesant`, `Co-op City`, `Green-Wood Cemetery` and any others the script reports);
+- drop direction suffixes in parentheses ("Astoria (North)" → "Astoria"), then remove duplicates;
+- leave out cemeteries (NTA type 7); parks, airports and other special areas stay ("Central Park").
+
+A script, `backend/scripts/neighborhoods.py` (standard library only), downloads the GeoJSON, simplifies the polygons (about 20 m tolerance, coordinates to 5 decimals), splits the names, and writes the migration. It prints every split name, so a person can read the list once. Rerunning it reproduces the migration exactly.
+
+**Server** (migration `0009`):
+
+- `private.neighborhood_areas (id, nta_code, borough, kind, area geography(MultiPolygon))` and `private.neighborhood_names (area_id, name, position)`, with a GiST index on `area`.
+- `public.neighborhoods_near(latitude, longitude) returns setof text`. It snaps the point the same way `create_request` does. Then it returns the names of the area that contains the point, in their listed order, followed by the names of other areas within 750 m, nearest first, without duplicates. At most 8 names. It's callable by signed-in users only.
+- `create_request` refuses a `location_label` that isn't in `neighborhoods_near` for the request's snapped point, with `validation` and the message "Choose a neighborhood near you." Outside the NYC areas the list is empty, and the server accepts any label that passes the existing text check (migration 0008). This is a known limit until there's boundary data beyond NYC.
+- New column `requests.meeting_spot text not null default ''`. It follows the same rules as the old typed tag (at most 40 characters; letters, spaces and `,.-'’` only, so no house numbers or unit numbers), but it may be empty. The offensive-word trigger covers it. `create_request` gains a `meeting_spot` parameter that defaults to `''`, so build 1 keeps working.
+
+**Core** (record in `docs/PROGRESS.md`; these change the domain model):
+
+- `NeighborhoodDirectory` protocol: `func neighborhoods(near point: GeoPoint) async throws -> [String]`. The mock answers from a table keyed by the demo presets, with Roosevelt Island first for the Roosevelt Island preset. The remote version calls `neighborhoods_near`. `AppEnvironment` gets `neighborhoods`.
+- `NewRequestDraft.meetingSpot` and `HelpRequest.meetingSpot` (`String`, default `""`).
+- `DraftValidator`: `validateLocationLabel` keeps its rules for the meeting spot, renamed `validateMeetingSpot`, with empty allowed. The neighborhood needs to be non-empty, at most 40 characters and pass the content filter. Whether it's on the list is the server's check, and the mock repeats it.
+
+**App**:
+
+- **Post:** the neighborhood field becomes a menu `Picker` (`post.neighborhood`) with the choices for the current location. While they load it shows "Finding neighborhoods…". On failure it shows an inline message with Try again (`post.neighborhood.retry`), and Post stays disabled.
+  - The default is the neighborhood this device last picked, if it's on the list (kept in `UserDefaults`, nothing sent anywhere). Otherwise it's the first choice.
+  - The choices reload when the location changes.
+  - Outside NYC, the choices are the geocoder's names (`subLocality`, `locality`), and there's still no free text.
+- **Meeting spot (optional)** (`post.meetingSpot`) is a text field with the hint "A public spot, like a lobby or a corner. No addresses." It uses the inline message pattern of the other fields.
+- **Showing it:**
+  - Request Detail shows "Near Roosevelt Island" and, when set, a "Meeting spot" fact.
+  - Nearby rows and My Activity rows show the neighborhood only.
+  - The Nearby header keeps the geocoder's name.
+
+**Tests:**
+
+- **pgTAP:**
+  - A point on Roosevelt Island lists "Roosevelt Island".
+  - "Seattle" is refused there.
+  - A neighboring area's name is accepted.
+  - A point outside NYC accepts a clean label.
+  - The meeting spot's rules and filter work.
+  - `create_request` without `meeting_spot` still works.
+- **Package:** the validator, the mock directory, the view model (loading, failure and retry, the last-pick default, reloading on a new location), and contract tests for `neighborhoods_near` on both the mock and the local backend.
+- **UI:** posting with a picked neighborhood and a meeting spot, which then shows on Request Detail.
+
+**Cost:** none. The data is free, and its table adds well under 1 MB to the database.
 
 ### 4H. App Store submission and launch
 
@@ -273,7 +326,7 @@ FAVORLY_REMOTE_TESTS=1 swift test --package-path Packages/FavorlyKit   # contrac
 Defaults are in *Decisions needed from the owner*. Also:
 
 - **Empty area at review time.** Apple reviewers are not on Roosevelt Island, so Nearby will be empty for them. Default: the review notes and screen recording explain this, and the reviewer can post a request and see it. If rejected under 2.1, add a review account with a few requests near the reviewer's location.
-- **Neighborhood names.** Reverse geocoding gives names like "Roosevelt Island" or "Midtown East". Default: use the system's `subLocality`, falling back to the city.
+- **Neighborhood names.** Reverse geocoding gives names like "Roosevelt Island" or "Midtown East". Default: use the system's `subLocality`, falling back to the city. Answered for requests on 2026-11-04: in New York the name comes from NYC's boundaries (4G, *Verified neighborhood*); the Nearby header still uses the geocoder.
 - **Profile names.** Display names are self-chosen. Default: first name or nickname, 2–30 characters, through the content filter. No verification in 1.0.
 - **Notifications for new nearby requests.** Not in 1.0; it needs a server-side geo fan-out and a way to avoid spamming. Revisit after launch.
 

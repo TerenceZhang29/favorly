@@ -27,8 +27,9 @@ jobs:
   app-tests:
     name: App and UI tests (xcodebuild test)
     runs-on: macos-26
-    # A failed UI test can leave xcodebuild collecting diagnostics for a long time.
-    timeout-minutes: 30
+    # The UI suite takes about 13 minutes back to back on a laptop and two to three times that here. The test
+    # step stops first, so a slow run still shows its failures and uploads its results.
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
       - name: Generate the Xcode project
@@ -47,6 +48,7 @@ jobs:
           test -n "$udid" && test "$udid" != "null"
           echo "SIMULATOR_UDID=$udid" >> "$GITHUB_ENV"
       - name: Build and run all tests
+        timeout-minutes: 50
         run: |
           set -o pipefail
           xcodebuild test -project Favorly.xcodeproj -scheme Favorly \

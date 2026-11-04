@@ -42,6 +42,14 @@ Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). T
 - [ ] **4G.** Release candidate and TestFlight beta
 - [ ] **4H.** App Store submission and launch, tag `v1.0.0`
 
+### Phase 5 — Grove UI revamp ([plan](PLAN-PHASE-5.md))
+
+- [ ] **5A.** Grove theme, Figtree font and shared components, "before" screenshots
+- [ ] **5B.** Nearby and Request Detail, then the review gate
+- [ ] **5C.** Post, My Activity and Chat
+- [ ] **5D.** Profile, review, onboarding and safety screens
+- [ ] **5E.** Polish, accessibility, docs, version and tag
+
 ## Needs the owner's review
 
 - **Two-phone check (4G).** Moved from 4C on the owner's decision: done during the internal TestFlight round, when teammates install the app anyway. Steps are in `docs/PLAN-PHASE-4.md`, 4G.
@@ -536,6 +544,12 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 ## Open questions
 
+- Phase 5: when does the Grove revamp run? Default: after 4H, released as 1.1.0, so 1.0.0 ships in the current look and the beta isn't restyled halfway through.
+- Phase 5: bundle the Figtree font (OFL)? Default: yes, only through `Theme.Typography`.
+- Phase 5: adopt the mockup's new copy ("Neighbors who could use a hand", "Ask for a favor", "I can help")? Default: no, current strings stay.
+- Phase 5: one olive tint for every category instead of five category colors? Default: yes, as in the mockup.
+- Phase 5: new app icon from the logo concepts? Default: not in this phase.
+
 - Phase 3: the helper can mark a request completed (Phase 1 rule 4), so a helper can award themselves 10 points. Resolved 2026-10-13: only the requester can mark completed, and a claimed request auto-completes 7 days after pick-up; planned as phase 3F.
 - Phase 3F: how is auto-complete shown in a demo, when 7 days never pass? Resolved 2026-10-28: tests only, with a fixed clock, as the plan's default.
 - Phase 3: are 10 points per favor, 2 per star and 100 points for a "$5" gift card the right values? Default: yes, as placeholders in `KindnessRules`.
@@ -551,7 +565,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
-- 2026-11-04 · 4G (part) · Verified neighborhood and meeting spot: plan, NYC boundary script and data (247 areas, 379 names), migrations 0009 and 0010 (182 database tests), `NeighborhoodDirectory` with mock, preview and remote versions, the Post picker and meeting spot, tests (405 package tests, contract tests on both backends, `PostNeighborhoodUITests`); migrations deployed to hosted with the owner's approval (`db diff --linked` clean). Build 1.0.0 (1) can't post in NYC any more (its geocoder name is refused) ; build 1.0.0 (2) archived and uploaded with the owner's approval (`Config/ExportOptions.plist`) · the two-phone check on build 2
+- 2026-11-04 · 4G (part) · Verified neighborhood and meeting spot: plan, NYC boundary script and data (247 areas, 379 names), migrations 0009 and 0010 (182 database tests), `NeighborhoodDirectory` with mock, preview and remote versions, the Post picker and meeting spot, tests (405 package tests, contract tests on both backends, `PostNeighborhoodUITests`); migrations deployed to hosted with the owner's approval (`db diff --linked` clean). Build 1.0.0 (1) can't post in NYC any more (its geocoder name is refused) ; build 1.0.0 (2) archived and uploaded with the owner's approval (`Config/ExportOptions.plist`); the owner tested it from TestFlight and confirmed the neighborhood picker and meeting spot work · the two-phone check on build 2
 - 2026-10-29 · 4G (part) · Editable neighborhood on Post (app check and migration 0008, deployed to hosted with the owner's approval after the full suite and backend CI on the branch; `db diff --linked` clean); website drafted and published to Vercel at `favorly-app.vercel.app` (home, support, privacy, terms; support mailbox favorlysupport@gmail.com); App Store privacy answers drafted; version 1.0.0 (build 1); privacy manifest; App Store Connect record (owner); build 1.0.0 (1) archived and uploaded with `xcodebuild -exportArchive` (App Store Connect, automatic signing) · internal TestFlight group and the two-phone check
 - 2026-10-29 · 4F · Push deployed and set up on the hosted project; notification arrived on the owner's iPhone; fixed a dropped tap at cold launch and a crash from the `async` delegate methods (crash log from the device); all three tap cases work; 4F done · start 4G on `phase/4g-beta` with the editable location tag
 - 2026-10-29 · 4F (code) · Push outbox, triggers and tests (153 database tests); `push` Edge Function, checked locally against Apple's sandbox with a throwaway key; device registration, permission after the first post or pick-up, unregister at sign-out, notification taps open My Activity; push entitlement; 386 package tests · owner: APNs key and secrets; deploy migration 0007 and the function; test on a phone

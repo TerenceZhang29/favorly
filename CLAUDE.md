@@ -8,12 +8,13 @@ Favorly is a hyperlocal iOS app that lets neighbors post small help requests and
 2. Read `docs/PLAN-PHASE-2.md`. It is the source of truth for how the app looks, and for the scope of phases 2A–2D.
 3. Read `docs/PLAN-PHASE-3.md`. It is the source of truth for the scope, rules and acceptance criteria of phases 3A–3F.
 4. Read `docs/PLAN-PHASE-4.md`. It is the source of truth for the scope, decisions, costs and acceptance criteria of phases 4A–4H.
-5. Read `docs/PROGRESS.md` and continue from the first unchecked phase or task.
-6. If the plan is ambiguous or seems wrong, write the question in `docs/PROGRESS.md` under "Open questions" and pick the most reasonable option. Don't silently diverge from the plan.
+5. Read `docs/PLAN-PHASE-5.md`. It is the source of truth for the Grove look and the scope of phases 5A–5E, and replaces the look in `docs/PLAN-PHASE-2.md`.
+6. Read `docs/PROGRESS.md` and continue from the first unchecked phase or task.
+7. If the plan is ambiguous or seems wrong, write the question in `docs/PROGRESS.md` under "Open questions" and pick the most reasonable option. Don't silently diverge from the plan.
 
 ## How to work
 
-- Do one phase (2A → 2D, then 3A → 3F, then 4A → 4H) per session, on a branch named `phase/<id>-<short-name>` (e.g. `phase/2a-theme`).
+- Do one phase (2A → 2D, then 3A → 3F, then 4A → 4H, then 5A → 5E) per session, on a branch named `phase/<id>-<short-name>` (e.g. `phase/2a-theme`).
 - No pull requests. When a phase is done, fast-forward `main` to the branch, push `main`, and delete the branch.
 - Commit in small steps using Conventional Commits (`feat(core): request status rules`).
 - Implement the types and protocols in the plan's "Domain model" section as written. If you must change one, record why in `docs/PROGRESS.md`.
@@ -27,7 +28,7 @@ Favorly is a hyperlocal iOS app that lets neighbors post small help requests and
 - One type per file; the file name matches the type; `public` only for what other modules need.
 - No third-party runtime dependencies without a note in `docs/PROGRESS.md`.
 - Build the UI from system SwiftUI controls, styled only through `Theme` and the shared components; no literal colors or sizes in screen files. Add an `accessibilityIdentifier` to every interactive element.
-- Follow the guardrails of the phase you are in: "Functionality guardrails" in `docs/PLAN-PHASE-2.md` for 2A–2D (looks only), "Guardrails" in `docs/PLAN-PHASE-3.md` for 3A–3F, "Guardrails" in `docs/PLAN-PHASE-4.md` for 4A–4H.
+- Follow the guardrails of the phase you are in: "Functionality guardrails" in `docs/PLAN-PHASE-2.md` for 2A–2D (looks only), "Guardrails" in `docs/PLAN-PHASE-3.md` for 3A–3F, "Guardrails" in `docs/PLAN-PHASE-4.md` for 4A–4H, "Guardrails" in `docs/PLAN-PHASE-5.md` for 5A–5E (looks only).
 
 ## Project file
 

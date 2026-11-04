@@ -255,7 +255,8 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 5 | `9fd701c` | fix(ui): Grove layouts at the largest text sizes |
 | 5 | `ea0e1d2` | test(ui): screenshot walk finds rows and the category menu at large text sizes |
 | 5 | `a7b4856` | docs: record Phase 5 progress, screenshots before and after |
-| 5 | (next commit) | docs: Grove ships in 1.0.0; commit map |
+| 5 | `ec55996` | docs: Grove ships in 1.0.0; commit map |
+| 5 | (next commit) | docs: full suite results for Phase 5 |
 
 ## Confirmed decisions
 
@@ -533,6 +534,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 ## Known issues
 
+- 2026-11-04 · Phase 5 · Full suite on `phase/5-grove-ui`, iPhone 17: run in parallel, `ChatUITests.testHelperAndRequesterHoldAConversation` (a Nearby row tap didn't open the request) and `KeyboardUITests.testDoneKeyClosesTheKeyboardOnPost` (the keyboard's Done key failed to scroll into view) failed; both passed when rerun alone, and a serial run of the whole suite passed (27 passed, 5 skipped, 0 failed). Same pattern as the 2026-10-29 entry below; watch whether the Chat one repeats
 - 2026-11-04 · Phase 5 · On the iPhone 18 Pro simulator, `ScreenshotUITests.testCaptureScreenshotsInDarkMode` captured light screens (the simulator didn't switch appearance); the same build on iPhone 17 captured dark ones, and the old look on iPhone 17 did too. Use iPhone 17 for dark screenshots
 - 2026-11-04 · Phase 5 · The app icon is still the Phase 2 teal (decision 5)
 
@@ -593,7 +595,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
-- 2026-11-04 · 5 · Grove UI built on `phase/5-grove-ui`: Grove tokens, Figtree, card rows, badges, buttons, chat, every screen; `ThemeTests` contrast checks for every pairing (411 package tests); `ScreenshotUITests` in light, dark, large and largest text pass on iPhone 17 and were checked by eye; large-text fixes; SwiftLint and SwiftFormat clean; full UI suite not run (it runs before a push) · the owner reviews the screenshots and decides when Grove merges (before 4H or as 1.1.0)
+- 2026-11-04 · 5 · Grove UI built on `phase/5-grove-ui`: Grove tokens, Figtree, card rows, badges, buttons, chat, every screen; `ThemeTests` contrast checks for every pairing (411 package tests); `ScreenshotUITests` in light, dark, large and largest text pass on iPhone 17 and were checked by eye; large-text fixes; SwiftLint and SwiftFormat clean; full UI suite passed serially (two parallel-only failures logged) · the owner reviews the screenshots and decides when Grove merges (before 4H or as 1.1.0)
 - 2026-11-04 · 4G (part) · Verified neighborhood and meeting spot: plan, NYC boundary script and data (247 areas, 379 names), migrations 0009 and 0010 (182 database tests), `NeighborhoodDirectory` with mock, preview and remote versions, the Post picker and meeting spot, tests (405 package tests, contract tests on both backends, `PostNeighborhoodUITests`); migrations deployed to hosted with the owner's approval (`db diff --linked` clean). Build 1.0.0 (1) can't post in NYC any more (its geocoder name is refused) ; build 1.0.0 (2) archived and uploaded with the owner's approval (`Config/ExportOptions.plist`); the owner tested it from TestFlight and confirmed the neighborhood picker and meeting spot work · the two-phone check on build 2
 - 2026-10-29 · 4G (part) · Editable neighborhood on Post (app check and migration 0008, deployed to hosted with the owner's approval after the full suite and backend CI on the branch; `db diff --linked` clean); website drafted and published to Vercel at `favorly-app.vercel.app` (home, support, privacy, terms; support mailbox favorlysupport@gmail.com); App Store privacy answers drafted; version 1.0.0 (build 1); privacy manifest; App Store Connect record (owner); build 1.0.0 (1) archived and uploaded with `xcodebuild -exportArchive` (App Store Connect, automatic signing) · internal TestFlight group and the two-phone check
 - 2026-10-29 · 4F · Push deployed and set up on the hosted project; notification arrived on the owner's iPhone; fixed a dropped tap at cold launch and a crash from the `async` delegate methods (crash log from the device); all three tap cases work; 4F done · start 4G on `phase/4g-beta` with the editable location tag

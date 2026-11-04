@@ -28,9 +28,9 @@ select ok(not private.contains_offensive_word('Scunthorpe, cocktails and shiitak
 select ok(not private.contains_offensive_word(null), 'nothing passes');
 
 select pg_temp.login(:'alex');
-select is(pg_temp.detail_of($$select public.create_request('Need shit', '', 'other', 40.755, -73.956, 'Here')$$),
+select is(pg_temp.detail_of($$select public.create_request('Need shit', '', 'other', 40.755, -73.956, 'Roosevelt Island')$$),
     'Please remove offensive language.', 'an offensive title is refused with the app''s message');
-select throws_ok($$select public.create_request('Need rice', 'fuck it', 'other', 40.755, -73.956, 'Here')$$,
+select throws_ok($$select public.create_request('Need rice', 'fuck it', 'other', 40.755, -73.956, 'Roosevelt Island')$$,
     'P0001', 'validation', 'offensive details are refused');
 select throws_ok($$select public.complete_profile('Dick', true, 1)$$, 'P0001', 'validation',
     'an offensive name is refused');

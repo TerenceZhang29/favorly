@@ -15,7 +15,7 @@ select throws_ok($$select public.complete_profile('Sam', false, 1)$$,
     'P0001', 'validation', 'an under-18 sign-up is refused');
 select throws_ok($$select public.complete_profile('Sam', true, 0)$$,
     'P0001', 'validation', 'not accepting the terms is refused');
-select throws_ok($$select public.create_request('Need rice', '', 'ingredient', 40.755, -73.956, 'Here')$$,
+select throws_ok($$select public.create_request('Need rice', '', 'ingredient', 40.755, -73.956, 'Roosevelt Island')$$,
     'P0001', 'not_signed_in', 'without a profile nothing can be posted');
 
 select is((select display_name from public.complete_profile('  Sam ', true, 1)), 'Sam',

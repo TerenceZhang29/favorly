@@ -9,13 +9,13 @@ select pg_temp.make_user('chen') as chen \gset
 -- MARK: Posting
 
 select pg_temp.login(:'alex');
-select throws_ok($$select public.create_request('  Hi ', '', 'other', 40.755, -73.956, 'Here')$$,
+select throws_ok($$select public.create_request('  Hi ', '', 'other', 40.755, -73.956, 'Roosevelt Island')$$,
     'P0001', 'validation', 'a title under 3 characters is refused');
-select throws_ok($$select public.create_request(repeat('a', 81), '', 'other', 40.755, -73.956, 'Here')$$,
+select throws_ok($$select public.create_request(repeat('a', 81), '', 'other', 40.755, -73.956, 'Roosevelt Island')$$,
     'P0001', 'validation', 'a title over 80 characters is refused');
-select throws_ok($$select public.create_request('Need rice', repeat('a', 501), 'other', 40.755, -73.956, 'Here')$$,
+select throws_ok($$select public.create_request('Need rice', repeat('a', 501), 'other', 40.755, -73.956, 'Roosevelt Island')$$,
     'P0001', 'validation', 'details over 500 characters are refused');
-select throws_ok($$select public.create_request('Need rice', '', 'other', 95, -73.956, 'Here')$$,
+select throws_ok($$select public.create_request('Need rice', '', 'other', 95, -73.956, 'Roosevelt Island')$$,
     'P0001', 'validation', 'an impossible location is refused');
 
 select id as rice from public.create_request('  Need a cup of rice ', ' Cooking tonight ', 'ingredient',
@@ -29,8 +29,8 @@ select is((select status::text from public.requests where requester_id = :'alex'
 
 -- At most 5 open requests.
 select pg_temp.login(:'alex');
-select public.create_request('Request ' || n, '', 'other', 40.755, -73.956, 'Here') from generate_series(2, 5) n;
-select throws_ok($$select public.create_request('Request 6', '', 'other', 40.755, -73.956, 'Here')$$,
+select public.create_request('Request ' || n, '', 'other', 40.755, -73.956, 'Roosevelt Island') from generate_series(2, 5) n;
+select throws_ok($$select public.create_request('Request 6', '', 'other', 40.755, -73.956, 'Roosevelt Island')$$,
     'P0001', 'rate_limited', 'a sixth open request is refused');
 
 -- Nobody writes tables directly.
@@ -49,7 +49,7 @@ update public.requests set created_at = now() - interval '1 hour' where id = :'n
 insert into public.requests (title, category, latitude, longitude, location_label, requester_id)
 values ('Five km away', 'other', 40.800, -73.956, 'Astoria', :'chen');
 insert into public.requests (title, category, latitude, longitude, location_label, requester_id, helper_id, status, claimed_at)
-values ('Already claimed', 'other', 40.755, -73.956, 'Here', :'chen', :'alex', 'claimed', now());
+values ('Already claimed', 'other', 40.755, -73.956, 'Roosevelt Island', :'chen', :'alex', 'claimed', now());
 
 select pg_temp.login(:'bea');
 select is(

@@ -44,6 +44,7 @@ These commands use your `supabase login` session, not the database password; `--
 | `supabase/tests/` | pgTAP tests, one file per area; `helpers.psql` is included by each |
 | `supabase/seed.sql` | Local seed data (empty: tests create their own users) |
 | `supabase/functions/push/` | The Edge Function that sends notifications to Apple |
+| `scripts/neighborhoods.py` | Writes the neighborhood data migration from NYC Open Data (see *Neighborhoods*) |
 | `moderation/queries.sql` | Dashboard queries for the moderation routine in `docs/MODERATION.md` |
 
 ## How it works
@@ -53,10 +54,23 @@ These commands use your `supabase login` session, not the database password; `--
 - **Nearby** is `nearby_requests(center_latitude, center_longitude, radius_m)`: open requests within the radius, nearest first, then newest, with `distance_m`.
 - **Kindness score** is `kindness_summary(user_id)`, computed from completed favors and review stars every time it is asked for.
 - **Locations** are snapped to 3 decimal places (about 100 m) before they are stored.
+- **Neighborhoods**: a request's neighborhood must be one of the names `neighborhoods_near(latitude, longitude)` offers for its point; `create_request` refuses any other with "Choose a neighborhood near you." Outside NYC nothing is offered and any clean label is kept. The optional `meeting_spot` holds free text such as "Cornell Tech lobby": at most 40 characters, letters and `,.-'’` only.
 - **Auto-complete** (rule 15): a `pg_cron` job runs `private.complete_due_requests()` every 15 minutes and completes picked-up requests 7 days after pick-up.
 - **Rate limits**: at most 5 open requests per user, 20 new requests a day, and 30 messages a minute.
 - **Blocks** hide profiles, requests and reviews in both directions, and stop pick-ups and messages between the two people.
 - **Account deletion** (`delete_my_account`) removes the profile, every request the user posted that is not completed, the messages and reviews they wrote, reviews about them, and their blocks. A request they had picked up goes back to open with its thread cleared. Completed favors stay, with the deleted person's side left empty.
+
+## Neighborhoods
+
+The boundaries are NYC's 2020 Neighborhood Tabulation Areas from [NYC Open Data](https://data.cityofnewyork.us/d/9nt8-h7nd) (dataset `9nt8-h7nd`, published by the Department of City Planning, free to use under the [NYC Open Data terms](https://opendata.cityofnewyork.us/overview/#termsofuse)). Their names combine neighborhoods ("Upper East Side-Lenox Hill-Roosevelt Island"), so `scripts/neighborhoods.py` splits each into its parts, drops "(North)"-style suffixes, leaves out cemeteries and Rikers Island, simplifies the polygons to about 20 m, and writes `migrations/20261104000010_neighborhood_data.sql`. To refresh the data, run it from this folder and read the names it prints:
+
+```bash
+python3 scripts/neighborhoods.py > /tmp/names.txt   # downloads the data and rewrites the migration
+```
+
+A changed data file is a new migration, not an edit of the applied one: copy the generated file to a new timestamp that first deletes from `private.neighborhood_areas`.
+
+`neighborhoods_near` returns the names of the area containing the point, in their listed order, then those of areas within 750 m, nearest first, at most 8.
 
 ## Push notifications
 

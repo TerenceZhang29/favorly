@@ -50,12 +50,11 @@ Built on `phase/5-grove-ui` (from `phase/4g-beta`) in one session at the owner's
 - [x] **5B.** Nearby and Request Detail. The review gate was skipped: the owner asked for the whole revamp at once and reviews the finished screens instead
 - [x] **5C.** Post, My Activity and Chat
 - [x] **5D.** Profile, review, onboarding and safety screens
-- [ ] **5E.** Polish, accessibility, docs, version and tag. Done: consistency pass, light, dark and large-text screenshots checked by eye and committed (`docs/screenshots/phase-5/`, at half resolution; the look before is in `phase-4/`), SwiftLint and SwiftFormat clean, docs. Left: the full UI suite (run before the push), a check on a real iPhone, the version number and the tag (decision 1)
+- [ ] **5E.** Polish, accessibility, docs, version and tag. Done: consistency pass, light, dark and large-text screenshots checked by eye and committed (`docs/screenshots/phase-5/`, at half resolution; the look before is in `phase-4/`), SwiftLint and SwiftFormat clean, docs. Left: a check on a real iPhone. Version stays `1.0.0` (owner, 2026-11-04); the next TestFlight upload, with Grove, is build 3. No separate Phase 5 tag: `v1.0.0` in 4H covers it
 
 ## Needs the owner's review
 
 - **Grove screens (Phase 5).** Compare `docs/screenshots/phase-5/` with the mockup (https://claude.ai/artifact/MepsaKmAH4rhe43aqw4D4w) and with `docs/screenshots/phase-4/`. This stands in for the 5B review gate. Changes asked for now are edits to `Theme` and the shared components.
-- **Phase 5 decision 1.** The revamp is built before 4H, so either merge it before the App Store screenshots (the store shows Grove) or keep it on its branch and release it as 1.1.0 after launch.
 
 - **Two-phone check (4G).** Moved from 4C on the owner's decision: done during the internal TestFlight round, when teammates install the app anyway. Steps are in `docs/PLAN-PHASE-4.md`, 4G.
 
@@ -254,8 +253,9 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 5 | `26baab9` | feat(ui): Grove theme, Figtree type and restyled screens |
 | 5 | `e5b90b5` | test(ui): scroll to Dana's saffron row before the review screenshots |
 | 5 | `9fd701c` | fix(ui): Grove layouts at the largest text sizes |
-| 5 | (next commit) | test(ui): screenshot walk finds rows and the category menu at large text sizes |
-| 5 | (next commit) | docs: record Phase 5 progress, screenshots before and after |
+| 5 | `ea0e1d2` | test(ui): screenshot walk finds rows and the category menu at large text sizes |
+| 5 | `a7b4856` | docs: record Phase 5 progress, screenshots before and after |
+| 5 | (next commit) | docs: Grove ships in 1.0.0; commit map |
 
 ## Confirmed decisions
 
@@ -271,6 +271,7 @@ Defaults from the plan's Preparation section. Change here if the team decides ot
 
 Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
+- 2026-11-04 · 5 · Grove ships in 1.0.0: `phase/5-grove-ui` merges into `main` with the 4G work, and the version stays `1.0.0` · the owner's decision, so the submitted app and its store screenshots have the final look
 - 2026-11-04 · 5 · All of Phase 5 on one branch, `phase/5-grove-ui`, branched from `phase/4g-beta`, with no 5B review gate · the owner asked for the whole revamp in one go; `main` doesn't have 4G yet, so the branch can't fast-forward `main` on its own
 - 2026-11-04 · 5A · Figtree is a resource of `FavorlyFeatures` (`Resources/Fonts`, registered with Core Text by `GroveFonts`), not an app-target resource listed in `UIAppFonts` · previews and package tests load it too, `project.yml` needs no change, and the font check is a package test (`ThemeTests.figtreeIsBundledAndRegisters`) instead of a new `LaunchUITests` method
 - 2026-11-04 · 5A · The plan's `Theme.Typography` is the `TextStyle` enum, applied with `.textStyle(_:)`, which also sets letter spacing and capitals · one modifier keeps font, tracking and case together
@@ -571,7 +572,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 ## Open questions
 
-- Phase 5: when does the Grove revamp run? Partly resolved 2026-11-04: the owner asked for it to be built now, on `phase/5-grove-ui`. Whether it merges before 4H or ships as 1.1.0 after launch is still open (see *Needs the owner's review*).
+- Phase 5: when does the Grove revamp run? Resolved 2026-11-04: built now on `phase/5-grove-ui`, merged into `main` together with 4G, and shipped in 1.0.0, so the App Store screenshots in 4H show Grove.
 - Phase 5: bundle the Figtree font (OFL)? Default taken: yes, only through `TextStyle`.
 - Phase 5: adopt the mockup's new copy ("Neighbors who could use a hand", "Ask for a favor", "I can help")? Default: no, current strings stay.
 - Phase 5: one olive tint for every category instead of five category colors? Default: yes, as in the mockup.

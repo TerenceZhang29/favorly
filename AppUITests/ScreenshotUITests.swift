@@ -93,7 +93,8 @@ final class ScreenshotUITests: UITestCase {
         app.typeText("ed a cup of rice\n")
         // At the largest text size the category row can start under the tab bar.
         scrollToAndTap(app.buttons["post.category"])
-        if !app.buttons["Ingredient"].waitForExistence(timeout: Self.shortWait) {
+        // At the largest text size the menu can take a while to open; a second tap too early would close it.
+        if !app.buttons["Ingredient"].waitForExistence(timeout: Self.waitTimeout) {
             // The first tap can land while the keyboard is still closing.
             app.buttons["post.category"].tap()
         }
@@ -117,7 +118,12 @@ final class ScreenshotUITests: UITestCase {
         }
         XCTAssertTrue(ownRow.exists)
         try capture("nearby-yours")
-        row("nearby.row.", containing: "Need a cup of rice").tap()
+        // Grove cards are taller, so at large text sizes the row can be above the ones just scrolled to.
+        let riceRow = row("nearby.row.", containing: "Need a cup of rice")
+        for _ in 0 ..< Self.maxSwipes where !(riceRow.exists && riceRow.isHittable) {
+            app.swipeDown()
+        }
+        riceRow.tap()
         waitFor(element("detail.title"), toRead: "Need a cup of rice")
         try capture("request-detail-open")
         scrollToAndTap(app.buttons["detail.pickUp"])

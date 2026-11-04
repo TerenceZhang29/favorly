@@ -80,7 +80,7 @@ The second command runs the package tests again on iOS, plus the UI tests. Each 
 
 If `KeyboardUITests` fails because the Done key is "not visible", the simulator thinks a hardware keyboard is attached, which happens after you type into it from the Mac keyboard, and keeps the on-screen keyboard below the screen. Erase that simulator (`xcrun simctl erase <device id>`) and run the tests again.
 
-Every push to `main` and to `phase/**`, `ci/**` and `claude/**` branches runs both commands on GitHub Actions (`.github/workflows/ci.yml`). A second workflow, `.github/workflows/manual-checks.yml`, runs SwiftLint and SwiftFormat on `claude/**` branches (agent sessions without Xcode) or by hand from the Actions tab, and can capture the screenshots and upload them as an artifact.
+Every push to `main` and to `phase/**`, `ci/**` and `claude/**` branches runs the package tests on GitHub Actions (`.github/workflows/ci.yml`). The app and UI tests take over half an hour there, so they run on pushes to `main`, or on a branch when started by hand: `gh workflow run ci.yml --ref <branch>`. Both jobs cache their build between runs. A second workflow, `.github/workflows/manual-checks.yml`, runs SwiftLint and SwiftFormat on `claude/**` branches (agent sessions without Xcode) or by hand from the Actions tab, and can capture the screenshots and upload them as an artifact.
 
 ## Lint and format
 

@@ -6,7 +6,10 @@ import SwiftUI
 struct StarRatingPicker: View {
     @Binding var rating: Int
     var maximum = ReviewRules.ratingRange.upperBound
-    @ScaledMetric private var side = Theme.controlHeight
+    @ScaledMetric private var scaledSide = Theme.controlHeight
+
+    /// Grows with the text, but never so far that five stars no longer fit across a phone.
+    private var side: CGFloat { min(scaledSide, Theme.IconSize.starMax) }
 
     var body: some View {
         HStack(spacing: Theme.Spacing.small) {
@@ -16,7 +19,7 @@ struct StarRatingPicker: View {
                     rating = star
                 } label: {
                     Image(systemName: isFilled ? "star.fill" : "star")
-                        .font(.title)
+                        .font(.system(size: side * Theme.IconSize.symbolScale, weight: .medium))
                         .foregroundStyle(isFilled ? Theme.Colors.star : Theme.Colors.starEmpty)
                         .frame(width: side, height: side)
                         .background(

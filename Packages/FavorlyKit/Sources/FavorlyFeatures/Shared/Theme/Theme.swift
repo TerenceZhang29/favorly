@@ -1,4 +1,4 @@
-import Foundation
+import SwiftUI
 
 /// The one source of style. Screens take every color, font, spacing, corner radius and shadow from here.
 /// The values are the Grove look in `docs/PLAN-PHASE-5.md`.
@@ -89,6 +89,8 @@ enum Theme {
         /// Side of a `CategoryIcon` tile in a row, at the default text size.
         static let row: CGFloat = 38
         static let large: CGFloat = 56
+        /// The largest a star button on the review form gets, so five fit across the narrowest phone.
+        static let starMax: CGFloat = 60
         /// Side of the symbol tile on a fact row.
         static let fact: CGFloat = 32
         /// Side of the avatar circle on a profile.
@@ -117,6 +119,8 @@ enum Theme {
         static let none = GroveShadow(color: Colors.ink, lightOpacity: 0, darkOpacity: 0, radius: 0, offsetY: 0)
     }
 
+    /// The largest text size a section header follows.
+    static let headerMaxTypeSize = DynamicTypeSize.accessibility2
     /// Blur of the dark-mode glow.
     static let glowBlur: CGFloat = 70
     static let glowOpacity = 0.7

@@ -9,6 +9,8 @@ struct SectionHeader: View {
             .textStyle(.headline)
             .foregroundStyle(Theme.Colors.ink)
             .textCase(nil)
+            // Headers stop growing at a large accessibility size, so they don't push the content off screen.
+            .dynamicTypeSize(...Theme.headerMaxTypeSize)
     }
 }
 

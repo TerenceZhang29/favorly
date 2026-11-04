@@ -91,7 +91,8 @@ final class ScreenshotUITests: UITestCase {
         waitFor(element("post.titleMessage"), toRead: "Title must be at least 3 characters.")
         try capture("post-invalid")
         app.typeText("ed a cup of rice\n")
-        app.buttons["post.category"].tap()
+        // At the largest text size the category row can start under the tab bar.
+        scrollToAndTap(app.buttons["post.category"])
         if !app.buttons["Ingredient"].waitForExistence(timeout: Self.shortWait) {
             // The first tap can land while the keyboard is still closing.
             app.buttons["post.category"].tap()

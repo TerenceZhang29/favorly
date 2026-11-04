@@ -11,7 +11,7 @@ struct RequestRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.medium + Theme.Spacing.small / 2) {
-            HStack(spacing: Theme.Spacing.medium + Theme.Spacing.small / 2) {
+            headerLayout {
                 CategoryIcon(systemImage: item.request.category.systemImage)
                 VStack(alignment: .leading, spacing: Theme.Spacing.small / 2) {
                     Text(item.request.category.title)
@@ -40,6 +40,13 @@ struct RequestRow: View {
 
     /// At accessibility text sizes the badge goes under the title, so the text keeps the row's width.
     private var stacksBadge: Bool { dynamicTypeSize.isAccessibilitySize }
+
+    /// The category tile beside its text, or above it at accessibility text sizes so words don't break.
+    private var headerLayout: AnyLayout {
+        stacksBadge
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: Theme.Spacing.medium))
+            : AnyLayout(HStackLayout(spacing: Theme.Spacing.medium + Theme.Spacing.small / 2))
+    }
 
     private var ownBadge: some View { TagBadge(text: "Yours") }
 

@@ -25,7 +25,7 @@ final class ChatUITests: UITestCase {
         send("On my way")
         XCTAssertTrue(bubble(containing: "You said: On my way").waitForExistence(timeout: Self.waitTimeout))
         // Leave the chat, so the keyboard closes and the tab bar is visible again.
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
 
         // Alex sees it and replies.
         switchUser(to: "user-alex")
@@ -39,7 +39,7 @@ final class ChatUITests: UITestCase {
         XCTAssertTrue(bubble(containing: "You said: Thank you!").waitForExistence(timeout: Self.waitTimeout))
 
         // Once completed, the thread is read-only.
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
         scrollToAndTap(app.buttons["detail.complete"])
         waitFor(element("detail.status"), toRead: "Completed")
         scrollToAndTap(app.buttons["detail.message"])

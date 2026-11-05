@@ -32,7 +32,7 @@ final class BrowseAndPickUpUITests: UITestCase {
         waitFor(element("detail.helper"), toRead: "Bea")
         XCTAssertFalse(app.buttons["detail.pickUp"].exists)
 
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
         waitFor(count, toRead: "7 requests")
         XCTAssertFalse(app.buttons[eggsRow].exists)
 

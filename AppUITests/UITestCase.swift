@@ -36,7 +36,7 @@ class UITestCase: XCTestCase {
     @MainActor
     func openTab(_ title: String) {
         // A slow simulator (GitHub's) can drop a tab tap, so tap again until the tab is selected.
-        let tab = app.tabBars.buttons[title]
+        let tab = tabButton(title)
         let selected = NSPredicate(format: "isSelected == true")
         for _ in 0 ..< 3 {
             tab.tap()
@@ -46,6 +46,38 @@ class UITestCase: XCTestCase {
             }
         }
         XCTAssertTrue(tab.isSelected, "The \(title) tab didn't open")
+    }
+
+    /// A button of the app's Grove tab bar, by its title ("My Activity").
+    @MainActor
+    func tabButton(_ title: String) -> XCUIElement {
+        let ids = [
+            "Nearby": "nearby", "Post": "post", "My Activity": "activity", "Profile": "profile",
+            "Dev Settings": "devSettings",
+        ]
+        return app.buttons["tab.\(ids[title] ?? title)"]
+    }
+
+    /// Goes back one screen: the "‹ Nearby" link where a screen has one, otherwise the system back button.
+    @MainActor
+    func goBack() {
+        let link = app.buttons["nav.back"]
+        if link.exists {
+            link.tap()
+        } else {
+            app.navigationBars.buttons.firstMatch.tap()
+        }
+    }
+
+    /// Opens the Settings screen behind the gear on the Profile tab, where the account rows are.
+    @MainActor
+    func openProfileSettings() {
+        openTab("Profile")
+        let gear = app.buttons["profile.settings"]
+        for _ in 0 ..< 4 where !(gear.exists && gear.isHittable) {
+            app.swipeDown()
+        }
+        gear.tap()
     }
 
     @MainActor

@@ -43,13 +43,12 @@ final class DemoFlowUITests: UITestCase {
         waitFor(element("post.titleMessage"), toRead: "Title must be at least 3 characters.")
         XCTAssertFalse(app.buttons["post.submit"].isEnabled)
         app.typeText("\u{8}\u{8}Need a cup of rice\n")
-        app.buttons["post.category"].tap()
-        app.buttons["Ingredient"].tap()
+        scrollToAndTap(app.buttons["post.category.ingredient"])
         app.buttons["post.submit"].tap()
 
         let postedRow = row("activity.row.", containing: "Need a cup of rice")
         XCTAssertTrue(postedRow.waitForExistence(timeout: Self.waitTimeout))
-        XCTAssertTrue(app.tabBars.buttons["My Activity"].isSelected)
+        XCTAssertTrue(tabButton("My Activity").isSelected)
         XCTAssertEqual(postedRow.label, "Need a cup of rice, Ingredient, Open, new")
     }
 
@@ -68,7 +67,7 @@ final class DemoFlowUITests: UITestCase {
         app.buttons["detail.pickUp"].tap()
         app.buttons["claim.confirm"].tap()
         waitFor(element("detail.status"), toRead: "Claimed by Bea")
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
         waitFor(count, toRead: "7 requests")
         XCTAssertFalse(row("nearby.row.", containing: "Need a cup of rice").exists)
 
@@ -91,7 +90,7 @@ final class DemoFlowUITests: UITestCase {
         waitFor(element("detail.status"), toRead: "Claimed by Bea")
         app.buttons["detail.complete"].tap()
         waitFor(element("detail.status"), toRead: "Completed")
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
     }
 
     /// Step 7: from Ithaca nothing is nearby, and resetting clears what the demo created.
@@ -145,8 +144,7 @@ final class DemoFlowUITests: UITestCase {
         waitFor(element("post.location"), toRead: "Tagged at Roosevelt Island")
         app.textFields["post.title"].tap()
         app.typeText("Need a cup of rice\n")
-        app.buttons["post.category"].tap()
-        app.buttons["Ingredient"].tap()
+        scrollToAndTap(app.buttons["post.category.ingredient"])
         app.buttons["post.submit"].tap()
         XCTAssertTrue(row("activity.row.", containing: "Need a cup of rice")
             .waitForExistence(timeout: Self.waitTimeout))
@@ -170,8 +168,8 @@ final class DemoFlowUITests: UITestCase {
         scrollToAndTap(app.buttons["detail.message"])
         sendChatMessage("On my way")
         XCTAssertTrue(chatBubble(containing: "You said: On my way").waitForExistence(timeout: Self.waitTimeout))
-        app.navigationBars.buttons.firstMatch.tap()
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
+        goBack()
 
         switchUser(to: "user-alex")
         openTab("My Activity")
@@ -183,7 +181,7 @@ final class DemoFlowUITests: UITestCase {
         XCTAssertTrue(chatBubble(containing: "Bea said: On my way").waitForExistence(timeout: Self.waitTimeout))
         sendChatMessage("Thank you!")
         XCTAssertTrue(chatBubble(containing: "You said: Thank you!").waitForExistence(timeout: Self.waitTimeout))
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
         scrollToAndTap(app.buttons["detail.complete"])
         waitFor(element("detail.status"), toRead: "Completed")
     }
@@ -198,7 +196,7 @@ final class DemoFlowUITests: UITestCase {
         app.typeText("Fast and friendly")
         app.buttons["review.submit"].tap()
         XCTAssertTrue(element("detail.reviewSummary").waitForExistence(timeout: Self.waitTimeout))
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
     }
 
     /// Step 5: Bea has 110 points, the new review and the favor.

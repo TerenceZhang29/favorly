@@ -7,7 +7,7 @@ final class LaunchUITests: UITestCase {
 
         for title in ["Nearby", "Post", "My Activity", "Profile", "Dev Settings"] {
             XCTAssertTrue(
-                app.tabBars.buttons[title].waitForExistence(timeout: Self.waitTimeout),
+                tabButton(title).waitForExistence(timeout: Self.waitTimeout),
                 "Missing tab: \(title)"
             )
         }
@@ -18,7 +18,7 @@ final class LaunchUITests: UITestCase {
     func testLaunchWithoutFlagsStartsAtWelcome() {
         app.launch()
         XCTAssertTrue(app.buttons["welcome.signIn"].waitForExistence(timeout: Self.waitTimeout))
-        XCTAssertFalse(app.tabBars.firstMatch.exists)
+        XCTAssertFalse(app.buttons["tab.nearby"].exists)
     }
 
     @MainActor

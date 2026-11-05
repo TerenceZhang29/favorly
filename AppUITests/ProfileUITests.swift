@@ -73,7 +73,7 @@ final class ProfileUITests: UITestCase {
         waitFor(element("profile.name"), toRead: "Dana")
         waitFor(element("profile.score"), toRead: "0 points")
         XCTAssertFalse(app.buttons["profile.signOut"].exists)
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
 
         let helper = element("detail.helper")
         waitFor(helper, toRead: "Chen")

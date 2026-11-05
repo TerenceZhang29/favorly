@@ -36,8 +36,7 @@ final class RiceStoryDemoUITests: UITestCase {
         element("post.details").tap()
         typeSlowly("Cooking dinner tonight and just ran out. The store is closed. Can anyone spare a cup?")
         dismissKeyboard()
-        app.buttons["post.category"].tap()
-        app.buttons["Ingredient"].tap()
+        scrollToAndTap(app.buttons["post.category.ingredient"])
         hold()
         app.buttons["post.submit"].tap()
         let posted = row("activity.row.", containing: "Need a cup of rice")
@@ -63,8 +62,8 @@ final class RiceStoryDemoUITests: UITestCase {
         scrollToAndTap(app.buttons["detail.message"])
         sendMessage("On my way with a cup of rice!")
         hold(2)
-        app.navigationBars.buttons.firstMatch.tap()
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
+        goBack()
     }
 
     /// Beat 3: Alex gets the rice, cooks as planned, marks the favor completed and thanks Bea with a review.
@@ -82,7 +81,7 @@ final class RiceStoryDemoUITests: UITestCase {
         hold()
         sendMessage("Thank you! Dinner is saved.")
         hold()
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
         scrollToAndTap(app.buttons["detail.complete"])
         waitFor(element("detail.status"), toRead: "Completed")
         hold()
@@ -95,7 +94,7 @@ final class RiceStoryDemoUITests: UITestCase {
         app.buttons["review.submit"].tap()
         XCTAssertTrue(element("detail.reviewSummary").waitForExistence(timeout: Self.waitTimeout))
         hold()
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
     }
 
     /// Beat 4: Bea's Profile shows the Kindness points she earned for the favor and the review.

@@ -28,7 +28,7 @@ final class OnboardingUITests: UITestCase {
         XCTAssertTrue(continueButton.isEnabled)
         continueButton.tap()
 
-        XCTAssertTrue(app.tabBars.buttons["Profile"].waitForExistence(timeout: Self.waitTimeout))
+        XCTAssertTrue(tabButton("Profile").waitForExistence(timeout: Self.waitTimeout))
     }
 
     @MainActor
@@ -53,7 +53,7 @@ final class OnboardingUITests: UITestCase {
     @MainActor
     func testSigningOutReturnsToWelcome() {
         launchApp()
-        openTab("Profile")
+        openProfileSettings()
         scrollToAndTap(app.buttons["profile.signOut"])
         XCTAssertTrue(app.buttons["welcome.signIn"].waitForExistence(timeout: Self.waitTimeout))
     }
@@ -64,6 +64,7 @@ final class OnboardingUITests: UITestCase {
         signUpAsSam()
         openTab("Profile")
         waitFor(element("profile.name"), toRead: "Sam")
+        openProfileSettings()
         scrollToAndTap(app.buttons["profile.deleteAccount"])
 
         // The confirmation can draw its button twice (sheet and popover layers), so take the first.

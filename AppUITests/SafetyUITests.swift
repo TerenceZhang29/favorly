@@ -40,11 +40,11 @@ final class SafetyUITests: UITestCase {
 
         // Blocking closes the profile; back on Nearby, Chen's request is gone.
         XCTAssertTrue(element("detail.title").waitForExistence(timeout: Self.waitTimeout))
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
         XCTAssertTrue(element("nearby.count").waitForExistence(timeout: Self.waitTimeout))
         XCTAssertTrue(eggs.waitForNonExistence(timeout: Self.waitTimeout))
 
-        openTab("Profile")
+        openProfileSettings()
         scrollToAndTap(app.buttons["profile.blockedPeople"])
         let unblock = app.buttons["blocked.unblock.user-chen"]
         XCTAssertTrue(unblock.waitForExistence(timeout: Self.waitTimeout))
@@ -59,7 +59,7 @@ final class SafetyUITests: UITestCase {
     @MainActor
     func testSafetyTipsOpenFromTheProfile() {
         launchApp()
-        openTab("Profile")
+        openProfileSettings()
         scrollToAndTap(app.buttons["profile.safetyTips"])
         XCTAssertTrue(app.navigationBars["Safety tips"].waitForExistence(timeout: Self.waitTimeout))
     }

@@ -91,14 +91,10 @@ final class ScreenshotUITests: UITestCase {
         waitFor(element("post.titleMessage"), toRead: "Title must be at least 3 characters.")
         try capture("post-invalid")
         app.typeText("ed a cup of rice\n")
-        // At the largest text size the category row can start under the tab bar, the first tap can land while
-        // the keyboard is still closing, and the menu can be slow to open. Tap again only when it didn't open.
-        let ingredient = app.buttons["Ingredient"]
-        for _ in 0 ..< 3 where !ingredient.exists {
-            scrollToAndTap(app.buttons["post.category"])
-            _ = ingredient.waitForExistence(timeout: Self.waitTimeout / 2)
-        }
-        ingredient.tap()
+        // At the largest text size the category chips can start below the fold.
+        scrollToAndTap(app.buttons["post.category.ingredient"])
+        // Checking for an element waits for the app to go idle, so the chip's change has finished drawing.
+        XCTAssertTrue(app.buttons["post.category.ingredient"].waitForExistence(timeout: Self.waitTimeout))
         try capture("post")
         scrollToAndTap(app.buttons["post.submit"])
         XCTAssertTrue(row("activity.row.", containing: "Need a cup of rice")
@@ -142,7 +138,7 @@ final class ScreenshotUITests: UITestCase {
         app.buttons["chat.send"].tap()
         _ = element("chat.empty").waitForNonExistence(timeout: Self.waitTimeout)
         try capture("chat")
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
 
         openTab("My Activity")
         app.segmentedControls["activity.segment"].buttons["Claimed by me"].tap()
@@ -165,7 +161,7 @@ final class ScreenshotUITests: UITestCase {
         scrollToAndTap(element("detail.helper"))
         waitFor(element("profile.name"), toRead: "Bea")
         try capture("profile-other")
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
         openTab("My Activity")
         XCTAssertTrue(row("activity.row.", containing: "Claimed by Bea").waitForExistence(timeout: Self.waitTimeout))
         try capture("my-activity")
@@ -176,7 +172,7 @@ final class ScreenshotUITests: UITestCase {
         openTab("Dev Settings")
         scrollToAndTap(app.buttons["devSettings.location.ithaca"])
         openTab("Nearby")
-        app.navigationBars.buttons.firstMatch.tap()
+        goBack()
         waitFor(element("nearby.empty"), toRead: "No requests within 1 mi")
         try capture("nearby-empty")
 

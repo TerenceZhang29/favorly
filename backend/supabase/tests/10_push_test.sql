@@ -40,8 +40,8 @@ select is((select count(*) from public.device_tokens), 0::bigint, 'signing out r
 select pg_temp.login(:'bea');
 select public.claim_request(:'rice');
 select pg_temp.logout();
-select is(pg_temp.last_push(), 'Request picked up | Bea picked up "Need a cup of rice". | request',
-    'the requester hears about the pick-up');
+select is(pg_temp.last_push(), 'Request claimed | Bea claimed "Need a cup of rice". | request',
+    'the requester hears about the claim');
 select is((select recipient_id from public.push_outbox order by id desc limit 1), :'alex'::uuid, 'Alex gets it');
 
 select pg_temp.login(:'bea');

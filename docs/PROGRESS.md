@@ -1,9 +1,9 @@
 # Progress
 
-Updated by every coding session. Read this after `docs/PLAN.md` and `docs/PLAN-PHASE-2.md` through `docs/PLAN-PHASE-5.md`, and continue from the first unchecked item.
+Updated by every coding session. Read this after `docs/PLAN.md` and `docs/PLAN-PHASE-2.md` through `docs/PLAN-PHASE-6.md`, and continue from the first unchecked item.
 
-**Current phase:** Phase 4. 4A–4F are done: Sign in with Apple on the hosted Supabase project, device location, reporting, blocking and the word filter, and push notifications, tried on the owner's iPhone. Phase 3 (`v0.3.0-profiles` plus 3F), Phase 2 (`v0.2.0-ui`) and Phase 1 (`v0.1.0-prototype`) are complete
-**Next task:** the owner's review of the Grove screens built on `phase/5-grove-ui` (Phase 5, 5A–5D done, 5E partly); then the 4G two-phone check on build 2
+**Current phase:** Phase 6 (TestFlight beta). Phases 1–5 and 4A–4G are done: Grove (Phase 5) is merged and ships in 1.0.0, the two-phone check passed, and build 1.0.0 (3) is the first with Grove. 4H (submission) follows Phase 6
+**Next task:** 6A, the internal TestFlight round on build 3, on `phase/6a-internal-beta`
 
 ## Phase checklist
 
@@ -39,8 +39,8 @@ Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). T
 - [x] **4D.** Real location and privacy
 - [x] **4E.** Trust and safety: report, block, content filter, moderation, terms
 - [x] **4F.** Push notifications
-- [ ] **4G.** Release candidate and TestFlight beta
-- [ ] **4H.** App Store submission and launch, tag `v1.0.0`
+- [x] **4G.** Release candidate. Closed 2026-11-04 after the two-phone check; the beta itself moved to Phase 6
+- [ ] **4H.** App Store submission and launch, tag `v1.0.0`. Follows Phase 6
 
 ### Phase 5 — Grove UI revamp ([plan](PLAN-PHASE-5.md))
 
@@ -50,13 +50,18 @@ Built on `phase/5-grove-ui` (from `phase/4g-beta`) in one session at the owner's
 - [x] **5B.** Nearby and Request Detail. The review gate was skipped: the owner asked for the whole revamp at once and reviews the finished screens instead
 - [x] **5C.** Post, My Activity and Chat
 - [x] **5D.** Profile, review, onboarding and safety screens
-- [ ] **5E.** Polish, accessibility, docs, version and tag. Done: consistency pass, light, dark and large-text screenshots checked by eye and committed (`docs/screenshots/phase-5/`, at half resolution; the look before is in `phase-4/`), SwiftLint and SwiftFormat clean, docs. Left: a check on a real iPhone. Version stays `1.0.0` (owner, 2026-11-04); the next TestFlight upload, with Grove, is build 3. No separate Phase 5 tag: `v1.0.0` in 4H covers it
+- [x] **5E.** Polish, accessibility, docs, version and tag. Done: consistency pass, light, dark and large-text screenshots checked by eye and committed (`docs/screenshots/phase-5/`, at half resolution; the look before is in `phase-4/`), SwiftLint and SwiftFormat clean, docs. Left: a check on a real iPhone. Version stays `1.0.0` (owner, 2026-11-04); the next TestFlight upload, with Grove, is build 3. No separate Phase 5 tag: `v1.0.0` in 4H covers it
+
+### Phase 6 — TestFlight beta ([plan](PLAN-PHASE-6.md))
+
+- [ ] **6A.** Internal round on build 3 or later, cold-start requests
+- [ ] **6B.** External beta: Supabase Pro, external TestFlight group, two weeks
+- [ ] **6C.** Triage and the launch candidate, then 4H
 
 ## Needs the owner's review
 
 - **Grove screens (Phase 5).** Compare `docs/screenshots/phase-5/` with the mockup (https://claude.ai/artifact/MepsaKmAH4rhe43aqw4D4w) and with `docs/screenshots/phase-4/`. This stands in for the 5B review gate. Changes asked for now are edits to `Theme` and the shared components.
 
-- **Two-phone check (4G).** Moved from 4C on the owner's decision: done during the internal TestFlight round, when teammates install the app anyway. Steps are in `docs/PLAN-PHASE-4.md`, 4G.
 
 ## Owner's review of Phase 3
 

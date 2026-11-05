@@ -213,20 +213,22 @@ Everything the store build needs that does not depend on a server, built against
 
 ### 4G. Release candidate and beta
 
-- [ ] **Owner, $25/month:** upgrade Supabase to Pro before external testers join
-- [ ] Website (Vercel, `favorly-app.vercel.app`, from `site/`): Privacy Policy, Terms of Use, Support page with contact email. Linked in the app and the listing
-- [ ] App Privacy answers drafted in `docs/release/app-privacy.md` (contact info: name; location: coarse; user content: messages, requests, reviews; identifiers: user ID; none used for tracking)
-- [ ] Version `1.0.0` (build numbers count up per upload); archive a Release build
+- [ ] **Owner, $25/month:** upgrade Supabase to Pro before external testers join. **Moved to Phase 6** ([PLAN-PHASE-6.md](PLAN-PHASE-6.md))
+- [x] Website (Vercel, `favorly-app.vercel.app`, from `site/`): Privacy Policy, Terms of Use, Support page with contact email. Linked in the app and the listing
+- [x] App Privacy answers drafted in `docs/release/app-privacy.md` (contact info: name; location: coarse; user content: messages, requests, reviews; identifiers: user ID; none used for tracking)
+- [x] Version `1.0.0` (build numbers count up per upload); archive a Release build. Builds 1 and 2 uploaded; build 3 is the first with the Grove look (Phase 5)
 - [x] Editable location tag on Post (decided 2026-10-29, built in `87264f6` and migration 0008): the tag starts as the geocoder's name and the requester can change it, for example from "Manhattan" to "Roosevelt Island". Apple's geocoder returns only the borough in New York (`subLocality` "Manhattan" for Roosevelt Island), see `docs/PROGRESS.md`. **Replaced by the verified neighborhood below**, because any typed name was accepted, "Seattle" included
 - [x] **Verified neighborhood and meeting spot** (decided 2026-11-04, built and deployed to the hosted project 2026-11-04, confirmed by the owner on build 1.0.0 (2) from TestFlight; see *Verified neighborhood* below): the neighborhood is picked from server-derived choices around the request's point, never typed; an optional meeting spot holds the free text
-- [ ] **Owner:** App Store Connect app record; internal TestFlight for the team
-- [ ] Internal round: the team uses it for a week on Roosevelt Island; fix crashes (Xcode Organizer) and blockers
-- [ ] **Owner:** the two-phone check moved here from 4C: two Apple IDs post, pick up, chat, complete and review with each other, screens update without refreshing, and deleting one account updates the other phone
-- [ ] **Owner:** external TestFlight group (Beta App Review, about a day), 20–50 neighbors, two weeks; "What to Test" notes; feedback through TestFlight
-- [ ] Triage list in `docs/PROGRESS.md`; fix everything marked "launch blocker"
-- [ ] Cold-start plan: team members post real requests in the pilot area so the first users see activity
+- [x] **Owner:** App Store Connect app record; TestFlight builds install on the owner's iPhone. The team's internal round is **moved to Phase 6**
+- [ ] **Moved to Phase 6.** Internal round: the team uses it for a week on Roosevelt Island; fix crashes (Xcode Organizer) and blockers
+- [x] **Owner:** the two-phone check moved here from 4C (done, confirmed by the owner 2026-11-04): two Apple IDs post, pick up, chat, complete and review with each other, screens update without refreshing, and deleting one account updates the other phone
+- [ ] **Moved to Phase 6.** **Owner:** external TestFlight group (Beta App Review, about a day), 20–50 neighbors, two weeks; "What to Test" notes; feedback through TestFlight
+- [ ] **Moved to Phase 6.** Triage list in `docs/PROGRESS.md`; fix everything marked "launch blocker"
+- [ ] **Moved to Phase 6.** Cold-start plan: team members post real requests in the pilot area so the first users see activity
 
-**Done when:** the external beta ran for two weeks with no open launch blockers and no crash affecting more than one tester; the privacy policy, terms and support pages are live.
+**4G closed 2026-11-04** on the owner's decision: the release candidate is built, the two-phone check passed, and the beta itself is Phase 6. 4H follows Phase 6.
+
+**Done when** (now Phase 6's): the external beta ran for two weeks with no open launch blockers and no crash affecting more than one tester; the privacy policy, terms and support pages are live.
 
 #### Verified neighborhood
 

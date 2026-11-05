@@ -9,12 +9,13 @@ Favorly is a hyperlocal iOS app that lets neighbors post small help requests and
 3. Read `docs/PLAN-PHASE-3.md`. It is the source of truth for the scope, rules and acceptance criteria of phases 3A–3F.
 4. Read `docs/PLAN-PHASE-4.md`. It is the source of truth for the scope, decisions, costs and acceptance criteria of phases 4A–4H.
 5. Read `docs/PLAN-PHASE-5.md`. It is the source of truth for the Grove look and the scope of phases 5A–5E, and replaces the look in `docs/PLAN-PHASE-2.md`.
-6. Read `docs/PROGRESS.md` and continue from the first unchecked phase or task.
-7. If the plan is ambiguous or seems wrong, write the question in `docs/PROGRESS.md` under "Open questions" and pick the most reasonable option. Don't silently diverge from the plan.
+6. Read `docs/PLAN-PHASE-6.md`. It is the source of truth for the TestFlight beta (6A–6C), which comes before App Store submission (4H).
+7. Read `docs/PROGRESS.md` and continue from the first unchecked phase or task.
+8. If the plan is ambiguous or seems wrong, write the question in `docs/PROGRESS.md` under "Open questions" and pick the most reasonable option. Don't silently diverge from the plan.
 
 ## How to work
 
-- Do one phase (2A → 2D, then 3A → 3F, then 4A → 4H, then 5A → 5E) per session, on a branch named `phase/<id>-<short-name>` (e.g. `phase/2a-theme`).
+- Do one phase (2A → 2D, then 3A → 3F, then 4A → 4G, then 5A → 5E, then 6A → 6C, then 4H) per session, on a branch named `phase/<id>-<short-name>` (e.g. `phase/2a-theme`).
 - No pull requests. When a phase is done, fast-forward `main` to the branch, push `main`, and delete the branch.
 - Commit in small steps using Conventional Commits (`feat(core): request status rules`).
 - Implement the types and protocols in the plan's "Domain model" section as written. If you must change one, record why in `docs/PROGRESS.md`.

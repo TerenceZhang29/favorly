@@ -25,6 +25,8 @@ final class NearbyViewModel {
     var radius = RadiusOption.default
     /// Where the last list was loaded around.
     private(set) var location: TaggedLocation?
+    /// The signed-in user's Kindness score, for the pill in the header; nil until loaded or if it can't be.
+    private(set) var score: Int?
 
     @ObservationIgnored private let environment: AppEnvironment
     @ObservationIgnored private var latestLoad = 0
@@ -85,8 +87,10 @@ final class NearbyViewModel {
             // The server already hides them; the mock cannot, since its reads do not know who is asking.
             let blocked = await blockedUserIDs()
             let results = found.filter { !blocked.contains($0.request.requesterID) }
+            let summary = try? await environment.kindness.kindnessSummary(for: environment.session.currentUser.id)
             guard load == latestLoad else { return }
             self.location = location
+            score = summary?.lifetimePoints
             state = results.isEmpty ? .empty : .loaded(results)
         } catch is CancellationError {
             // A newer load replaced this one.

@@ -77,6 +77,38 @@ final class ProfileViewModel {
         return "\(Self.ratingFormat(average)) average from \(reviews)"
     }
 
+    // MARK: Milestone and points, as in the Grove mockup
+
+    /// Points toward the next milestone, which comes every `KindnessRules.giftCardCost` points (100).
+    /// There is no reward to redeem in 1.0; this only shows progress.
+    var milestonePoints: Int {
+        (content?.summary.lifetimePoints ?? 0) % KindnessRules.giftCardCost
+    }
+
+    /// How far to the next milestone, from 0 to 1, for the ring and the progress bar.
+    var milestoneProgress: Double {
+        Double(milestonePoints) / Double(KindnessRules.giftCardCost)
+    }
+
+    /// "90 of 100 points".
+    var milestoneText: String {
+        "\(milestonePoints) of \(KindnessRules.giftCardCost) points"
+    }
+
+    /// "10 more points to go".
+    var milestoneRemainingText: String {
+        let remaining = KindnessRules.giftCardCost - milestonePoints
+        return remaining == 1 ? "1 more point to go" : "\(remaining) more points to go"
+    }
+
+    /// The points the profile's user earned for a favor they helped with, such as "+18", or nil for one they
+    /// asked for.
+    func pointsText(for activity: ProfileActivity) -> String? {
+        guard activity.role == .helped else { return nil }
+        let stars = content?.reviews.first { $0.requestID == activity.id }?.rating ?? 0
+        return "+\(KindnessRules.pointsPerFavor + KindnessRules.pointsPerStar * stars)"
+    }
+
     func displayName(for id: UserID) -> String {
         environment.session.displayName(for: id)
     }

@@ -34,6 +34,17 @@ final class ReviewFormViewModel {
     }
 
     /// "12 / 300".
+    /// What the helper earns for this favor with the chosen rating, as in the Grove mockup: "Bea earns +18
+    /// Kindness points for this favor", or, before a rating, "Bea earns 10 points, plus 2 per star".
+    func pointsText(for helperName: String) -> String {
+        guard rating > 0 else {
+            let base = KindnessRules.pointsPerFavor
+            return "\(helperName) earns \(base) points, plus \(KindnessRules.pointsPerStar) per star"
+        }
+        let points = KindnessRules.pointsPerFavor + KindnessRules.pointsPerStar * rating
+        return "\(helperName) earns +\(points) Kindness points for this favor"
+    }
+
     var commentCountText: String {
         "\(comment.count) / \(ReviewRules.maxCommentLength)"
     }

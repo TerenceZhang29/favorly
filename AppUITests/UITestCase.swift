@@ -40,9 +40,8 @@ class UITestCase: XCTestCase {
         let selected = NSPredicate(format: "isSelected == true")
         for _ in 0 ..< 3 {
             tab.tap()
-            if XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: selected, object: tab)], timeout: 5)
-                == .completed
-            {
+            let opened = XCTNSPredicateExpectation(predicate: selected, object: tab)
+            if XCTWaiter().wait(for: [opened], timeout: 5) == .completed {
                 return
             }
         }

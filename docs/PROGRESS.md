@@ -3,7 +3,7 @@
 Updated by every coding session. Read this after `docs/PLAN.md` and `docs/PLAN-PHASE-2.md` through `docs/PLAN-PHASE-6.md`, and continue from the first unchecked item.
 
 **Current phase:** Phase 6 (TestFlight beta). Phases 1–5 and 4A–4G are done: Grove (Phase 5) is merged and ships in 1.0.0, the two-phone check passed, and build 1.0.0 (3) is the first with Grove. 4H (submission) follows Phase 6
-**Next task:** 6A, the internal TestFlight round on build 4 (the first with Claim and the claim sheet)
+**Next task:** 6A, the internal TestFlight round on build 5 (Claim, the claim sheet, and the layout closest to the Grove mockup)
 
 ## Phase checklist
 
@@ -608,6 +608,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-11-05 · 6A (part) · Closed the look-only gaps with the Grove mockup and fixed the keyboard staying open after posting (the cause of the CI core-flow failures); full UI suite passed serially (27 passed, 5 skipped); build 1.0.0 (5) archived and uploaded with the owner's approval · 6A: the internal round on build 5
 - 2026-11-04 · 6A (part) · "Pick up" became "Claim" in the app, confirmed in a bottom sheet (owner picked option A of five on the Grove canvas); migration 0011 changes the claim notification's wording, 182 database tests pass and it is deployed to the hosted project (`db diff --linked` clean); CI boots the simulator before its one UI test; full UI suite passed serially (27 passed, 5 skipped); build 1.0.0 (4) archived and uploaded with the owner's approval · 6A: the internal round on build 4
 - 2026-11-04 · 4G close · Owner confirmed the two-phone check; 4G closed and the beta items moved to Phase 6 (`docs/PLAN-PHASE-6.md`); Grove and 4G fast-forwarded into `main` and pushed; build 1.0.0 (3), the first with Grove, archived and uploaded with the owner's approval (`Config/ExportOptions.plist`, upload succeeded, processing in App Store Connect) · 6A: add build 3 to the internal TestFlight group
 - 2026-11-04 · 5 · Grove UI built on `phase/5-grove-ui`: Grove tokens, Figtree, card rows, badges, buttons, chat, every screen; `ThemeTests` contrast checks for every pairing (411 package tests); `ScreenshotUITests` in light, dark, large and largest text pass on iPhone 17 and were checked by eye; large-text fixes; SwiftLint and SwiftFormat clean; full UI suite passed serially (two parallel-only failures logged) · the owner reviews the screenshots and decides when Grove merges (before 4H or as 1.1.0)

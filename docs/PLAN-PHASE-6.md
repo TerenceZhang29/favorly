@@ -14,7 +14,7 @@ Phase 6 runs the beta that 4G prepared. The release candidate is version 1.0.0 w
 
 ### 6A. Internal round
 
-- [ ] **Owner:** internal TestFlight group for the team, on build 4 or later (build 4 adds Claim and the claim sheet)
+- [ ] **Owner:** internal TestFlight group for the team, on build 5 or later (build 4 added Claim and the claim sheet; build 5 the remaining Grove layout and the keyboard fix)
 - [ ] The team uses it for a week on Roosevelt Island
 - [ ] Fix crashes (Xcode Organizer) and blockers; each fix ships as a new build
 - [ ] Cold-start plan: team members post real requests in the pilot area so the first users see activity

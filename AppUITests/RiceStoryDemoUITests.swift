@@ -57,7 +57,7 @@ final class RiceStoryDemoUITests: UITestCase {
         hold(2)
         app.buttons["detail.pickUp"].tap()
         hold()
-        app.buttons["Confirm pick up"].tap()
+        app.buttons["claim.confirm"].tap()
         waitFor(element("detail.status"), toRead: "Claimed by Bea")
         hold()
         scrollToAndTap(app.buttons["detail.message"])

@@ -15,7 +15,7 @@ final class ChatUITests: UITestCase {
         rice.tap()
         XCTAssertFalse(app.buttons["detail.message"].exists)
         app.buttons["detail.pickUp"].tap()
-        app.buttons["Confirm pick up"].tap()
+        app.buttons["claim.confirm"].tap()
         waitFor(element("detail.status"), toRead: "Claimed by Bea")
         let message = app.buttons["detail.message"]
         XCTAssertTrue(message.waitForExistence(timeout: Self.waitTimeout))

@@ -35,7 +35,7 @@ final class ProfileUITests: UITestCase {
         XCTAssertTrue(eggs.waitForExistence(timeout: Self.waitTimeout))
         eggs.tap()
         app.buttons["detail.pickUp"].tap()
-        app.buttons["Confirm pick up"].tap()
+        app.buttons["claim.confirm"].tap()
 
         // Only the requester can mark it completed; the helper sees when it completes on its own.
         XCTAssertTrue(element("detail.autoCompleteNote").waitForExistence(timeout: Self.waitTimeout))
@@ -61,7 +61,7 @@ final class ProfileUITests: UITestCase {
         launchApp()
         switchUser(to: "user-chen")
         openTab("My Activity")
-        app.segmentedControls["activity.segment"].buttons["Picked up by me"].tap()
+        app.segmentedControls["activity.segment"].buttons["Claimed by me"].tap()
         let ladder = row("activity.row.", containing: "Hold a ladder")
         XCTAssertTrue(ladder.waitForExistence(timeout: Self.waitTimeout))
         ladder.tap()

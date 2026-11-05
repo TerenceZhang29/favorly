@@ -31,8 +31,8 @@ struct DisplayTests {
 
     @Test(arguments: [
         (FavorlyError.notFound, "This request is no longer available."),
-        (.alreadyClaimed, "Someone else already picked this up."),
-        (.cannotClaimOwnRequest, "You can't pick up your own request."),
+        (.alreadyClaimed, "Someone else already claimed this."),
+        (.cannotClaimOwnRequest, "You can't claim your own request."),
         (.notAllowed, "You're not allowed to do that."),
         (.invalidTransition(from: .completed, to: .cancelled), "This request can't be changed that way anymore."),
         (.validation("Title must be at least 3 characters."), "Title must be at least 3 characters."),

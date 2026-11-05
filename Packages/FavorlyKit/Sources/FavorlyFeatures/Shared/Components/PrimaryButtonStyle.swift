@@ -23,7 +23,7 @@ struct PrimaryButtonStyle: ButtonStyle {
 
 #Preview {
     LightAndDarkPreview {
-        Button("Pick up") {}
+        Button("Claim") {}
         Button("Post request") {}
             .disabled(true)
     }

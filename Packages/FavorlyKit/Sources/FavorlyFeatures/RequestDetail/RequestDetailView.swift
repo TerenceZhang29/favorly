@@ -4,7 +4,7 @@ import SwiftUI
 struct RequestDetailView: View {
     private let environment: AppEnvironment
     @State private var viewModel: RequestDetailViewModel
-    @State private var isConfirmingPickUp = false
+    @State private var isConfirmingClaim = false
     @State private var isShowingChat = false
     @State private var isReviewing = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -54,13 +54,22 @@ struct RequestDetailView: View {
             environment: environment,
             block: viewModel.blockRequester
         ))
-        .confirmationDialog("Pick up this request?", isPresented: $isConfirmingPickUp, titleVisibility: .visible) {
-            Button("Confirm pick up") {
-                Task { await viewModel.pickUp() }
+        .sheet(isPresented: $isConfirmingClaim) {
+            if case let .loaded(request) = viewModel.state {
+                ClaimConfirmationView(
+                    title: request.title,
+                    categorySymbol: request.category.systemImage,
+                    requesterName: viewModel.requesterName,
+                    detailLine: [
+                        viewModel.distanceText,
+                        request.meetingSpot.isEmpty ? request.location.label : request.meetingSpot,
+                    ]
+                    .compactMap(\.self)
+                    .joined(separator: " · ")
+                ) {
+                    Task { await viewModel.pickUp() }
+                }
             }
-            Button("Not now", role: .cancel) {}
-        } message: {
-            Text("The requester will see that you picked it up.")
         }
         .navigationDestination(isPresented: $isShowingChat) {
             ChatView(requestID: viewModel.requestID, environment: environment)
@@ -177,7 +186,7 @@ struct RequestDetailView: View {
             }
             if viewModel.canPickUp {
                 Section {
-                    Button("Pick up") { isConfirmingPickUp = true }
+                    Button("Claim") { isConfirmingClaim = true }
                         .buttonStyle(PrimaryButtonStyle())
                         .accessibilityIdentifier("detail.pickUp")
                         .plainListRow()

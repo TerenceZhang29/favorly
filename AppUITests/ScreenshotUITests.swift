@@ -91,14 +91,14 @@ final class ScreenshotUITests: UITestCase {
         waitFor(element("post.titleMessage"), toRead: "Title must be at least 3 characters.")
         try capture("post-invalid")
         app.typeText("ed a cup of rice\n")
-        // At the largest text size the category row can start under the tab bar.
-        scrollToAndTap(app.buttons["post.category"])
-        // At the largest text size the menu can take a while to open; a second tap too early would close it.
-        if !app.buttons["Ingredient"].waitForExistence(timeout: Self.waitTimeout) {
-            // The first tap can land while the keyboard is still closing.
-            app.buttons["post.category"].tap()
+        // At the largest text size the category row can start under the tab bar, the first tap can land while
+        // the keyboard is still closing, and the menu can be slow to open. Tap again only when it didn't open.
+        let ingredient = app.buttons["Ingredient"]
+        for _ in 0 ..< 3 where !ingredient.exists {
+            scrollToAndTap(app.buttons["post.category"])
+            _ = ingredient.waitForExistence(timeout: Self.waitTimeout / 2)
         }
-        app.buttons["Ingredient"].tap()
+        ingredient.tap()
         try capture("post")
         scrollToAndTap(app.buttons["post.submit"])
         XCTAssertTrue(row("activity.row.", containing: "Need a cup of rice")
@@ -127,7 +127,9 @@ final class ScreenshotUITests: UITestCase {
         waitFor(element("detail.title"), toRead: "Need a cup of rice")
         try capture("request-detail-open")
         scrollToAndTap(app.buttons["detail.pickUp"])
-        app.buttons["Confirm pick up"].tap()
+        XCTAssertTrue(app.buttons["claim.confirm"].waitForExistence(timeout: Self.waitTimeout))
+        try capture("claim-confirm")
+        app.buttons["claim.confirm"].tap()
         // The helper's auto-complete note can be below the fold at the largest text size, so it is given a moment
         // but not required.
         _ = element("detail.autoCompleteNote").waitForExistence(timeout: Self.shortWait)
@@ -143,7 +145,7 @@ final class ScreenshotUITests: UITestCase {
         app.navigationBars.buttons.firstMatch.tap()
 
         openTab("My Activity")
-        app.segmentedControls["activity.segment"].buttons["Picked up by me"].tap()
+        app.segmentedControls["activity.segment"].buttons["Claimed by me"].tap()
         XCTAssertTrue(row("activity.row.", containing: "Posted by Alex").waitForExistence(timeout: Self.waitTimeout))
         try capture("my-activity-picked-up")
         app.segmentedControls["activity.segment"].buttons["My requests"].tap()

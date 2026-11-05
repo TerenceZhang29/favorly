@@ -24,6 +24,6 @@ struct ErrorBanner: View {
 
 #Preview {
     LightAndDarkPreview {
-        ErrorBanner(message: "Someone else already picked this up.", identifier: "preview.error")
+        ErrorBanner(message: "Someone else already claimed this.", identifier: "preview.error")
     }
 }

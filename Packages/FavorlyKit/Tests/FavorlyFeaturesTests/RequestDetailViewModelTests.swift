@@ -109,7 +109,7 @@ struct RequestDetailViewModelTests {
 
         await viewModel.pickUp()
 
-        #expect(viewModel.actionError == "Someone else already picked this up.")
+        #expect(viewModel.actionError == "Someone else already claimed this.")
         #expect(viewModel.statusText == "Claimed by Dana")
         #expect(!viewModel.canPickUp)
     }

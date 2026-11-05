@@ -83,6 +83,8 @@ enum Theme {
         /// Chat bubbles, with a smaller corner on the sender's side.
         static let bubble: CGFloat = 18
         static let bubbleTail: CGFloat = 6
+        /// The top corners of a sheet.
+        static let sheet: CGFloat = 28
     }
 
     enum IconSize {

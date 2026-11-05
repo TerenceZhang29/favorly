@@ -54,7 +54,7 @@ final class DemoFlowUITests: UITestCase {
     }
 
     /// Steps 4 and 5: Bea sees the request at the top of Nearby and picks it up.
-    /// It leaves Nearby and appears under Picked up by me.
+    /// It leaves Nearby and appears under Claimed by me.
     @MainActor
     private func pickItUpAsBea() {
         switchUser(to: "user-bea")
@@ -66,14 +66,14 @@ final class DemoFlowUITests: UITestCase {
 
         nearbyRow.tap()
         app.buttons["detail.pickUp"].tap()
-        app.buttons["Confirm pick up"].tap()
+        app.buttons["claim.confirm"].tap()
         waitFor(element("detail.status"), toRead: "Claimed by Bea")
         app.navigationBars.buttons.firstMatch.tap()
         waitFor(count, toRead: "7 requests")
         XCTAssertFalse(row("nearby.row.", containing: "Need a cup of rice").exists)
 
         openTab("My Activity")
-        app.segmentedControls["activity.segment"].buttons["Picked up by me"].tap()
+        app.segmentedControls["activity.segment"].buttons["Claimed by me"].tap()
         let pickedUpRow = row("activity.row.", containing: "Need a cup of rice")
         XCTAssertTrue(pickedUpRow.waitForExistence(timeout: Self.waitTimeout))
         XCTAssertTrue(pickedUpRow.label.hasSuffix("Claimed by Bea, Posted by Alex"))
@@ -165,7 +165,7 @@ final class DemoFlowUITests: UITestCase {
         XCTAssertTrue(rice.waitForExistence(timeout: Self.waitTimeout))
         rice.tap()
         app.buttons["detail.pickUp"].tap()
-        app.buttons["Confirm pick up"].tap()
+        app.buttons["claim.confirm"].tap()
         waitFor(element("detail.status"), toRead: "Claimed by Bea")
         scrollToAndTap(app.buttons["detail.message"])
         sendChatMessage("On my way")
@@ -266,7 +266,7 @@ final class DemoFlowUITests: UITestCase {
         launchApp()
         openTab("My Activity")
         waitFor(element("activity.empty"), toRead: "You haven't posted any requests yet.")
-        app.segmentedControls["activity.segment"].buttons["Picked up by me"].tap()
-        waitFor(element("activity.empty"), toRead: "You haven't picked up any requests yet.")
+        app.segmentedControls["activity.segment"].buttons["Claimed by me"].tap()
+        waitFor(element("activity.empty"), toRead: "You haven't claimed any requests yet.")
     }
 }

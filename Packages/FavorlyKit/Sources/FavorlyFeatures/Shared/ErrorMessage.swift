@@ -6,8 +6,8 @@ enum ErrorMessage {
         guard let error = error as? FavorlyError else { return "Something went wrong. Please try again." }
         return switch error {
         case .notFound: "This request is no longer available."
-        case .alreadyClaimed: "Someone else already picked this up."
-        case .cannotClaimOwnRequest: "You can't pick up your own request."
+        case .alreadyClaimed: "Someone else already claimed this."
+        case .cannotClaimOwnRequest: "You can't claim your own request."
         case .notAllowed: "You're not allowed to do that."
         case .invalidTransition: "This request can't be changed that way anymore."
         case let .validation(message): message

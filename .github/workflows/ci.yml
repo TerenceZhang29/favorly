@@ -64,6 +64,12 @@ jobs:
             | sort_by(.key) | last | .value[0].udid')
           test -n "$udid" && test "$udid" != "null"
           echo "SIMULATOR_UDID=$udid" >> "$GITHUB_ENV"
+      # A cold simulator can make the first app launch time out ("Timed out while launching application"),
+      # so boot it and wait until it is ready before the test starts.
+      - name: Boot the simulator
+        run: |
+          xcrun simctl boot "$SIMULATOR_UDID" || true
+          xcrun simctl bootstatus "$SIMULATOR_UDID" -b
       # Only the one UI test: the package tests already ran in the job above.
       - name: Build and run the core-flow UI test
         timeout-minutes: 20

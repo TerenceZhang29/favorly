@@ -27,7 +27,7 @@ final class BrowseAndPickUpUITests: UITestCase {
         waitFor(element("detail.status"), toRead: "Open")
 
         app.buttons["detail.pickUp"].tap()
-        app.buttons["Confirm pick up"].tap()
+        app.buttons["claim.confirm"].tap()
         waitFor(element("detail.status"), toRead: "Claimed by Bea")
         waitFor(element("detail.helper"), toRead: "Bea")
         XCTAssertFalse(app.buttons["detail.pickUp"].exists)
@@ -37,7 +37,7 @@ final class BrowseAndPickUpUITests: UITestCase {
         XCTAssertFalse(app.buttons[eggsRow].exists)
 
         openTab("My Activity")
-        app.segmentedControls["activity.segment"].buttons["Picked up by me"].tap()
+        app.segmentedControls["activity.segment"].buttons["Claimed by me"].tap()
         XCTAssertTrue(row("activity.row.", containing: "Need 2 eggs for a cake")
             .waitForExistence(timeout: Self.waitTimeout))
     }

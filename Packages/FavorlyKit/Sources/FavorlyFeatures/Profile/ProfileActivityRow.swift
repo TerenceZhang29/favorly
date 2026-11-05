@@ -5,6 +5,8 @@ import SwiftUI
 struct ProfileActivityRow: View {
     let request: HelpRequest
     let role: ProfileActivity.Role
+    /// The points earned, such as "+18", for a favor the user helped with.
+    var pointsText: String?
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -39,6 +41,12 @@ struct ProfileActivityRow: View {
                 .textStyle(.meta)
                 .foregroundStyle(Theme.Colors.inkMuted)
         }
+        if let pointsText {
+            Spacer(minLength: Theme.Spacing.medium)
+            Text(pointsText)
+                .textStyle(.metaStrong)
+                .foregroundStyle(Theme.Colors.points)
+        }
     }
 
     /// "Helped" gets the olive tint, "Asked" the quiet fill.
@@ -46,7 +54,8 @@ struct ProfileActivityRow: View {
 
     /// "Need a pinch of saffron, Ingredient, Helped, Downtown Brooklyn".
     private var spokenLabel: String {
-        [request.title, request.category.title, roleTitle, request.location.label].joined(separator: ", ")
+        let parts = [request.title, request.category.title, roleTitle, request.location.label]
+        return (pointsText.map { parts + ["\($0) points"] } ?? parts).joined(separator: ", ")
     }
 }
 

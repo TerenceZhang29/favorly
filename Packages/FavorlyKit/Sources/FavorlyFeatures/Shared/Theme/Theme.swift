@@ -85,6 +85,8 @@ enum Theme {
         static let bubbleTail: CGFloat = 6
         /// The top corners of a sheet.
         static let sheet: CGFloat = 28
+        /// The floating tab bar.
+        static let tabBar: CGFloat = 24
     }
 
     enum IconSize {
@@ -105,6 +107,8 @@ enum Theme {
         static let initialScale: CGFloat = 0.4
         /// The most a tile grows with Dynamic Type, as a multiple of its default side.
         static let maxScale: CGFloat = 2
+        /// A tab's symbol.
+        static let tabSymbol: CGFloat = 20
         /// Size of the dark-mode glow.
         static let glow: CGFloat = 360
     }
@@ -123,6 +127,8 @@ enum Theme {
         static let none = GroveShadow(color: Colors.ink, lightOpacity: 0, darkOpacity: 0, radius: 0, offsetY: 0)
     }
 
+    /// The largest text size the tab bar follows, as the system tab bar does.
+    static let tabBarMaxTypeSize = DynamicTypeSize.xxxLarge
     /// The largest text size a section header follows.
     static let headerMaxTypeSize = DynamicTypeSize.accessibility2
     /// Blur of the dark-mode glow.
@@ -131,7 +137,15 @@ enum Theme {
     /// Height of the primary button and the chat composer's controls.
     static let controlHeight: CGFloat = 56
     static let composerHeight: CGFloat = 48
+    /// Height of a pill such as "I can help" or "Message".
+    static let pillHeight: CGFloat = 40
+    /// Height of the floating tab bar's buttons.
+    static let tabBarHeight: CGFloat = 60
+    /// How far a tab label may shrink to fit, at large text sizes.
+    static let tabLabelMinimumScale: CGFloat = 0.7
     static let borderWidth: CGFloat = 1
+    /// The milestone ring around the avatar on the user's own profile.
+    static let ringWidth: CGFloat = 5
     static let pressedOpacity = 0.7
     static let disabledOpacity = 0.5
 }

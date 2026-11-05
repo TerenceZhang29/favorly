@@ -32,6 +32,17 @@ enum RootTab: String, CaseIterable, Identifiable, Sendable {
         }
     }
 
+    /// The symbol when the tab is selected: filled where SF Symbols has a filled form.
+    var selectedSystemImage: String {
+        switch self {
+        case .nearby: "location.fill"
+        case .post: "plus.circle.fill"
+        case .activity: "list.bullet"
+        case .profile: "person.crop.circle.fill"
+        case .devSettings: "gearshape.fill"
+        }
+    }
+
     var systemImage: String {
         switch self {
         case .nearby: "location"

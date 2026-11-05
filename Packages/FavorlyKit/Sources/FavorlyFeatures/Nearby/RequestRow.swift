@@ -33,6 +33,18 @@ struct RequestRow: View {
             if stacksBadge {
                 badge
             }
+            // Where to meet and the mockup's "I can help" pill. The whole card opens the request.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: Theme.Spacing.large) {
+                    place
+                    Spacer(minLength: 0)
+                    helpPill
+                }
+                VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
+                    place
+                    helpPill
+                }
+            }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(spokenLabel)
@@ -46,6 +58,30 @@ struct RequestRow: View {
         stacksBadge
             ? AnyLayout(VStackLayout(alignment: .leading, spacing: Theme.Spacing.medium))
             : AnyLayout(HStackLayout(spacing: Theme.Spacing.medium + Theme.Spacing.small / 2))
+    }
+
+    /// The meeting spot, or the neighborhood when there is none.
+    private var place: some View {
+        Label(
+            item.request.meetingSpot.isEmpty ? item.request.location.label : item.request.meetingSpot,
+            systemImage: item.request.meetingSpot.isEmpty ? "mappin" : "figure.wave"
+        )
+        .textStyle(.meta)
+        .foregroundStyle(Theme.Colors.inkMuted)
+        .lineLimit(2)
+    }
+
+    /// Not a separate button: it shows what tapping the card is for. Hidden on the user's own requests.
+    @ViewBuilder
+    private var helpPill: some View {
+        if !isOwn {
+            Text("I can help")
+                .textStyle(.metaStrong)
+                .foregroundStyle(Theme.Colors.onTint)
+                .padding(.horizontal, Theme.Spacing.xLarge)
+                .frame(minHeight: Theme.pillHeight)
+                .background(Theme.Colors.tint, in: Capsule())
+        }
     }
 
     /// "Yours" on the user's own requests, otherwise the status ("Open").

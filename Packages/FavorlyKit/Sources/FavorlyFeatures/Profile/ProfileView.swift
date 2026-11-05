@@ -5,8 +5,9 @@ import SwiftUI
 struct ProfileView: View {
     private let environment: AppEnvironment
     @State private var viewModel: ProfileViewModel
-    @State private var isConfirmingDelete = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.selectTab) private var selectTab
+    @State private var isShowingSettings = false
     /// True for the Profile tab, false when pushed for a given user.
     private let isTab: Bool
 
@@ -29,11 +30,11 @@ struct ProfileView: View {
             case let .loaded(content):
                 header(content.user)
                 score
+                if isTab {
+                    milestone
+                }
                 activities(content.activities)
                 reviews(content.reviews)
-                if viewModel.showsAccount {
-                    account
-                }
             case let .failed(message):
                 MessageView(
                     systemImage: "exclamationmark.triangle",
@@ -49,6 +50,10 @@ struct ProfileView: View {
         .groveListBackground()
         .navigationTitle(isTab ? "Profile" : viewModel.content?.user.displayName ?? "Profile")
         .toolbarTitleDisplayMode(isTab ? .automatic : .inline)
+        .modifier(TabRootBar(isTabRoot: isTab))
+        .navigationDestination(isPresented: $isShowingSettings) {
+            AccountSettingsView(viewModel: viewModel, environment: environment)
+        }
         .modifier(SafetyActions(
             isEnabled: viewModel.canReportOrBlock,
             reportTitle: "Report \(personName)",
@@ -71,7 +76,33 @@ struct ProfileView: View {
     private func header(_ user: UserProfile) -> some View {
         Section {
             VStack(spacing: Theme.Spacing.medium) {
-                AvatarView(name: user.displayName)
+                if isTab {
+                    // The mockup's settings button, top right, over the avatar.
+                    HStack {
+                        Spacer()
+                        Button {
+                            isShowingSettings = true
+                        } label: {
+                            Image(systemName: "slider.horizontal.3")
+                                .font(.system(size: Theme.IconSize.tabSymbol, weight: .semibold))
+                                .foregroundStyle(Theme.Colors.ink)
+                                .frame(width: Theme.composerHeight, height: Theme.composerHeight)
+                                .background(
+                                    Theme.Colors.surface,
+                                    in: RoundedRectangle(cornerRadius: Theme.Radius.field)
+                                )
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: Theme.Radius.field)
+                                        .strokeBorder(Theme.Colors.surfaceBorder, lineWidth: Theme.borderWidth)
+                                }
+                        }
+                        .buttonStyle(.borderless)
+                        .accessibilityLabel("Settings")
+                        .accessibilityIdentifier("profile.settings")
+                    }
+                    .padding(.horizontal, Theme.Spacing.screen)
+                }
+                avatar(for: user)
                 Text(user.displayName)
                     .textStyle(.title)
                     .foregroundStyle(Theme.Colors.ink)
@@ -88,6 +119,56 @@ struct ProfileView: View {
             .padding(.vertical, Theme.Spacing.small)
             .plainListRow()
         }
+    }
+
+    /// The avatar, with the mockup's progress ring toward the next milestone on the user's own profile.
+    @ViewBuilder
+    private func avatar(for user: UserProfile) -> some View {
+        if isTab {
+            AvatarView(name: user.displayName)
+                .padding(Theme.Spacing.small + Theme.Spacing.small / 2)
+                .overlay {
+                    Circle().stroke(Theme.Colors.surfaceBorder, lineWidth: Theme.ringWidth)
+                    Circle()
+                        .trim(from: 0, to: viewModel.milestoneProgress)
+                        .stroke(Theme.Colors.star, style: StrokeStyle(lineWidth: Theme.ringWidth, lineCap: .round))
+                        .rotationEffect(.degrees(-90))
+                }
+                .accessibilityElement()
+                .accessibilityLabel("Next milestone")
+                .accessibilityValue(viewModel.milestoneText)
+        } else {
+            AvatarView(name: user.displayName)
+        }
+    }
+
+    /// The mockup's gift card, as progress only: 1.0 has no reward to redeem, so there is no Redeem button.
+    private var milestone: some View {
+        Section {
+            VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
+                HStack(spacing: Theme.Spacing.large) {
+                    CategoryIcon(systemImage: "gift")
+                    VStack(alignment: .leading, spacing: Theme.Spacing.small / 2) {
+                        Text("Next milestone")
+                            .textStyle(.bodyStrong)
+                            .foregroundStyle(Theme.Colors.ink)
+                        Text(viewModel.milestoneText)
+                            .textStyle(.meta)
+                            .foregroundStyle(Theme.Colors.inkMuted)
+                    }
+                }
+                ProgressView(value: viewModel.milestoneProgress)
+                    .tint(Theme.Colors.star)
+                    .accessibilityHidden(true)
+                Text(viewModel.milestoneRemainingText)
+                    .textStyle(.meta)
+                    .foregroundStyle(Theme.Colors.inkMuted)
+            }
+            .padding(.vertical, Theme.Spacing.small)
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("profile.milestone")
+        }
+        .groveRows()
     }
 
     /// One card, as in the mockup: the lime "Kindness score" badge over the score, and favors and rating beside
@@ -124,69 +205,6 @@ struct ProfileView: View {
             : AnyLayout(HStackLayout(alignment: .center, spacing: Theme.Spacing.large))
     }
 
-    private var account: some View {
-        Section {
-            if let accountError = viewModel.accountError {
-                InlineMessage(text: accountError, identifier: "profile.accountError")
-            }
-            NavigationLink {
-                BlockedUsersView(environment: environment)
-            } label: {
-                Label("Blocked people", systemImage: "hand.raised")
-            }
-            .accessibilityIdentifier("profile.blockedPeople")
-            if let settings = SystemSettings.appURL {
-                Link(destination: settings) {
-                    Label("Notifications", systemImage: "bell")
-                }
-                .accessibilityIdentifier("profile.notifications")
-            }
-            NavigationLink {
-                SafetyTipsView()
-            } label: {
-                Label("Safety tips", systemImage: "checkmark.shield")
-            }
-            .accessibilityIdentifier("profile.safetyTips")
-            Link(destination: LegalLinks.terms) {
-                Label("Terms of Use", systemImage: "doc.text")
-            }
-            .accessibilityIdentifier("profile.terms")
-            Link(destination: LegalLinks.privacy) {
-                Label("Privacy Policy", systemImage: "lock")
-            }
-            .accessibilityIdentifier("profile.privacy")
-            Link(destination: LegalLinks.support) {
-                Label("Contact support", systemImage: "envelope")
-            }
-            .accessibilityIdentifier("profile.support")
-            Button("Sign out") {
-                Task { await viewModel.signOut() }
-            }
-            .accessibilityIdentifier("profile.signOut")
-            Button("Delete account", role: .destructive) {
-                isConfirmingDelete = true
-            }
-            .disabled(viewModel.isDeletingAccount)
-            .accessibilityIdentifier("profile.deleteAccount")
-        } header: {
-            SectionHeader(text: "Account")
-        }
-        .groveRows()
-        .confirmationDialog("Delete your account?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
-            Button("Delete account", role: .destructive) {
-                Task { await viewModel.deleteAccount() }
-            }
-            .accessibilityIdentifier("profile.confirmDelete")
-        } message: {
-            Text(Self.deleteExplanation)
-        }
-    }
-
-    static let deleteExplanation = """
-    This deletes your profile, your open requests, and the messages and reviews you wrote. \
-    Favors you completed stay, shown as from a deleted user. This can't be undone.
-    """
-
     private func reviews(_ reviews: [Review]) -> some View {
         Section {
             if reviews.isEmpty {
@@ -217,13 +235,27 @@ struct ProfileView: View {
             }
             ForEach(activities) { activity in
                 NavigationLink(value: activity.id) {
-                    ProfileActivityRow(request: activity.request, role: activity.role)
+                    ProfileActivityRow(
+                        request: activity.request,
+                        role: activity.role,
+                        pointsText: viewModel.pointsText(for: activity)
+                    )
                 }
                 .navigationLinkIndicatorVisibility(.hidden)
                 .accessibilityIdentifier("profile.activity.\(activity.id.rawValue.uuidString)")
             }
         } header: {
-            SectionHeader(text: "Past activities")
+            HStack(alignment: .firstTextBaseline) {
+                SectionHeader(text: "Past activities")
+                Spacer()
+                if isTab {
+                    Button("See all") { selectTab(.activity) }
+                        .textStyle(.meta)
+                        .foregroundStyle(Theme.Colors.inkMuted)
+                        .textCase(nil)
+                        .accessibilityIdentifier("profile.seeAll")
+                }
+            }
         }
         .groveRows()
     }

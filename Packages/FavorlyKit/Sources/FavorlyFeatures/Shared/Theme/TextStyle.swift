@@ -25,6 +25,9 @@ enum TextStyle: CaseIterable, Sendable {
     case badge
     /// The Kindness score on a profile: 38 Bold.
     case score
+    /// A tab label: 11 Medium, or 11 Bold when selected.
+    case tab
+    case tabSelected
 
     var font: Font {
         GroveFonts.registerIfNeeded()
@@ -33,9 +36,9 @@ enum TextStyle: CaseIterable, Sendable {
 
     var fontName: String {
         switch self {
-        case .largeTitle, .title, .headline, .button, .badge, .score: GroveFonts.bold
+        case .largeTitle, .title, .headline, .button, .badge, .score, .tabSelected: GroveFonts.bold
         case .bodyStrong, .metaStrong: GroveFonts.semiBold
-        case .cardTitle: GroveFonts.medium
+        case .cardTitle, .tab: GroveFonts.medium
         case .body, .meta: GroveFonts.regular
         }
     }
@@ -49,7 +52,7 @@ enum TextStyle: CaseIterable, Sendable {
         case .body, .bodyStrong: 15
         case .meta, .metaStrong: 13
         case .button: 16
-        case .badge: 11
+        case .badge, .tab, .tabSelected: 11
         case .score: 38
         }
     }
@@ -63,7 +66,7 @@ enum TextStyle: CaseIterable, Sendable {
         case .body, .bodyStrong: .subheadline
         case .meta, .metaStrong: .footnote
         case .button: .callout
-        case .badge: .caption2
+        case .badge, .tab, .tabSelected: .caption2
         }
     }
 

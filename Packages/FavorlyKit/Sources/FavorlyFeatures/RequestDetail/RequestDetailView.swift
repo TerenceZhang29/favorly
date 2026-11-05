@@ -46,8 +46,9 @@ struct RequestDetailView: View {
         .groveListBackground()
         .navigationTitle("Request")
         .toolbarTitleDisplayMode(.inline)
-        // The title stays for the back button and VoiceOver, but the bar shows none, as in the mockup.
+        // The title stays for VoiceOver, but the bar shows none, and "‹ Nearby" replaces the back button.
         .hidingNavigationTitle()
+        .groveBackLink()
         .modifier(SafetyActions(
             isEnabled: viewModel.canReportOrBlock,
             reportTitle: "Report request",
@@ -176,7 +177,7 @@ struct RequestDetailView: View {
             if viewModel.canPickUp {
                 Section {
                     VStack(spacing: Theme.Spacing.medium) {
-                        Button("Claim") { isConfirmingClaim = true }
+                        Button("I can help") { isConfirmingClaim = true }
                             .buttonStyle(PrimaryButtonStyle())
                             .accessibilityIdentifier("detail.pickUp")
                         Text("\(viewModel.requesterName) will see that you claimed it.")

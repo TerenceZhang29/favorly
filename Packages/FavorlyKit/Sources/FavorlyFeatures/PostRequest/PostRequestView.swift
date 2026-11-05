@@ -14,6 +14,13 @@ struct PostRequestView: View {
     var body: some View {
         Form {
             Section {
+                ScreenHeadline(text: "Ask for ", accent: "a favor")
+                    .padding(.horizontal, Theme.Spacing.screen + Theme.Spacing.small)
+                    .padding(.top, Theme.Spacing.section)
+                    .plainListRow()
+            }
+
+            Section {
                 TextField("Title", text: $viewModel.title)
                     .submitLabel(.done)
                     .accessibilityIdentifier("post.title")
@@ -44,15 +51,18 @@ struct PostRequestView: View {
             .groveRows()
             .compactSectionSpacing()
 
+            // Category chips, as in the mockup: one tap picks a category.
             Section {
-                Picker("Category", selection: $viewModel.category) {
+                FlowLayout {
                     ForEach(RequestCategory.allCases, id: \.self) { category in
-                        Text(category.title).tag(category)
+                        categoryChip(category)
                     }
                 }
-                .accessibilityIdentifier("post.category")
+                .padding(.horizontal, Theme.Spacing.screen + Theme.Spacing.small)
+                .plainListRow()
+            } header: {
+                SectionHeader(text: "Category")
             }
-            .groveRows()
 
             Section {
                 location
@@ -99,7 +109,35 @@ struct PostRequestView: View {
         .scrollDismissesKeyboard(.interactively)
         .groveListBackground()
         .navigationTitle("Post")
+        .hidingNavigationBar()
         .task(id: viewModel.reloadKey) { await viewModel.loadLocation() }
+    }
+
+    private func categoryChip(_ category: RequestCategory) -> some View {
+        let isSelected = viewModel.category == category
+        return Button {
+            viewModel.category = category
+        } label: {
+            HStack(spacing: Theme.Spacing.small + Theme.Spacing.small / 2) {
+                Image(systemName: category.systemImage)
+                    .accessibilityHidden(true)
+                Text(category.title)
+            }
+            .textStyle(isSelected ? .bodyStrong : .body)
+            .fixedSize()
+            .foregroundStyle(isSelected ? Theme.Colors.onBubbleMine : Theme.Colors.ink)
+            .padding(.horizontal, Theme.Spacing.large)
+            .frame(minHeight: Theme.pillHeight)
+            .background(isSelected ? Theme.Colors.bubbleMine : Theme.Colors.surface, in: Capsule())
+            .overlay {
+                if !isSelected {
+                    Capsule().strokeBorder(Theme.Colors.surfaceBorder, lineWidth: Theme.borderWidth)
+                }
+            }
+        }
+        .buttonStyle(ChipButtonStyle())
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+        .accessibilityIdentifier("post.category.\(category.rawValue)")
     }
 
     @ViewBuilder

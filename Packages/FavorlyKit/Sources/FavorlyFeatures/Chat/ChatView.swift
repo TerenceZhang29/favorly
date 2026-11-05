@@ -28,11 +28,17 @@ struct ChatView: View {
                 }
             }
         }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if let request = viewModel.request {
+                requestCard(request)
+            }
+        }
         .safeAreaInset(edge: .bottom) {
             if viewModel.isOpenForSending {
                 composer
             }
         }
+        .hidesTabBar()
         .sheet(isPresented: Binding(get: { reporting != nil }, set: {
             if !$0 {
                 reporting = nil
@@ -46,7 +52,7 @@ struct ChatView: View {
         .toolbarTitleDisplayMode(.inline)
         .toolbar {
             // The other person, as in the mockup, with the request under their name.
-            if let otherName {
+            if let otherName = viewModel.otherName {
                 ToolbarItem(placement: .principal) {
                     HStack(spacing: Theme.Spacing.medium) {
                         AvatarView(name: otherName, side: Theme.IconSize.fact)
@@ -54,7 +60,7 @@ struct ChatView: View {
                             Text(otherName)
                                 .textStyle(.headline)
                                 .foregroundStyle(Theme.Colors.ink)
-                            Text(viewModel.title)
+                            Text(viewModel.otherScoreText ?? viewModel.title)
                                 .textStyle(.meta)
                                 .foregroundStyle(Theme.Colors.inkMuted)
                         }
@@ -138,12 +144,34 @@ struct ChatView: View {
         }
     }
 
-    /// The other person in the thread: the helper for the requester, the requester for the helper.
-    private var otherName: String? {
-        guard let request = viewModel.request else { return nil }
-        let currentID = environment.session.currentUser.id
-        guard let other = request.requesterID == currentID ? request.helperID : request.requesterID else { return nil }
-        return environment.session.displayName(for: other)
+    /// The mockup's card under the header: the user's part in the request, its title, and who finishes it.
+    /// Tapping it goes back to the request.
+    private func requestCard(_ request: HelpRequest) -> some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
+            HStack {
+                TagBadge(text: viewModel.roleText)
+                Spacer()
+                if let pointsRangeText = viewModel.pointsRangeText {
+                    Text(pointsRangeText)
+                        .textStyle(.metaStrong)
+                        .foregroundStyle(Theme.Colors.points)
+                }
+            }
+            Text(request.title)
+                .textStyle(.cardTitle)
+                .foregroundStyle(Theme.Colors.ink)
+            if let completionNote = viewModel.completionNote {
+                Label(completionNote, systemImage: "clock")
+                    .textStyle(.meta)
+                    .foregroundStyle(Theme.Colors.inkMuted)
+            }
+        }
+        .padding(Theme.Spacing.card)
+        .background(CardBackground())
+        .padding(.horizontal, Theme.Spacing.xLarge)
+        .padding(.vertical, Theme.Spacing.medium)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("chat.requestCard")
     }
 
     /// Messages more than 15 minutes apart get a new time line.

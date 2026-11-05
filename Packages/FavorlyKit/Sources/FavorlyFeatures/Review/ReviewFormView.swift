@@ -53,6 +53,20 @@ struct ReviewFormView: View {
                 }
                 .groveRows()
 
+                // The mockup's points preview: what the helper earns with this rating.
+                Section {
+                    Label(viewModel.pointsText(for: helperName), systemImage: "star.fill")
+                        .textStyle(.bodyStrong)
+                        .foregroundStyle(Theme.Colors.onTint)
+                        .padding(Theme.Spacing.card)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Theme.Colors.tint, in: RoundedRectangle(cornerRadius: Theme.Radius.field))
+                        .accessibilityIdentifier("review.points")
+                        .padding(.horizontal, Theme.Spacing.screen)
+                        .plainListRow()
+                }
+                .compactSectionSpacing()
+
                 if let submitError = viewModel.submitError {
                     Section {
                         InlineMessage(text: submitError, identifier: "review.submitError")

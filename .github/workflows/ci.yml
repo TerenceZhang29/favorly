@@ -38,16 +38,19 @@ jobs:
     name: App build and core-flow UI test
     if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     runs-on: macos-26
-    # The test step stops first, so a slow run still shows its failures and uploads its results.
-    timeout-minutes: 30
+    # The build and test steps stop first, so a slow run still shows its failures, uploads its results and
+    # saves its build cache.
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v5
       - name: Generate the Xcode project
         run: |
           brew install xcodegen
           xcodegen generate
-      - name: Cache the app build
-        uses: actions/cache@v4
+      # Restored here and saved at the end even when the job fails: with the cache saved only on success, a run
+      # of failures meant every run built from nothing and ran out of time.
+      - name: Restore the app build
+        uses: actions/cache/restore@v4
         with:
           path: DerivedData
           key: >-
@@ -70,19 +73,33 @@ jobs:
         run: |
           xcrun simctl boot "$SIMULATOR_UDID" || true
           xcrun simctl bootstatus "$SIMULATOR_UDID" -b
-      # Only the one UI test: the package tests already ran in the job above.
-      - name: Build and run the core-flow UI test
-        timeout-minutes: 20
+      - name: Build the app and tests
+        timeout-minutes: 30
         run: |
           set -o pipefail
-          xcodebuild test -project Favorly.xcodeproj -scheme Favorly \
+          xcodebuild build-for-testing -quiet -project Favorly.xcodeproj -scheme Favorly \
+            -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" -derivedDataPath DerivedData 2>&1 | tee build.log
+      # Only the one UI test: the package tests already ran in the job above.
+      - name: Run the core-flow UI test
+        timeout-minutes: 15
+        run: |
+          set -o pipefail
+          xcodebuild test-without-building -project Favorly.xcodeproj -scheme Favorly \
             -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" -derivedDataPath DerivedData \
             -only-testing:FavorlyUITests/DemoFlowUITests/testDemoScript \
-            -resultBundlePath TestResults.xcresult 2>&1 | tee xcodebuild.log | tail -n 400
+            -resultBundlePath TestResults.xcresult 2>&1 | tee xcodebuild.log | grep -E "Test Case|error:|TEST"
+      - name: Save the app build
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: DerivedData
+          key: >-
+            xcode-${{ runner.os }}-${{ hashFiles('Packages/FavorlyKit/Package.swift', 'project.yml') }}-${{ github.sha }}
       - name: Show failures
         if: failure()
         run: |
-          grep -nE "error:|: Test failed|' failed \\(|XCTAssert|Failed to|Assertion Failure" xcodebuild.log | head -n 200
+          grep -nE "error:|: Test failed|' failed \\(|XCTAssert|Failed to|Assertion Failure" build.log xcodebuild.log \
+            2>/dev/null | head -n 200 || true
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v4

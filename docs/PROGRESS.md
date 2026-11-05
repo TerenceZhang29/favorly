@@ -547,6 +547,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 ## Known issues
 
+- 2026-11-05 · CI · On GitHub's simulator a tab tap is sometimes dropped: the core-flow test stayed on Dev Settings after tapping Nearby (runs 41954096116 and 42056233215). `UITestCase.openTab` now taps again, up to three times, until the tab is selected
 - 2026-11-04 · Phase 5 · Full suite on `phase/5-grove-ui`, iPhone 17: run in parallel, `ChatUITests.testHelperAndRequesterHoldAConversation` (a Nearby row tap didn't open the request) and `KeyboardUITests.testDoneKeyClosesTheKeyboardOnPost` (the keyboard's Done key failed to scroll into view) failed; both passed when rerun alone, and a serial run of the whole suite passed (27 passed, 5 skipped, 0 failed). Same pattern as the 2026-10-29 entry below; watch whether the Chat one repeats
 - 2026-11-04 · Phase 5 · On the iPhone 18 Pro simulator, `ScreenshotUITests.testCaptureScreenshotsInDarkMode` captured light screens (the simulator didn't switch appearance); the same build on iPhone 17 captured dark ones, and the old look on iPhone 17 did too. Use iPhone 17 for dark screenshots
 - 2026-11-04 · Phase 5 · The app icon is still the Phase 2 teal (decision 5)

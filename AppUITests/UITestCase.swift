@@ -35,7 +35,18 @@ class UITestCase: XCTestCase {
 
     @MainActor
     func openTab(_ title: String) {
-        app.tabBars.buttons[title].tap()
+        // A slow simulator (GitHub's) can drop a tab tap, so tap again until the tab is selected.
+        let tab = app.tabBars.buttons[title]
+        let selected = NSPredicate(format: "isSelected == true")
+        for _ in 0 ..< 3 {
+            tab.tap()
+            if XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: selected, object: tab)], timeout: 5)
+                == .completed
+            {
+                return
+            }
+        }
+        XCTAssertTrue(tab.isSelected, "The \(title) tab didn't open")
     }
 
     @MainActor

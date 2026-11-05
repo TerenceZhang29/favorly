@@ -279,6 +279,7 @@ Defaults from the plan's Preparation section. Change here if the team decides ot
 
 Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
+- 2026-11-04 · CI · GitHub's app job builds the app and runs only `DemoFlowUITests.testDemoScript` (job limit 30 minutes, test step 20); the full UI suite runs locally before every push to `main` · owner's request to cut CI time; that test walks the core flow (browse, post, pick up, complete, reset) across all four main tabs, and the package tests already run in their own job
 - 2026-11-04 · 5 · Grove ships in 1.0.0: `phase/5-grove-ui` merges into `main` with the 4G work, and the version stays `1.0.0` · the owner's decision, so the submitted app and its store screenshots have the final look
 - 2026-11-04 · 5 · All of Phase 5 on one branch, `phase/5-grove-ui`, branched from `phase/4g-beta`, with no 5B review gate · the owner asked for the whole revamp in one go; `main` doesn't have 4G yet, so the branch can't fast-forward `main` on its own
 - 2026-11-04 · 5A · Figtree is a resource of `FavorlyFeatures` (`Resources/Fonts`, registered with Core Text by `GroveFonts`), not an app-target resource listed in `UIAppFonts` · previews and package tests load it too, `project.yml` needs no change, and the font check is a package test (`ThemeTests.figtreeIsBundledAndRegisters`) instead of a new `LaunchUITests` method

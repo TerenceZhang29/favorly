@@ -31,15 +31,15 @@ jobs:
       - name: Run package tests
         run: swift test --package-path Packages/FavorlyKit
 
-  # The UI suite is long on GitHub's machines, so it runs on main and when started by hand
-  # (gh workflow run ci.yml --ref <branch>), like the full suite runs locally only before a push to main.
+  # On GitHub only the core-flow UI test runs (DemoFlowUITests.testDemoScript: browse, post, pick up,
+  # complete, reset), on main and when started by hand (gh workflow run ci.yml --ref <branch>). The full UI
+  # suite runs locally before a push to main; it takes two to three times longer on GitHub's machines.
   app-tests:
-    name: App and UI tests (xcodebuild test)
+    name: App build and core-flow UI test
     if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     runs-on: macos-26
-    # The UI suite takes about 13 minutes back to back on a laptop and two to three times that here. The test
-    # step stops first, so a slow run still shows its failures and uploads its results.
-    timeout-minutes: 60
+    # The test step stops first, so a slow run still shows its failures and uploads its results.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
       - name: Generate the Xcode project
@@ -64,12 +64,14 @@ jobs:
             | sort_by(.key) | last | .value[0].udid')
           test -n "$udid" && test "$udid" != "null"
           echo "SIMULATOR_UDID=$udid" >> "$GITHUB_ENV"
-      - name: Build and run all tests
-        timeout-minutes: 50
+      # Only the one UI test: the package tests already ran in the job above.
+      - name: Build and run the core-flow UI test
+        timeout-minutes: 20
         run: |
           set -o pipefail
           xcodebuild test -project Favorly.xcodeproj -scheme Favorly \
             -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" -derivedDataPath DerivedData \
+            -only-testing:FavorlyUITests/DemoFlowUITests/testDemoScript \
             -resultBundlePath TestResults.xcresult 2>&1 | tee xcodebuild.log | tail -n 400
       - name: Show failures
         if: failure()

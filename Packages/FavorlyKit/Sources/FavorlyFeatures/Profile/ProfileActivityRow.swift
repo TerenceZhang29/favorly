@@ -1,39 +1,44 @@
 import FavorlyCore
 import SwiftUI
 
-/// A completed request on a profile: its icon, title, "Helped" or "Asked", and the location label only.
+/// A completed request on a profile: "Helped" or "Asked", its title, and the location label only.
 struct ProfileActivityRow: View {
     let request: HelpRequest
     let role: ProfileActivity.Role
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     /// "Helped" or "Asked".
     private var roleTitle: String { role.title }
 
+    private var layout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: Theme.Spacing.small))
+            : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: Theme.Spacing.large))
+    }
+
     var body: some View {
-        HStack(spacing: Theme.Spacing.large) {
-            CategoryIcon(systemImage: request.category.systemImage)
-            VStack(alignment: .leading, spacing: Theme.Spacing.small) {
-                Text(request.title)
-                    .textStyle(.bodyStrong)
-                    .foregroundStyle(Theme.Colors.ink)
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: Theme.Spacing.medium) { details }
-                    VStack(alignment: .leading, spacing: Theme.Spacing.small) { details }
-                }
-            }
-            Spacer(minLength: Theme.Spacing.medium)
-        }
-        .padding(.vertical, Theme.Spacing.small)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(spokenLabel)
+        // The role badge on the left, then the title and where it was, as in the mockup. At accessibility text
+        // sizes the badge goes above, so the title keeps the row's width.
+        layout { content }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, Theme.Spacing.small)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(spokenLabel)
     }
 
     @ViewBuilder
-    private var details: some View {
+    private var content: some View {
         TagBadge(text: roleTitle, colors: isHelped ? .tint : .quiet)
-        Text(request.location.label)
-            .textStyle(.meta)
-            .foregroundStyle(Theme.Colors.inkMuted)
+            .frame(minWidth: Theme.IconSize.roleBadge, alignment: .leading)
+        VStack(alignment: .leading, spacing: Theme.Spacing.small / 2) {
+            Text(request.title)
+                .textStyle(.bodyStrong)
+                .foregroundStyle(Theme.Colors.ink)
+            Text(request.location.label)
+                .textStyle(.meta)
+                .foregroundStyle(Theme.Colors.inkMuted)
+        }
     }
 
     /// "Helped" gets the olive tint, "Asked" the quiet fill.

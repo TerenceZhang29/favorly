@@ -1,6 +1,7 @@
 import SwiftUI
 
 /// One chat message: the signed-in user's on the right in ink, the other person's on the left on a card.
+/// The sender and time aren't drawn (the thread shows a time line instead), but VoiceOver reads both.
 struct MessageBubble: View {
     let text: String
     /// "You" or the sender's name.
@@ -22,9 +23,6 @@ struct MessageBubble: View {
                         shape.strokeBorder(Theme.Colors.surfaceBorder, lineWidth: Theme.borderWidth)
                     }
                 }
-            Text("\(senderName) · \(timeText)")
-                .textStyle(.meta)
-                .foregroundStyle(Theme.Colors.inkMuted)
         }
         .frame(maxWidth: .infinity, alignment: isMine ? .trailing : .leading)
         .padding(.leading, isMine ? Theme.Spacing.bubbleInset : Theme.Spacing.xLarge)

@@ -20,6 +20,13 @@ struct PostRequestView: View {
                 if let titleMessage = viewModel.titleMessage {
                     InlineMessage(text: titleMessage, identifier: "post.titleMessage")
                 }
+            } header: {
+                SectionHeader(text: "What do you need?")
+            }
+            .groveRows()
+
+            // Details get their own card, with a running count, as in the mockup.
+            Section {
                 TextField("Details (optional)", text: $viewModel.details, axis: .vertical)
                     .lineLimit(3 ... 6)
                     .doneKey(text: $viewModel.details)
@@ -27,10 +34,15 @@ struct PostRequestView: View {
                 if let detailsMessage = viewModel.detailsMessage {
                     InlineMessage(text: detailsMessage, identifier: "post.detailsMessage")
                 }
-            } header: {
-                SectionHeader(text: "What do you need?")
+            } footer: {
+                Text("\(viewModel.details.count) / \(DraftValidator.maxDetailsLength)")
+                    .textStyle(.meta)
+                    .foregroundStyle(Theme.Colors.inkMuted)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .accessibilityIdentifier("post.detailsCount")
             }
             .groveRows()
+            .compactSectionSpacing()
 
             Section {
                 Picker("Category", selection: $viewModel.category) {
@@ -45,7 +57,13 @@ struct PostRequestView: View {
             Section {
                 location
             } header: {
-                SectionHeader(text: "Location")
+                VStack(alignment: .leading, spacing: 0) {
+                    SectionHeader(text: "Location")
+                    // The mockup shows only the neighborhood and meeting spot; VoiceOver still reads the tag.
+                    if case .tagged = viewModel.locationState, let locationText = viewModel.locationText {
+                        SpokenOnlyText(text: locationText, identifier: "post.location")
+                    }
+                }
             } footer: {
                 if viewModel.locationText != nil {
                     Text("Neighbors see these with your request. Pick a public meeting spot, never an address.")
@@ -64,6 +82,8 @@ struct PostRequestView: View {
 
             Section {
                 Button("Post request") {
+                    // Posting opens My Activity; without this the keyboard stays open over it.
+                    Keyboard.dismiss()
                     Task {
                         if let request = await viewModel.submit() {
                             onPosted(request)
@@ -89,15 +109,6 @@ struct PostRequestView: View {
             ProgressView()
                 .accessibilityIdentifier("post.locationLoading")
         case .tagged:
-            if let locationText = viewModel.locationText {
-                Label {
-                    Text(locationText)
-                } icon: {
-                    Image(systemName: "mappin.and.ellipse")
-                        .foregroundStyle(Theme.Colors.brand)
-                }
-                .accessibilityIdentifier("post.location")
-            }
             neighborhood
             TextField("Meeting spot (optional)", text: $viewModel.meetingSpot)
                 .submitLabel(.done)

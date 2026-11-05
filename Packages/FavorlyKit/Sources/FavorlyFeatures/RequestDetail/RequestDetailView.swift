@@ -26,6 +26,7 @@ struct RequestDetailView: View {
             case let .loaded(request):
                 summary(of: request)
                 facts(of: request)
+                people(of: request)
                 if let review = viewModel.review {
                     reviewSection(review)
                 }
@@ -45,6 +46,8 @@ struct RequestDetailView: View {
         .groveListBackground()
         .navigationTitle("Request")
         .toolbarTitleDisplayMode(.inline)
+        // The title stays for the back button and VoiceOver, but the bar shows none, as in the mockup.
+        .hidingNavigationTitle()
         .modifier(SafetyActions(
             isEnabled: viewModel.canReportOrBlock,
             reportTitle: "Report request",
@@ -92,11 +95,16 @@ struct RequestDetailView: View {
     private func summary(of request: HelpRequest) -> some View {
         Section {
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
-                HStack(spacing: Theme.Spacing.medium + Theme.Spacing.small / 2) {
-                    CategoryIcon(systemImage: request.category.systemImage)
-                    // The Status row below is what VoiceOver and the UI tests read.
-                    StatusBadge(text: viewModel.statusText, colors: request.status.badgeColors)
-                        .accessibilityHidden(true)
+                // The icon, badge and time on one line, or the time under them when the badge is long.
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: Theme.Spacing.medium + Theme.Spacing.small / 2) {
+                        iconAndBadge(of: request)
+                        timeLine(of: request)
+                    }
+                    VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
+                        HStack(spacing: Theme.Spacing.medium + Theme.Spacing.small / 2) { iconAndBadge(of: request) }
+                        timeLine(of: request)
+                    }
                 }
                 Text(request.title)
                     .textStyle(.title)
@@ -120,30 +128,11 @@ struct RequestDetailView: View {
     private func facts(of request: HelpRequest) -> some View {
         Section {
             fact("Category", request.category.title, id: "category", systemImage: "tag")
-            fact("Location", request.location.label, id: "location", systemImage: "mappin")
+            fact("Neighborhood", request.location.label, id: "location", systemImage: "mappin")
             if !request.meetingSpot.isEmpty {
                 fact("Meeting spot", request.meetingSpot, id: "meetingSpot", systemImage: "figure.wave")
             }
-            if let distanceText = viewModel.distanceText {
-                fact("Distance", distanceText, id: "distance", systemImage: "ruler")
-            }
-            person(
-                "Posted by",
-                viewModel.isOwn ? "\(viewModel.requesterName) (you)" : viewModel.requesterName,
-                id: "requester",
-                systemImage: "person",
-                user: (request.requesterID, viewModel.requesterScore)
-            )
-            fact("Status", viewModel.statusText, id: "status", systemImage: "checkmark.seal")
-            if let helperID = request.helperID, let helperName = viewModel.helperName {
-                person(
-                    "Helper",
-                    helperName,
-                    id: "helper",
-                    systemImage: "hands.sparkles",
-                    user: (helperID, viewModel.helperScore)
-                )
-            }
+            fact("Posted", postedText(of: request), id: "posted", systemImage: "clock")
         }
         .groveRows()
     }
@@ -186,10 +175,17 @@ struct RequestDetailView: View {
             }
             if viewModel.canPickUp {
                 Section {
-                    Button("Claim") { isConfirmingClaim = true }
-                        .buttonStyle(PrimaryButtonStyle())
-                        .accessibilityIdentifier("detail.pickUp")
-                        .plainListRow()
+                    VStack(spacing: Theme.Spacing.medium) {
+                        Button("Claim") { isConfirmingClaim = true }
+                            .buttonStyle(PrimaryButtonStyle())
+                            .accessibilityIdentifier("detail.pickUp")
+                        Text("\(viewModel.requesterName) will see that you claimed it.")
+                            .textStyle(.meta)
+                            .foregroundStyle(Theme.Colors.inkMuted)
+                            .multilineTextAlignment(.center)
+                            .accessibilityIdentifier("detail.claimNote")
+                    }
+                    .plainListRow()
                 }
                 .compactSectionSpacing()
             }
@@ -229,28 +225,44 @@ struct RequestDetailView: View {
         }
         .disabled(viewModel.isWorking)
     }
+}
 
-    /// A requester or helper row with their Kindness score. Tapping it opens their profile.
-    /// VoiceOver and the UI tests read the name as the value, as before; the score is in the hint.
-    private func person(
+private extension RequestDetailView {
+    /// A requester or helper card: their avatar, "Posted by" over their name, and their Kindness score.
+    /// Tapping it opens their profile. VoiceOver and the UI tests read the name as the value, as before; the
+    /// score is in the hint.
+    func person(
         _ label: String,
         _ name: String,
         id: String,
-        systemImage: String,
         user: (id: UserID, score: Int?)
     ) -> some View {
         let score = user.score
         return NavigationLink(value: user.id) {
-            // At accessibility text sizes the score goes under the name, so the label keeps the row's width.
-            let layout = dynamicTypeSize.isAccessibilitySize
-                ? AnyLayout(VStackLayout(alignment: .leading, spacing: Theme.Spacing.small))
-                : AnyLayout(HStackLayout(spacing: Theme.Spacing.medium))
-            layout {
-                FactRow(label: label, value: name, systemImage: systemImage)
-                if let score {
-                    ScoreLabel(points: score)
+            HStack(spacing: Theme.Spacing.large) {
+                AvatarView(name: name, side: Theme.IconSize.row)
+                // At accessibility text sizes the score goes under the name, so the name keeps the row's width.
+                let layout = dynamicTypeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: Theme.Spacing.small))
+                    : AnyLayout(HStackLayout(spacing: Theme.Spacing.medium))
+                layout {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.small / 2) {
+                        Text(label)
+                            .textStyle(.meta)
+                            .foregroundStyle(Theme.Colors.inkMuted)
+                        Text(name)
+                            .textStyle(.headline)
+                            .foregroundStyle(Theme.Colors.ink)
+                    }
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        Spacer(minLength: Theme.Spacing.medium)
+                    }
+                    if let score {
+                        ScoreLabel(points: score)
+                    }
                 }
             }
+            .padding(.vertical, Theme.Spacing.small)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(label)
@@ -259,9 +271,53 @@ struct RequestDetailView: View {
         .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier("detail.\(id)")
     }
-}
 
-private extension RequestDetailView {
+    /// The requester, and the helper once there is one, each as its own card that opens their profile.
+    @ViewBuilder
+    func people(of request: HelpRequest) -> some View {
+        Section {
+            person(
+                "Posted by",
+                viewModel.isOwn ? "\(viewModel.requesterName) (you)" : viewModel.requesterName,
+                id: "requester",
+                user: (request.requesterID, viewModel.requesterScore)
+            )
+        }
+        .groveRows()
+        .compactSectionSpacing()
+        if let helperID = request.helperID, let helperName = viewModel.helperName {
+            Section {
+                person("Helper", helperName, id: "helper", user: (helperID, viewModel.helperScore))
+            }
+            .groveRows()
+            .compactSectionSpacing()
+        }
+    }
+
+    /// The status badge and "0.1 mi away · 22 minutes ago". The badge is what VoiceOver and the UI tests
+    /// read as the status ("Status, Claimed by Bea").
+    @ViewBuilder
+    func iconAndBadge(of request: HelpRequest) -> some View {
+        CategoryIcon(systemImage: request.category.systemImage)
+        StatusBadge(text: viewModel.statusText, colors: request.status.badgeColors)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Status")
+            .accessibilityValue(viewModel.statusText)
+            .accessibilityIdentifier("detail.status")
+    }
+
+    func timeLine(of request: HelpRequest) -> some View {
+        Text([viewModel.distanceText.map { "\($0) away" }, postedText(of: request)].compactMap(\.self)
+            .joined(separator: " · "))
+            .textStyle(.meta)
+            .foregroundStyle(Theme.Colors.inkMuted)
+            .accessibilityIdentifier("detail.distance")
+    }
+
+    func postedText(of request: HelpRequest) -> String {
+        request.createdAt.formatted(.relative(presentation: .named))
+    }
+
     /// The requester's review of the helper, shown once it exists.
     func reviewSection(_ review: Review) -> some View {
         Section {

@@ -75,6 +75,7 @@ struct ActivityView: View {
                     ActivityRow(request: request, subtitle: viewModel.subtitle(for: request), isNew: isNew)
                 }
                 .cardRow(isHighlighted: isNew)
+                .navigationLinkIndicatorVisibility(.hidden)
                 .accessibilityIdentifier("activity.row.\(request.id.rawValue.uuidString)")
             }
         } else {

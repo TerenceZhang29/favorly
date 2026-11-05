@@ -22,16 +22,16 @@ struct RequestRow: View {
                         .foregroundStyle(Theme.Colors.inkMuted)
                 }
                 Spacer(minLength: Theme.Spacing.medium)
-                if isOwn, !stacksBadge {
-                    ownBadge
+                if !stacksBadge {
+                    badge
                 }
             }
             Text(item.request.title)
                 .textStyle(.cardTitle)
                 .foregroundStyle(Theme.Colors.ink)
                 .fixedSize(horizontal: false, vertical: true)
-            if isOwn, stacksBadge {
-                ownBadge
+            if stacksBadge {
+                badge
             }
         }
         .accessibilityElement(children: .ignore)
@@ -48,7 +48,15 @@ struct RequestRow: View {
             : AnyLayout(HStackLayout(spacing: Theme.Spacing.medium + Theme.Spacing.small / 2))
     }
 
-    private var ownBadge: some View { TagBadge(text: "Yours") }
+    /// "Yours" on the user's own requests, otherwise the status ("Open").
+    @ViewBuilder
+    private var badge: some View {
+        if isOwn {
+            TagBadge(text: "Yours")
+        } else {
+            StatusBadge(text: item.request.status.title, colors: item.request.status.badgeColors)
+        }
+    }
 
     private var distanceText: Text {
         Text(DistanceFormatter.miles(item.distanceMeters))

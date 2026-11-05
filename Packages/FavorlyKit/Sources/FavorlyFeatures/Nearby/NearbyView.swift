@@ -44,10 +44,9 @@ struct NearbyView: View {
             Section {
                 results
             } header: {
+                // The mockup shows no count; VoiceOver still reads it.
                 if let countText = viewModel.countText {
-                    SectionHeader(text: countText)
-                        .padding(.horizontal, Theme.Spacing.small)
-                        .accessibilityIdentifier("nearby.count")
+                    SpokenOnlyText(text: countText, identifier: "nearby.count")
                 }
             }
         }
@@ -78,6 +77,7 @@ struct NearbyView: View {
                     )
                 }
                 .cardRow()
+                .navigationLinkIndicatorVisibility(.hidden)
                 .accessibilityIdentifier("nearby.row.\(item.id.rawValue.uuidString)")
             }
         case .empty:

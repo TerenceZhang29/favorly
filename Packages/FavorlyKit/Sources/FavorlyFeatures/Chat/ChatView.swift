@@ -44,6 +44,27 @@ struct ChatView: View {
         }
         .navigationTitle(viewModel.title)
         .toolbarTitleDisplayMode(.inline)
+        .toolbar {
+            // The other person, as in the mockup, with the request under their name.
+            if let otherName {
+                ToolbarItem(placement: .principal) {
+                    HStack(spacing: Theme.Spacing.medium) {
+                        AvatarView(name: otherName, side: Theme.IconSize.fact)
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text(otherName)
+                                .textStyle(.headline)
+                                .foregroundStyle(Theme.Colors.ink)
+                            Text(viewModel.title)
+                                .textStyle(.meta)
+                                .foregroundStyle(Theme.Colors.inkMuted)
+                        }
+                        .lineLimit(1)
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityAddTraits(.isHeader)
+                }
+            }
+        }
         .task(id: viewModel.reloadKey) { await viewModel.load() }
         .task { await viewModel.observeChanges() }
     }
@@ -66,7 +87,17 @@ struct ChatView: View {
                 )
                 .plainListRow()
             }
-            ForEach(messages) { message in
+            ForEach(Array(messages.enumerated()), id: \.element.id) { index, message in
+                // One time line at the start and after a pause, instead of a time under every bubble.
+                if index == 0 || message.sentAt.timeIntervalSince(messages[index - 1].sentAt) >= Self.pauseBeforeTime {
+                    Text(Self.timeLine(for: message.sentAt))
+                        .textStyle(.meta)
+                        .foregroundStyle(Theme.Colors.inkMuted)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, Theme.Spacing.medium)
+                        .plainListRow()
+                        .accessibilityHidden(true)
+                }
                 MessageBubble(
                     text: message.text,
                     senderName: viewModel.senderName(of: message),
@@ -105,6 +136,30 @@ struct ChatView: View {
             }
             .plainListRow()
         }
+    }
+
+    /// The other person in the thread: the helper for the requester, the requester for the helper.
+    private var otherName: String? {
+        guard let request = viewModel.request else { return nil }
+        let currentID = environment.session.currentUser.id
+        guard let other = request.requesterID == currentID ? request.helperID : request.requesterID else { return nil }
+        return environment.session.displayName(for: other)
+    }
+
+    /// Messages more than 15 minutes apart get a new time line.
+    private static let pauseBeforeTime: TimeInterval = 15 * 60
+
+    /// "Today 5:12 PM", "Yesterday 9:03 AM" or "Nov 2, 4:40 PM".
+    private static func timeLine(for date: Date) -> String {
+        let time = date.formatted(date: .omitted, time: .shortened)
+        let calendar = Calendar.current
+        if calendar.isDateInToday(date) {
+            return "Today \(time)"
+        }
+        if calendar.isDateInYesterday(date) {
+            return "Yesterday \(time)"
+        }
+        return date.formatted(.dateTime.month(.abbreviated).day().hour().minute())
     }
 
     private var composer: some View {

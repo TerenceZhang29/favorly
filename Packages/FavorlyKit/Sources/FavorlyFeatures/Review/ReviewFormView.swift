@@ -23,11 +23,18 @@ struct ReviewFormView: View {
         NavigationStack {
             Form {
                 Section {
-                    StarRatingPicker(rating: $viewModel.rating)
-                        .padding(.vertical, Theme.Spacing.medium)
-                        .plainListRow()
-                } header: {
-                    SectionHeader(text: "How did \(helperName) do?")
+                    VStack(spacing: Theme.Spacing.large) {
+                        AvatarView(name: helperName)
+                        Text("How did \(helperName) do?")
+                            .textStyle(.title)
+                            .foregroundStyle(Theme.Colors.ink)
+                            .multilineTextAlignment(.center)
+                            .accessibilityAddTraits(.isHeader)
+                        StarRatingPicker(rating: $viewModel.rating)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, Theme.Spacing.medium)
+                    .plainListRow()
                 }
 
                 Section {
@@ -52,21 +59,6 @@ struct ReviewFormView: View {
                     }
                     .compactSectionSpacing()
                 }
-
-                Section {
-                    Button("Submit") {
-                        Task {
-                            if let review = await viewModel.submit() {
-                                onSubmitted(review)
-                                dismiss()
-                            }
-                        }
-                    }
-                    .buttonStyle(PrimaryButtonStyle())
-                    .disabled(!viewModel.canSubmit)
-                    .accessibilityIdentifier("review.submit")
-                    .plainListRow()
-                }
             }
             .scrollDismissesKeyboard(.interactively)
             .groveListBackground()
@@ -76,6 +68,19 @@ struct ReviewFormView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                         .accessibilityIdentifier("review.cancel")
+                }
+                // Submit sits in the bar, as in the mockup, and is dimmed until a rating is chosen.
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Submit") {
+                        Task {
+                            if let review = await viewModel.submit() {
+                                onSubmitted(review)
+                                dismiss()
+                            }
+                        }
+                    }
+                    .disabled(!viewModel.canSubmit)
+                    .accessibilityIdentifier("review.submit")
                 }
             }
         }

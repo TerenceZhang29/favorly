@@ -93,6 +93,8 @@ enum Theme {
         static let large: CGFloat = 56
         /// The largest a star button on the review form gets, so five fit across the narrowest phone.
         static let starMax: CGFloat = 60
+        /// The narrowest a "Helped" or "Asked" badge gets, so the titles beside them line up.
+        static let roleBadge: CGFloat = 72
         /// Side of the symbol tile on a fact row.
         static let fact: CGFloat = 32
         /// Side of the avatar circle on a profile.

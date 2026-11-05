@@ -6,6 +6,7 @@ struct ProfileView: View {
     private let environment: AppEnvironment
     @State private var viewModel: ProfileViewModel
     @State private var isConfirmingDelete = false
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     /// True for the Profile tab, false when pushed for a given user.
     private let isTab: Bool
 
@@ -89,20 +90,38 @@ struct ProfileView: View {
         }
     }
 
+    /// One card, as in the mockup: the lime "Kindness score" badge over the score, and favors and rating beside
+    /// it (under it at accessibility text sizes).
     private var score: some View {
         Section {
-            ScoreLabel(points: viewModel.content?.summary.lifetimePoints ?? 0, isLarge: true)
-                .accessibilityIdentifier("profile.score")
-            Label(viewModel.favorsText, systemImage: "hands.sparkles")
+            scoreLayout {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small) {
+                    TagBadge(text: "Kindness score")
+                        .accessibilityHidden(true)
+                    ScoreLabel(points: viewModel.content?.summary.lifetimePoints ?? 0, isLarge: true)
+                        .accessibilityIdentifier("profile.score")
+                }
+                if !dynamicTypeSize.isAccessibilitySize {
+                    Spacer(minLength: Theme.Spacing.medium)
+                }
+                VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
+                    Label(viewModel.favorsText, systemImage: "hands.sparkles")
+                        .accessibilityIdentifier("profile.favors")
+                    Label(viewModel.ratingText, systemImage: "star")
+                        .accessibilityIdentifier("profile.rating")
+                }
+                .textStyle(.meta)
                 .foregroundStyle(Theme.Colors.ink)
-                .accessibilityIdentifier("profile.favors")
-            Label(viewModel.ratingText, systemImage: "star")
-                .foregroundStyle(Theme.Colors.ink)
-                .accessibilityIdentifier("profile.rating")
-        } header: {
-            SectionHeader(text: "Kindness score")
+            }
+            .padding(.vertical, Theme.Spacing.small)
         }
         .groveRows()
+    }
+
+    private var scoreLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: Theme.Spacing.large))
+            : AnyLayout(HStackLayout(alignment: .center, spacing: Theme.Spacing.large))
     }
 
     private var account: some View {
@@ -200,6 +219,7 @@ struct ProfileView: View {
                 NavigationLink(value: activity.id) {
                     ProfileActivityRow(request: activity.request, role: activity.role)
                 }
+                .navigationLinkIndicatorVisibility(.hidden)
                 .accessibilityIdentifier("profile.activity.\(activity.id.rawValue.uuidString)")
             }
         } header: {

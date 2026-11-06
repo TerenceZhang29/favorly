@@ -31,6 +31,9 @@ enum TextStyle: CaseIterable, Sendable {
 
     var font: Font {
         GroveFonts.registerIfNeeded()
+        if CIExperiment.systemFont {
+            return Font.system(relativeTo)
+        }
         return Font.custom(fontName, size: size, relativeTo: relativeTo)
     }
 

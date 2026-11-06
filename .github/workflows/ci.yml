@@ -4,14 +4,22 @@ on:
   push:
     branches: [main, "phase/**", "ci/**", "claude/**"]
   workflow_dispatch:
+    inputs:
+      experiment:
+        description: "TEMPORARY: turn one part of the Grove look off in the UI test (systemFont, noAppearance, plainBackground, plainRows), to find why it is slow here"
+        type: string
+        default: ""
 
 concurrency:
-  group: ci-${{ github.ref }}
+  # The experiment is in the group, so parallel experiment runs don't cancel each other.
+  group: ci-${{ github.ref }}-${{ inputs.experiment || 'none' }}
   cancel-in-progress: true
 
 jobs:
   package-tests:
     name: Package tests (swift test)
+    # Experiment runs skip this job, so several fit in GitHub's limit of parallel macOS jobs.
+    if: inputs.experiment == '' || inputs.experiment == null
     runs-on: macos-26
     timeout-minutes: 15
     steps:
@@ -86,6 +94,7 @@ jobs:
         # Longer waits in the tests here; see UITestCase.waitTimeout.
         env:
           TEST_RUNNER_SLOW_MACHINE: "1"
+          TEST_RUNNER_CI_EXPERIMENT: ${{ inputs.experiment }}
         run: |
           set -o pipefail
           xcodebuild test-without-building -project Favorly.xcodeproj -scheme Favorly \

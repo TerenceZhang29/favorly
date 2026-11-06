@@ -18,7 +18,6 @@ struct CardRowModifier: ViewModifier {
                 CardBackground(isHighlighted: isHighlighted)
                     .padding(.horizontal, Theme.Spacing.screen)
                     .padding(.vertical, Theme.Spacing.cardGap)
-                    .opacity(CIExperiment.plainRows ? 0 : 1)
             )
             .listRowSeparator(.hidden)
     }

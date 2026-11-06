@@ -15,7 +15,6 @@ enum GroveFonts {
 
     /// Registers the fonts once; later calls do nothing.
     static func registerIfNeeded() {
-        guard !CIExperiment.systemFont else { return }
         _ = registered
     }
 

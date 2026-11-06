@@ -6,9 +6,7 @@ public struct RootView: View {
 
     public init() {
         #if canImport(UIKit)
-            if !CIExperiment.noAppearance {
-                GroveAppearance.applyIfNeeded()
-            }
+            GroveAppearance.applyIfNeeded()
         #endif
     }
 

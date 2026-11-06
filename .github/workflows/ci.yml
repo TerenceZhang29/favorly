@@ -4,26 +4,14 @@ on:
   push:
     branches: [main, "phase/**", "ci/**", "claude/**"]
   workflow_dispatch:
-    inputs:
-      experiment:
-        description: "TEMPORARY: turn one part of the Grove look off in the UI test (systemFont, noAppearance, plainBackground, plainRows), to find why it is slow here"
-        type: string
-        default: ""
-      ios:
-        description: "TEMPORARY: iOS simulator version for the UI test, such as 26.2 (empty picks the newest)"
-        type: string
-        default: ""
 
 concurrency:
-  # The experiment is in the group, so parallel experiment runs don't cancel each other.
-  group: ci-${{ github.ref }}-${{ inputs.experiment || 'none' }}-${{ inputs.ios || 'newest' }}
+  group: ci-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: true
 
 jobs:
   package-tests:
     name: Package tests (swift test)
-    # Experiment runs skip this job, so several fit in GitHub's limit of parallel macOS jobs.
-    if: inputs.experiment == '' || inputs.experiment == null
     runs-on: macos-26
     timeout-minutes: 15
     steps:
@@ -43,12 +31,13 @@ jobs:
       - name: Run package tests
         run: swift test --package-path Packages/FavorlyKit
 
-  # On GitHub only the core-flow UI test runs (DemoFlowUITests.testDemoScript: browse, post, pick up,
-  # complete, reset), on main and when started by hand (gh workflow run ci.yml --ref <branch>). The full UI
-  # suite runs locally before a push to main; it takes two to three times longer on GitHub's machines.
+  # Manual only (Actions tab, or gh workflow run ci.yml --ref <branch>). GitHub's free macOS simulator is too
+  # slow for UI tests: the core-flow test (DemoFlowUITests.testDemoScript) takes 11-15 minutes there against
+  # 95 seconds on a Mac, and often fails with "Timed out while evaluating UI query", on iOS 26.2, 26.4 and 26.5
+  # and on the code from before Grove too. The full UI suite runs locally before each push to main instead.
   app-tests:
     name: App build and core-flow UI test
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: macos-26
     # The build and test steps stop first, so a slow run still shows its failures, uploads its results and
     # saves its build cache.
@@ -69,14 +58,11 @@ jobs:
             xcode-${{ runner.os }}-${{ hashFiles('Packages/FavorlyKit/Package.swift', 'project.yml') }}-${{ github.sha }}
           restore-keys: xcode-${{ runner.os }}-${{ hashFiles('Packages/FavorlyKit/Package.swift', 'project.yml') }}-
       - name: Pick an iPhone simulator
-        env:
-          WANT_IOS: ${{ inputs.ios }}
         run: |
           xcrun simctl list devices available
           udid=$(xcrun simctl list devices available -j | jq -r '
             .devices | to_entries
             | map(select(.key | contains("iOS")))
-            | map(select(env.WANT_IOS == "" or (.key | endswith("iOS-" + (env.WANT_IOS | gsub("\\."; "-"))))))
             | map(.value |= map(select(.name | startswith("iPhone"))))
             | map(select(.value | length > 0))
             | sort_by(.key) | last | .value[0].udid')
@@ -101,7 +87,6 @@ jobs:
         # Longer waits in the tests here; see UITestCase.waitTimeout.
         env:
           TEST_RUNNER_SLOW_MACHINE: "1"
-          TEST_RUNNER_CI_EXPERIMENT: ${{ inputs.experiment }}
         run: |
           set -o pipefail
           xcodebuild test-without-building -project Favorly.xcodeproj -scheme Favorly \

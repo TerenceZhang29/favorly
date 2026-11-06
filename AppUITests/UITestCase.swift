@@ -18,15 +18,8 @@ class UITestCase: XCTestCase {
 
     @MainActor
     func launchApp() {
-        app.launchArguments = ["-uiTesting"] + Self.freshDefaults + Self.ciExperiment
+        app.launchArguments = ["-uiTesting"] + Self.freshDefaults
         app.launch()
-    }
-
-    /// TEMPORARY: `-ciExperiment <name>` when the run sets `TEST_RUNNER_CI_EXPERIMENT`, for finding why UI tests
-    /// are slow on GitHub. See `CIExperiment` in the app.
-    static var ciExperiment: [String] {
-        guard let name = ProcessInfo.processInfo.environment["CI_EXPERIMENT"], !name.isEmpty else { return [] }
-        return ["-ciExperiment", name]
     }
 
     /// Finds an element by accessibility identifier, whatever kind of element it is.

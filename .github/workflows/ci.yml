@@ -4,15 +4,9 @@ on:
   push:
     branches: [main, "phase/**", "ci/**", "claude/**"]
   workflow_dispatch:
-    inputs:
-      no_shadows:
-        description: "Run the UI test with shadows off (experiment: are shadows what slows the test here?)"
-        type: boolean
-        default: false
 
 concurrency:
-  # The experiment's input is in the group, so a run with shadows off doesn't cancel one with them on.
-  group: ci-${{ github.ref }}-${{ inputs.no_shadows || false }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -86,10 +80,9 @@ jobs:
           xcodebuild build-for-testing -quiet -project Favorly.xcodeproj -scheme Favorly \
             -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" -derivedDataPath DerivedData 2>&1 | tee build.log
       # Only the one UI test: the package tests already ran in the job above.
+      # About 12 minutes on GitHub's machines (95 seconds on a Mac), plus Xcode's wrap-up; see docs/PROGRESS.md.
       - name: Run the core-flow UI test
-        timeout-minutes: 15
-        env:
-          TEST_RUNNER_NO_SHADOWS: ${{ inputs.no_shadows && '1' || '0' }}
+        timeout-minutes: 25
         run: |
           set -o pipefail
           xcodebuild test-without-building -project Favorly.xcodeproj -scheme Favorly \

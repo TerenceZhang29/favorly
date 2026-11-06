@@ -131,9 +131,6 @@ enum Theme {
     static let tabBarMaxTypeSize = DynamicTypeSize.xxxLarge
     /// The largest text size a section header follows.
     static let headerMaxTypeSize = DynamicTypeSize.accessibility2
-    /// False when the app is launched with `-noShadows`, a UI-testing switch for checking whether drawing
-    /// shadows is what slows the tests on GitHub's machines. Always true for users.
-    static let drawsShadows = !ProcessInfo.processInfo.arguments.contains("-noShadows")
     /// Blur of the dark-mode glow.
     static let glowBlur: CGFloat = 70
     static let glowOpacity = 0.7

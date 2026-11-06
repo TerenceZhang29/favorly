@@ -83,6 +83,9 @@ jobs:
       # About 12 minutes on GitHub's machines (95 seconds on a Mac), plus Xcode's wrap-up; see docs/PROGRESS.md.
       - name: Run the core-flow UI test
         timeout-minutes: 25
+        # Longer waits in the tests here; see UITestCase.waitTimeout.
+        env:
+          TEST_RUNNER_SLOW_MACHINE: "1"
         run: |
           set -o pipefail
           xcodebuild test-without-building -project Favorly.xcodeproj -scheme Favorly \

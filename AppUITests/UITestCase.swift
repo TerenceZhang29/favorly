@@ -3,7 +3,9 @@ import XCTest
 /// Shared launch and lookup helpers. Each test launches the app fresh with no mock delay.
 class UITestCase: XCTestCase {
     /// Generous, because hosted CI machines are several times slower than a laptop.
-    static let waitTimeout: TimeInterval = 20
+    /// 20 seconds, or 60 when the run sets `TEST_RUNNER_SLOW_MACHINE=1`: GitHub's simulator can take longer than
+    /// 20 seconds to answer an accessibility query, while a correct screen is already showing.
+    static let waitTimeout: TimeInterval = ProcessInfo.processInfo.environment["SLOW_MACHINE"] == "1" ? 60 : 20
 
     /// Hides the neighborhood an earlier test posted with (Post offers it first), so each test starts the same.
     static let freshDefaults = ["-lastNeighborhood", ""]

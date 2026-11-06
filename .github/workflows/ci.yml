@@ -9,10 +9,14 @@ on:
         description: "TEMPORARY: turn one part of the Grove look off in the UI test (systemFont, noAppearance, plainBackground, plainRows), to find why it is slow here"
         type: string
         default: ""
+      ios:
+        description: "TEMPORARY: iOS simulator version for the UI test, such as 26.2 (empty picks the newest)"
+        type: string
+        default: ""
 
 concurrency:
   # The experiment is in the group, so parallel experiment runs don't cancel each other.
-  group: ci-${{ github.ref }}-${{ inputs.experiment || 'none' }}
+  group: ci-${{ github.ref }}-${{ inputs.experiment || 'none' }}-${{ inputs.ios || 'newest' }}
   cancel-in-progress: true
 
 jobs:
@@ -65,11 +69,14 @@ jobs:
             xcode-${{ runner.os }}-${{ hashFiles('Packages/FavorlyKit/Package.swift', 'project.yml') }}-${{ github.sha }}
           restore-keys: xcode-${{ runner.os }}-${{ hashFiles('Packages/FavorlyKit/Package.swift', 'project.yml') }}-
       - name: Pick an iPhone simulator
+        env:
+          WANT_IOS: ${{ inputs.ios }}
         run: |
           xcrun simctl list devices available
           udid=$(xcrun simctl list devices available -j | jq -r '
             .devices | to_entries
             | map(select(.key | contains("iOS")))
+            | map(select(env.WANT_IOS == "" or (.key | endswith("iOS-" + (env.WANT_IOS | gsub("\\."; "-"))))))
             | map(.value |= map(select(.name | startswith("iPhone"))))
             | map(select(.value | length > 0))
             | sort_by(.key) | last | .value[0].udid')

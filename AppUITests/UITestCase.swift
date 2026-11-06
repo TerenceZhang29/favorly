@@ -16,8 +16,14 @@ class UITestCase: XCTestCase {
 
     @MainActor
     func launchApp() {
-        app.launchArguments = ["-uiTesting"] + Self.freshDefaults
+        app.launchArguments = ["-uiTesting"] + Self.freshDefaults + Self.experimentArguments
         app.launch()
+    }
+
+    /// `-noShadows` when the test run sets `TEST_RUNNER_NO_SHADOWS=1`, for the CI experiment on whether drawing
+    /// shadows is what slows the UI tests on GitHub's machines.
+    static var experimentArguments: [String] {
+        ProcessInfo.processInfo.environment["NO_SHADOWS"] == "1" ? ["-noShadows"] : []
     }
 
     /// Finds an element by accessibility identifier, whatever kind of element it is.

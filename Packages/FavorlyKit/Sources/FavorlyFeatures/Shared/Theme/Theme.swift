@@ -131,6 +131,9 @@ enum Theme {
     static let tabBarMaxTypeSize = DynamicTypeSize.xxxLarge
     /// The largest text size a section header follows.
     static let headerMaxTypeSize = DynamicTypeSize.accessibility2
+    /// False when the app is launched with `-noShadows`, a UI-testing switch for checking whether drawing
+    /// shadows is what slows the tests on GitHub's machines. Always true for users.
+    static let drawsShadows = !ProcessInfo.processInfo.arguments.contains("-noShadows")
     /// Blur of the dark-mode glow.
     static let glowBlur: CGFloat = 70
     static let glowOpacity = 0.7
@@ -141,6 +144,8 @@ enum Theme {
     static let pillHeight: CGFloat = 40
     /// Height of the floating tab bar's buttons.
     static let tabBarHeight: CGFloat = 60
+    /// The space the floating tab bar takes above the bottom safe area: its buttons and its padding.
+    static let tabBarSpace: CGFloat = tabBarHeight + Spacing.medium + Spacing.small
     /// How far a tab label may shrink to fit, at large text sizes.
     static let tabLabelMinimumScale: CGFloat = 0.7
     static let borderWidth: CGFloat = 1

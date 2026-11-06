@@ -23,7 +23,7 @@ final class PostNeighborhoodUITests: UITestCase {
         )
         XCTAssertFalse(app.buttons["post.submit"].isEnabled)
         app.typeText(String(repeating: "\u{8}", count: 6) + "Cornell Tech lobby\n")
-        app.buttons["post.submit"].tap()
+        scrollToAndTap(app.buttons["post.submit"])
 
         let posted = row("activity.row.", containing: "Need a cup of rice")
         XCTAssertTrue(posted.waitForExistence(timeout: Self.waitTimeout))

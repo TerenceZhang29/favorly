@@ -66,7 +66,7 @@ final class ChatUITests: UITestCase {
         waitFor(element("post.location"), toRead: "Tagged at Roosevelt Island")
         app.textFields["post.title"].tap()
         app.typeText("Need a cup of rice\n")
-        app.buttons["post.submit"].tap()
+        scrollToAndTap(app.buttons["post.submit"])
         XCTAssertTrue(row("activity.row.", containing: "Need a cup of rice")
             .waitForExistence(timeout: Self.waitTimeout))
     }

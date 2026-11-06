@@ -38,7 +38,7 @@ final class RiceStoryDemoUITests: UITestCase {
         dismissKeyboard()
         scrollToAndTap(app.buttons["post.category.ingredient"])
         hold()
-        app.buttons["post.submit"].tap()
+        scrollToAndTap(app.buttons["post.submit"])
         let posted = row("activity.row.", containing: "Need a cup of rice")
         XCTAssertTrue(posted.waitForExistence(timeout: Self.waitTimeout))
         hold(2)

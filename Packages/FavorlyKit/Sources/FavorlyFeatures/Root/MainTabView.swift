@@ -25,6 +25,9 @@ struct MainTabView: View {
                         .appDestinations(environment)
                 }
                 .environment(\.currentTab, tab)
+                // Room for the floating bar, given to each tab's stack so every screen in it, pushed ones too,
+                // can scroll its last items clear of the bar.
+                .safeAreaPadding(.bottom, showsTabBar ? Theme.tabBarSpace : 0)
                 .hidingSystemTabBar()
                 // Without the system bar, iOS can leave visited tabs in the accessibility tree.
                 .accessibilityHidden(tab != selection)
@@ -32,7 +35,7 @@ struct MainTabView: View {
                 .accessibilityIdentifier("root.tab.\(tab.rawValue)")
             }
         }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
+        .overlay(alignment: .bottom) {
             if showsTabBar {
                 GroveTabBar(tabs: RootTab.visible, selection: $selection)
             }

@@ -44,7 +44,7 @@ final class DemoFlowUITests: UITestCase {
         XCTAssertFalse(app.buttons["post.submit"].isEnabled)
         app.typeText("\u{8}\u{8}Need a cup of rice\n")
         scrollToAndTap(app.buttons["post.category.ingredient"])
-        app.buttons["post.submit"].tap()
+        scrollToAndTap(app.buttons["post.submit"])
 
         let postedRow = row("activity.row.", containing: "Need a cup of rice")
         XCTAssertTrue(postedRow.waitForExistence(timeout: Self.waitTimeout))
@@ -145,7 +145,7 @@ final class DemoFlowUITests: UITestCase {
         app.textFields["post.title"].tap()
         app.typeText("Need a cup of rice\n")
         scrollToAndTap(app.buttons["post.category.ingredient"])
-        app.buttons["post.submit"].tap()
+        scrollToAndTap(app.buttons["post.submit"])
         XCTAssertTrue(row("activity.row.", containing: "Need a cup of rice")
             .waitForExistence(timeout: Self.waitTimeout))
 

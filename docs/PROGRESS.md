@@ -3,7 +3,7 @@
 Updated by every coding session. Read this after `docs/PLAN.md` and `docs/PLAN-PHASE-2.md` through `docs/PLAN-PHASE-6.md`, and continue from the first unchecked item.
 
 **Current phase:** Phase 6 (TestFlight beta). Phases 1–5 and 4A–4G are done: Grove (Phase 5) is merged and ships in 1.0.0, the two-phone check passed, and build 1.0.0 (3) is the first with Grove. 4H (submission) follows Phase 6
-**Next task:** 6A, the internal TestFlight round on build 6 (the app matched to the Grove mockup)
+**Next task:** 6A, the internal TestFlight round on build 7 (the app matched to the Grove mockup, with room left for the floating tab bar)
 
 ## Phase checklist
 
@@ -618,6 +618,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-11-06 · 6A (part) · Screens leave room for the floating tab bar (build 6 covered the Post button); CI's UI test is now started by hand, since GitHub's simulator is too slow for it; full UI suite passed serially (27 passed, 5 skipped); build 1.0.0 (7) archived and uploaded with the owner's approval · 6A: the internal round on build 7
 - 2026-11-05 · 6A (part) · App matched to the Grove mockup exactly (tab bar, headlines, score pill, I can help, back link, chips, row actions, settings screen, milestone ring and card, chat card, review points), with new view model logic and tests; full UI suite passed serially (27 passed, 5 skipped) and all four screenshot walks checked by eye; build 1.0.0 (6) archived and uploaded with the owner's approval · 6A: the internal round on build 6
 - 2026-11-05 · 6A (part) · Closed the look-only gaps with the Grove mockup and fixed the keyboard staying open after posting (the cause of the CI core-flow failures); full UI suite passed serially (27 passed, 5 skipped); build 1.0.0 (5) archived and uploaded with the owner's approval · 6A: the internal round on build 5
 - 2026-11-04 · 6A (part) · "Pick up" became "Claim" in the app, confirmed in a bottom sheet (owner picked option A of five on the Grove canvas); migration 0011 changes the claim notification's wording, 182 database tests pass and it is deployed to the hosted project (`db diff --linked` clean); CI boots the simulator before its one UI test; full UI suite passed serially (27 passed, 5 skipped); build 1.0.0 (4) archived and uploaded with the owner's approval · 6A: the internal round on build 4

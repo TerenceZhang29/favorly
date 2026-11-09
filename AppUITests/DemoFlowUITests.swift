@@ -48,7 +48,7 @@ final class DemoFlowUITests: UITestCase {
         let postedRow = row("activity.row.", containing: "Need a cup of rice")
         XCTAssertTrue(postedRow.waitForExistence(timeout: Self.waitTimeout))
         XCTAssertTrue(tabButton("My Activity").isSelected)
-        XCTAssertEqual(postedRow.label, "Need a cup of rice, Ingredient, Open, new")
+        XCTAssertEqual(postedRow.label, "Need a cup of rice, Open, new")
     }
 
     /// Steps 4 and 5: Bea sees the request at the top of Nearby and picks it up.
@@ -204,7 +204,7 @@ final class DemoFlowUITests: UITestCase {
         openTab("Profile")
         waitFor(element("profile.score"), toRead: "110 points")
 
-        let favor = row("profile.activity.", containing: "Need a cup of rice, Ingredient, Helped")
+        let favor = row("profile.activity.", containing: "Need a cup of rice, Helped")
         for _ in 0 ..< 4 where !(favor.exists && favor.isHittable) {
             app.swipeUp()
         }

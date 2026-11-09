@@ -21,7 +21,7 @@ final class ProfileUITests: UITestCase {
         waitFor(element("profile.name"), toRead: "Bea")
         waitFor(element("profile.score"), toRead: "90 points")
         waitFor(element("profile.favors"), toRead: "5 favors completed")
-        let saffron = row("profile.activity.", containing: "Need a pinch of saffron, Ingredient, Helped")
+        let saffron = row("profile.activity.", containing: "Need a pinch of saffron, Helped")
         scrollToShow(saffron)
         XCTAssertTrue(saffron.exists)
     }

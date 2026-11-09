@@ -155,8 +155,8 @@ The first time on a Mac, run `vercel login` in your own Terminal, then `vercel l
 
 ## App icon
 
-The icon is drawn by a script, so it can be redrawn if the brand color changes:
+The icon is made from the logo in `docs/brand/logo.png`. After changing the logo, run:
 
 ```bash
-swift scripts/make-app-icon.swift
+sh scripts/make-app-icon.sh
 ```

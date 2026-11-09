@@ -3,7 +3,7 @@
 Updated by every coding session. Read this after `docs/PLAN.md` and `docs/PLAN-PHASE-2.md` through `docs/PLAN-PHASE-6.md`, and continue from the first unchecked item.
 
 **Current phase:** Phase 6 (TestFlight beta). Phases 1–5 and 4A–4G are done: Grove (Phase 5) is merged and ships in 1.0.0, the two-phone check passed, and build 1.0.0 (3) is the first with Grove. 4H (submission) follows Phase 6
-**Next task:** 6A, the internal TestFlight round on build 7 (the app matched to the Grove mockup, with room left for the floating tab bar)
+**Next task:** 6A, the internal TestFlight round on build 8 (new app icon, no categories)
 
 ## Phase checklist
 
@@ -267,7 +267,8 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 6A | `023731f` | feat(app): new app icon from the Favorly logo |
 | 6A | `27be492` | feat: remove the category from requests |
 | 6A | `0fe541f` | test(ui): row labels no longer carry a category |
-| 6A | (next commit) | docs: record the icon and category changes |
+| 6A | `e643f72` | docs: record the icon and category changes |
+| 6A | (next commit) | chore(release): build 1.0.0 (8) |
 
 ## Confirmed decisions
 
@@ -626,7 +627,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
-- 2026-11-09 · 6A (part) · New app icon from the owner's logo; the category removed from requests in the app (server column kept, sent as `other`); 426 package tests pass; full UI suite serially: 26 passed, 5 skipped, 1 failed (`KeyboardUITests.testDoneKeyClosesTheKeyboardOnPost`, which fails the same way on `main` without these changes); SwiftLint and SwiftFormat clean · 6A: the internal round on the next build
+- 2026-11-09 · 6A (part) · New app icon from the owner's logo; the category removed from requests in the app (server column kept, sent as `other`); 426 package tests pass; full UI suite serially: 26 passed, 5 skipped, 1 failed (`KeyboardUITests.testDoneKeyClosesTheKeyboardOnPost`, which fails the same way on `main` without these changes); SwiftLint and SwiftFormat clean; build 1.0.0 (8) archived and uploaded with the owner's approval · 6A: the internal round on build 8
 - 2026-11-06 · 6A (part) · Screens leave room for the floating tab bar (build 6 covered the Post button); CI's UI test is now started by hand, since GitHub's simulator is too slow for it; full UI suite passed serially (27 passed, 5 skipped); build 1.0.0 (7) archived and uploaded with the owner's approval · 6A: the internal round on build 7
 - 2026-11-05 · 6A (part) · App matched to the Grove mockup exactly (tab bar, headlines, score pill, I can help, back link, chips, row actions, settings screen, milestone ring and card, chat card, review points), with new view model logic and tests; full UI suite passed serially (27 passed, 5 skipped) and all four screenshot walks checked by eye; build 1.0.0 (6) archived and uploaded with the owner's approval · 6A: the internal round on build 6
 - 2026-11-05 · 6A (part) · Closed the look-only gaps with the Grove mockup and fixed the keyboard staying open after posting (the cause of the CI core-flow failures); full UI suite passed serially (27 passed, 5 skipped); build 1.0.0 (5) archived and uploaded with the owner's approval · 6A: the internal round on build 5

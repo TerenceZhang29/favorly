@@ -51,7 +51,7 @@ How the app looks is decided in one place. [PLAN-PHASE-5.md](PLAN-PHASE-5.md) ha
 - Figtree (SIL Open Font License 1.1) ships as a resource of `FavorlyFeatures` in `Resources/Fonts/`, with its license. If it ever fails to load, SwiftUI falls back to the system font.
 - System controls stay system controls: `List`, `Form`, `TabView`, segmented and menu pickers, sheets, dialogs and Apple's sign-in button are restyled, not rebuilt.
 - `ThemeTests` checks every text-on-fill pairing the screens use, and every badge, for 4.5:1 contrast in both modes, and that the fonts register. A new pairing goes into `ThemeTests.pairs`.
-- The app icon is made from the logo in `docs/brand/logo.png` by `scripts/make-app-icon.sh`.
+- The app icon is made from the logos in `docs/brand` (`logo.png` light, `logo-dark.jpg` dark) by `scripts/make-app-icon.sh`.
 
 ## Project file
 

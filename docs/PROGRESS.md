@@ -3,7 +3,7 @@
 Updated by every coding session. Read this after `docs/PLAN.md` and `docs/PLAN-PHASE-2.md` through `docs/PLAN-PHASE-6.md`, and continue from the first unchecked item.
 
 **Current phase:** Phase 6 (TestFlight beta). Phases 1–5 and 4A–4G are done: Grove (Phase 5) is merged and ships in 1.0.0, the two-phone check passed, and build 1.0.0 (3) is the first with Grove. 4H (submission) follows Phase 6
-**Next task:** 6A, the internal TestFlight round on build 8 (new app icon, no categories)
+**Next task:** 6A, the internal TestFlight round on build 9 (light and dark app icons, no categories)
 
 ## Phase checklist
 
@@ -268,7 +268,8 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 6A | `27be492` | feat: remove the category from requests |
 | 6A | `0fe541f` | test(ui): row labels no longer carry a category |
 | 6A | `e643f72` | docs: record the icon and category changes |
-| 6A | (next commit) | chore(release): build 1.0.0 (8) |
+| 6A | `0d5693c` | chore(release): build 1.0.0 (8) |
+| 6A | (next commit) | feat(app): dark mode app icon; build 1.0.0 (9) |
 
 ## Confirmed decisions
 
@@ -285,6 +286,7 @@ Defaults from the plan's Preparation section. Change here if the team decides ot
 Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 - 2026-11-09 · 6A · Requests have no category any more (owner's request): `RequestCategory` and its display extension are gone, `category` is removed from `HelpRequest` and `NewRequestDraft` (a change to the plan's domain model), Post has no category chips, rows, Request Detail and the claim sheet show no category tile or Category fact, and `CategoryIcon` is renamed `IconTile` for the icons that remain (gift card, welcome, messages). The server is unchanged: `FavorlyRemote` sends `category = 'other'` to `create_request` and ignores the column when reading · no migration or deploy is needed, and builds 1–7 on TestFlight keep working; a later migration can drop the column once no old build is in use
+- 2026-11-09 · 6A · The app icon has a dark mode version, the owner's dark logo (`docs/brand/logo-dark.jpg`, the lime "f" on near-black), as the `luminosity: dark` entry of `AppIcon` · owner's request
 - 2026-11-09 · 6A · The app icon is the owner's logo (`docs/brand/logo.png`, a lime "f" on white), resized to 1024×1024 by `scripts/make-app-icon.sh`, which replaces the Phase 2 drawing script · owner's request; this also settles the Phase 5 open question about a new icon
 - 2026-11-06 · CI · The core-flow UI test runs on GitHub only when started by hand (owner's choice, over a non-blocking job or a paid larger runner). GitHub's free macOS simulator is the cause of the slowness, not the app: the test took 11–15 minutes there with each part of the Grove look turned off in turn (font, bar styling, background, row cards; shadows earlier), and 12¾ minutes on the code from before Grove (run 42156971343), against 95 seconds on a Mac; on iOS 26.2, 26.4 and 26.5 it failed with "Timed out while evaluating UI query" (runs 42159270503, 42159272699, 42159271183). The experiment switches are removed. Pushes run the package tests only; the full UI suite runs locally before each push to main
 - 2026-11-06 · CI · UI test waits are 60 seconds on CI (`TEST_RUNNER_SLOW_MACHINE=1`) and 20 locally · run 42140258075 failed with "Expected \"7 requests\", found \"7 requests\"": the screen was right, but GitHub's simulator answered the accessibility query after the 20-second wait
@@ -627,6 +629,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-11-09 · 6A (part) · Dark mode app icon; build 1.0.0 (9) archived and uploaded with the owner's approval, UI tests skipped at the owner's request (icon-only change) · 6A: the internal round on build 9
 - 2026-11-09 · 6A (part) · New app icon from the owner's logo; the category removed from requests in the app (server column kept, sent as `other`); 426 package tests pass; full UI suite serially: 26 passed, 5 skipped, 1 failed (`KeyboardUITests.testDoneKeyClosesTheKeyboardOnPost`, which fails the same way on `main` without these changes); SwiftLint and SwiftFormat clean; build 1.0.0 (8) archived and uploaded with the owner's approval · 6A: the internal round on build 8
 - 2026-11-06 · 6A (part) · Screens leave room for the floating tab bar (build 6 covered the Post button); CI's UI test is now started by hand, since GitHub's simulator is too slow for it; full UI suite passed serially (27 passed, 5 skipped); build 1.0.0 (7) archived and uploaded with the owner's approval · 6A: the internal round on build 7
 - 2026-11-05 · 6A (part) · App matched to the Grove mockup exactly (tab bar, headlines, score pill, I can help, back link, chips, row actions, settings screen, milestone ring and card, chat card, review points), with new view model logic and tests; full UI suite passed serially (27 passed, 5 skipped) and all four screenshot walks checked by eye; build 1.0.0 (6) archived and uploaded with the owner's approval · 6A: the internal round on build 6

@@ -155,7 +155,7 @@ The first time on a Mac, run `vercel login` in your own Terminal, then `vercel l
 
 ## App icon
 
-The icon is made from the logo in `docs/brand/logo.png`. After changing the logo, run:
+The icon is made from the logos in `docs/brand`: `logo.png` for light mode and `logo-dark.jpg` for dark mode. After changing either, run:
 
 ```bash
 sh scripts/make-app-icon.sh

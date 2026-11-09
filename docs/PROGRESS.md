@@ -265,7 +265,9 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 4G | `ce3fcde` | docs(plan): 4G closed after the two-phone check; the beta moves to Phase 6 |
 | 4G | (next commit) | docs: build 1.0.0 (3) uploaded, the first with Grove |
 | 6A | `023731f` | feat(app): new app icon from the Favorly logo |
-| 6A | (next commit) | feat: remove the category from requests |
+| 6A | `27be492` | feat: remove the category from requests |
+| 6A | `0fe541f` | test(ui): row labels no longer carry a category |
+| 6A | (next commit) | docs: record the icon and category changes |
 
 ## Confirmed decisions
 
@@ -560,6 +562,8 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 ## Known issues
 
+- 2026-11-09 · `KeyboardUITests.testDoneKeyClosesTheKeyboardOnPost` fails on the iPhone 17 simulator, on `main` as well: XCTest can't scroll to the keyboard's Done key ("Failed to scroll to visible … identifier: 'Done'", frame y 1087, below the screen). It passed on 2026-11-06, so the simulator or its keyboard changed, not the app; look at it in 6A
+
 - 2026-11-05 · CI · On GitHub's simulator a tab tap is sometimes dropped: the core-flow test stayed on Dev Settings after tapping Nearby (runs 41954096116 and 42056233215). `UITestCase.openTab` now taps again, up to three times, until the tab is selected
 - 2026-11-04 · Phase 5 · Full suite on `phase/5-grove-ui`, iPhone 17: run in parallel, `ChatUITests.testHelperAndRequesterHoldAConversation` (a Nearby row tap didn't open the request) and `KeyboardUITests.testDoneKeyClosesTheKeyboardOnPost` (the keyboard's Done key failed to scroll into view) failed; both passed when rerun alone, and a serial run of the whole suite passed (27 passed, 5 skipped, 0 failed). Same pattern as the 2026-10-29 entry below; watch whether the Chat one repeats
 - 2026-11-04 · Phase 5 · On the iPhone 18 Pro simulator, `ScreenshotUITests.testCaptureScreenshotsInDarkMode` captured light screens (the simulator didn't switch appearance); the same build on iPhone 17 captured dark ones, and the old look on iPhone 17 did too. Use iPhone 17 for dark screenshots
@@ -622,7 +626,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
-- 2026-11-09 · 6A (part) · New app icon from the owner's logo; the category removed from requests in the app (server column kept, sent as `other`); 426 package tests pass; SwiftLint and SwiftFormat clean · 6A: the internal round on the next build
+- 2026-11-09 · 6A (part) · New app icon from the owner's logo; the category removed from requests in the app (server column kept, sent as `other`); 426 package tests pass; full UI suite serially: 26 passed, 5 skipped, 1 failed (`KeyboardUITests.testDoneKeyClosesTheKeyboardOnPost`, which fails the same way on `main` without these changes); SwiftLint and SwiftFormat clean · 6A: the internal round on the next build
 - 2026-11-06 · 6A (part) · Screens leave room for the floating tab bar (build 6 covered the Post button); CI's UI test is now started by hand, since GitHub's simulator is too slow for it; full UI suite passed serially (27 passed, 5 skipped); build 1.0.0 (7) archived and uploaded with the owner's approval · 6A: the internal round on build 7
 - 2026-11-05 · 6A (part) · App matched to the Grove mockup exactly (tab bar, headlines, score pill, I can help, back link, chips, row actions, settings screen, milestone ring and card, chat card, review points), with new view model logic and tests; full UI suite passed serially (27 passed, 5 skipped) and all four screenshot walks checked by eye; build 1.0.0 (6) archived and uploaded with the owner's approval · 6A: the internal round on build 6
 - 2026-11-05 · 6A (part) · Closed the look-only gaps with the Grove mockup and fixed the keyboard staying open after posting (the cause of the CI core-flow failures); full UI suite passed serially (27 passed, 5 skipped); build 1.0.0 (5) archived and uploaded with the owner's approval · 6A: the internal round on build 5

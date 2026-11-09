@@ -34,7 +34,7 @@ struct ThemeTests {
         Pair(text: Palette.brand, fill: Palette.surface, name: "links on surface"),
         Pair(text: Palette.onBrand, fill: Palette.brand, name: "primary button label"),
         Pair(text: Palette.onLime, fill: Palette.lime, name: "Open and Yours badges"),
-        Pair(text: Palette.onTint, fill: Palette.tint, name: "Claimed, Helped, secondary buttons, category tiles"),
+        Pair(text: Palette.onTint, fill: Palette.tint, name: "Claimed, Helped, secondary buttons, icon tiles"),
         Pair(text: Palette.onSpark, fill: Palette.spark, name: "New badge"),
         Pair(text: Palette.points, fill: Palette.surface, name: "points on a card"),
         Pair(text: Palette.points, fill: Palette.tint, name: "points on a highlighted card"),

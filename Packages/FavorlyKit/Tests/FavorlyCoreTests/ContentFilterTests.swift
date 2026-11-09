@@ -29,7 +29,6 @@ struct ContentFilterTests {
             try DraftValidator.validate(NewRequestDraft(
                 title: "Need shit",
                 details: "",
-                category: .other,
                 location: here
             ))
         }
@@ -37,7 +36,6 @@ struct ContentFilterTests {
             try DraftValidator.validate(NewRequestDraft(
                 title: "Need rice",
                 details: "fuck",
-                category: .other,
                 location: here
             ))
         }

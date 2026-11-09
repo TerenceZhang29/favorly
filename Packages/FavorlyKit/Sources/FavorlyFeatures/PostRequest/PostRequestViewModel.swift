@@ -29,7 +29,6 @@ final class PostRequestViewModel {
 
     var title = ""
     var details = ""
-    var category = RequestCategory.other
     /// The neighborhood shown with the request, one of the offered names.
     var neighborhood = ""
     /// Where to meet, such as "Cornell Tech lobby"; optional.
@@ -142,7 +141,6 @@ final class PostRequestViewModel {
             let draft = NewRequestDraft(
                 title: title,
                 details: details,
-                category: category,
                 location: location,
                 meetingSpot: meetingSpot
             )
@@ -150,7 +148,6 @@ final class PostRequestViewModel {
             defaults.set(neighborhood, forKey: Self.lastNeighborhoodKey)
             title = ""
             details = ""
-            category = .other
             meetingSpot = ""
             // Now a notification is clearly useful: someone may pick this up.
             await environment.notifications.requestPermissionIfNeeded()
@@ -171,7 +168,7 @@ final class PostRequestViewModel {
     private func validationMessage(title: String, details: String) -> String? {
         // Only the title and details matter here; the neighborhood is picked and the meeting spot has its own message.
         let location = TaggedLocation(point: GeoPoint(latitude: 0, longitude: 0), label: "Here")
-        let draft = NewRequestDraft(title: title, details: details, category: category, location: location)
+        let draft = NewRequestDraft(title: title, details: details, location: location)
         do {
             try DraftValidator.validate(draft)
             return nil

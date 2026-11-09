@@ -31,7 +31,6 @@ struct MockKindnessRepositoryTests {
         let draft = NewRequestDraft(
             title: "Need a cup of rice",
             details: "",
-            category: .ingredient,
             location: TaggedLocation(point: LocationPresets.cornellTech.location.point, label: "Roosevelt Island")
         )
         for _ in 0 ..< count {

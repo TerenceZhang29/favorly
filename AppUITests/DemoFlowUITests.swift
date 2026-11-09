@@ -43,7 +43,6 @@ final class DemoFlowUITests: UITestCase {
         waitFor(element("post.titleMessage"), toRead: "Title must be at least 3 characters.")
         XCTAssertFalse(app.buttons["post.submit"].isEnabled)
         app.typeText("\u{8}\u{8}Need a cup of rice\n")
-        scrollToAndTap(app.buttons["post.category.ingredient"])
         scrollToAndTap(app.buttons["post.submit"])
 
         let postedRow = row("activity.row.", containing: "Need a cup of rice")
@@ -144,7 +143,6 @@ final class DemoFlowUITests: UITestCase {
         waitFor(element("post.location"), toRead: "Tagged at Roosevelt Island")
         app.textFields["post.title"].tap()
         app.typeText("Need a cup of rice\n")
-        scrollToAndTap(app.buttons["post.category.ingredient"])
         scrollToAndTap(app.buttons["post.submit"])
         XCTAssertTrue(row("activity.row.", containing: "Need a cup of rice")
             .waitForExistence(timeout: Self.waitTimeout))

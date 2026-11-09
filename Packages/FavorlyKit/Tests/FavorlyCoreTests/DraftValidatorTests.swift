@@ -6,7 +6,6 @@ struct DraftValidatorTests {
         NewRequestDraft(
             title: title,
             details: details,
-            category: .other,
             location: TaggedLocation(point: GeoPoint(latitude: 40.7553, longitude: -73.9562), label: "Cornell Tech")
         )
     }
@@ -91,12 +90,12 @@ struct DraftValidatorTests {
     @Test func theDraftsNeighborhoodIsCheckedAndTrimmed() throws {
         let here = GeoPoint(latitude: 40.755, longitude: -73.956)
         let draft = NewRequestDraft(
-            title: "Need rice", details: "", category: .other, location: TaggedLocation(point: here, label: " Harlem ")
+            title: "Need rice", details: "", location: TaggedLocation(point: here, label: " Harlem ")
         )
         #expect(try DraftValidator.validate(draft).location == TaggedLocation(point: here, label: "Harlem"))
         #expect(throws: FavorlyError.validation("Use only letters for the neighborhood, not a street address.")) {
             try DraftValidator.validate(NewRequestDraft(
-                title: "Need rice", details: "", category: .other, location: TaggedLocation(
+                title: "Need rice", details: "", location: TaggedLocation(
                     point: here,
                     label: "12 Main"
                 )
@@ -110,7 +109,7 @@ struct DraftValidatorTests {
         #expect(try DraftValidator.validateMeetingSpot("   ") == "")
         #expect(try DraftValidator.validateMeetingSpot(" Cornell Tech lobby ") == "Cornell Tech lobby")
         let draft = NewRequestDraft(
-            title: "Need rice", details: "", category: .other,
+            title: "Need rice", details: "",
             location: TaggedLocation(point: GeoPoint(latitude: 40.755, longitude: -73.956), label: "Roosevelt Island"),
             meetingSpot: " Outside Gristedes "
         )

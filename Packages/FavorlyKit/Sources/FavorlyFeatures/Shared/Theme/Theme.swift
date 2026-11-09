@@ -23,7 +23,7 @@ enum Theme {
         /// Good news: the Open status, "Yours", the Kindness score badge.
         static let lime = AdaptiveColor(light: 0xD6EF4F, dark: 0xD6EF4F)
         static let onLime = AdaptiveColor(light: 0x1D2B12, dark: 0x141A0D)
-        /// Soft fill: category tiles, secondary buttons, the Claimed status, a highlighted row.
+        /// Soft fill: icon tiles, secondary buttons, the Claimed status, a highlighted row.
         static let tint = AdaptiveColor(light: 0xEAF2BF, dark: 0x2D3616)
         static let onTint = AdaptiveColor(light: 0x45470C, dark: 0xDDF27A)
         /// Point values and the score heart.
@@ -78,7 +78,7 @@ enum Theme {
         static let button: CGFloat = 18
         /// Text fields and banners.
         static let field: CGFloat = 14
-        /// A category tile.
+        /// An icon tile.
         static let tile: CGFloat = 12
         /// Chat bubbles, with a smaller corner on the sender's side.
         static let bubble: CGFloat = 18
@@ -90,7 +90,7 @@ enum Theme {
     }
 
     enum IconSize {
-        /// Side of a `CategoryIcon` tile in a row, at the default text size.
+        /// Side of an `IconTile` in a row, at the default text size.
         static let row: CGFloat = 38
         static let large: CGFloat = 56
         /// The largest a star button on the review form gets, so five fit across the narrowest phone.

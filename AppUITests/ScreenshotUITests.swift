@@ -91,10 +91,8 @@ final class ScreenshotUITests: UITestCase {
         waitFor(element("post.titleMessage"), toRead: "Title must be at least 3 characters.")
         try capture("post-invalid")
         app.typeText("ed a cup of rice\n")
-        // At the largest text size the category chips can start below the fold.
-        scrollToAndTap(app.buttons["post.category.ingredient"])
-        // Checking for an element waits for the app to go idle, so the chip's change has finished drawing.
-        XCTAssertTrue(app.buttons["post.category.ingredient"].waitForExistence(timeout: Self.waitTimeout))
+        // Checking for an element waits for the app to go idle, so the keyboard has finished closing.
+        XCTAssertTrue(app.buttons["post.submit"].waitForExistence(timeout: Self.waitTimeout))
         try capture("post")
         scrollToAndTap(app.buttons["post.submit"])
         XCTAssertTrue(row("activity.row.", containing: "Need a cup of rice")

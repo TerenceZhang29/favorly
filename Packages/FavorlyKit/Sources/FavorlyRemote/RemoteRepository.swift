@@ -61,7 +61,8 @@ public actor RemoteRepository: RequestRepository {
         let params: [String: AnyJSON] = [
             "title": .string(draft.title),
             "details": .string(draft.details),
-            "category": .string(draft.category.rawValue),
+            // The app has no categories any more; the server column stays for builds that still send one.
+            "category": .string("other"),
             "latitude": .double(draft.location.point.latitude),
             "longitude": .double(draft.location.point.longitude),
             "location_label": .string(draft.location.label),

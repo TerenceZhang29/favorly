@@ -15,7 +15,6 @@ extension HelpRequest {
             id: RequestID(rawValue: UUID()),
             title: "Need 2 eggs for a cake",
             details: "",
-            category: .ingredient,
             location: TaggedLocation(point: GeoPoint(latitude: 40.7553, longitude: -73.9562), label: "Cornell Tech"),
             requesterID: .requester,
             helperID: wasClaimed ? .helper : nil,

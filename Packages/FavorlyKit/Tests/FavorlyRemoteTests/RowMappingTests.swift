@@ -23,7 +23,6 @@ struct RowMappingTests {
         let request = try decode(RequestRow.self, Self.requestJSON + "}").model()
         #expect(request.id.rawValue == UUID(uuidString: "5a3dac11-dd4c-453a-a9c5-1f88f82693ef"))
         #expect(request.title == "Need a cup of rice")
-        #expect(request.category == .ingredient)
         #expect(request.location == TaggedLocation(
             point: GeoPoint(latitude: 40.755, longitude: -73.956), label: "Roosevelt Island"
         ))
@@ -42,8 +41,14 @@ struct RowMappingTests {
         #expect(try decode(RequestRow.self, json).model().requesterID == .deletedUser)
     }
 
-    @Test func anUnknownCategoryIsAnError() {
+    /// The server's `category` column is left over from builds that had categories; the app ignores it.
+    @Test func theLeftoverCategoryIsIgnored() throws {
         let json = Self.requestJSON.replacingOccurrences(of: "\"ingredient\"", with: "\"gardening\"") + "}"
+        #expect(try decode(RequestRow.self, json).model().title == "Need a cup of rice")
+    }
+
+    @Test func anUnknownStatusIsAnError() {
+        let json = Self.requestJSON.replacingOccurrences(of: "\"open\"", with: "\"paused\"") + "}"
         #expect(throws: RemoteMappingError.unknownValue) {
             try decode(RequestRow.self, json).model()
         }

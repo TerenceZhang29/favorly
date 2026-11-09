@@ -10,7 +10,6 @@ struct ActivityRow: View {
 
     var body: some View {
         HStack(spacing: Theme.Spacing.large) {
-            CategoryIcon(systemImage: request.category.systemImage)
             VStack(alignment: .leading, spacing: Theme.Spacing.small + Theme.Spacing.small / 2) {
                 Text(request.title)
                     .textStyle(.bodyStrong)
@@ -58,7 +57,7 @@ struct ActivityRow: View {
     }
 
     private var spokenLabel: String {
-        let parts = [request.title, request.category.title, subtitle.replacingOccurrences(of: " · ", with: ", ")]
+        let parts = [request.title, subtitle.replacingOccurrences(of: " · ", with: ", ")]
         return (isNew ? parts + ["new"] : parts).joined(separator: ", ")
     }
 }

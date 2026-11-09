@@ -17,7 +17,6 @@ struct PostRequestViewModelTests {
 
     @Test func startsEmptyAndCannotSubmit() {
         #expect(viewModel.title.isEmpty)
-        #expect(viewModel.category == .other)
         #expect(viewModel.locationState == .loading)
         #expect(viewModel.locationText == nil)
         #expect(viewModel.titleMessage == nil)
@@ -81,13 +80,11 @@ struct PostRequestViewModelTests {
         await viewModel.loadLocation()
         viewModel.title = "  Need a cup of rice "
         viewModel.details = "Any kind works."
-        viewModel.category = .ingredient
 
         let created = try #require(await viewModel.submit())
 
         #expect(created.title == "Need a cup of rice")
         #expect(created.details == "Any kind works.")
-        #expect(created.category == .ingredient)
         #expect(created.location == TaggedLocation(
             point: LocationPresets.midtownEast.location.point,
             label: "East Midtown"
@@ -98,7 +95,6 @@ struct PostRequestViewModelTests {
 
         #expect(viewModel.title.isEmpty)
         #expect(viewModel.details.isEmpty)
-        #expect(viewModel.category == .other)
         #expect(viewModel.submitError == nil)
         #expect(!viewModel.isSubmitting)
         #expect(!viewModel.canSubmit)

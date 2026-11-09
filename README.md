@@ -95,7 +95,7 @@ One person plays both sides by switching users in the Dev Settings tab. It takes
 
 1. Launch the app. Dev Settings shows *Alex @ Cornell Tech, Roosevelt Island*.
 2. Nearby: 7 open requests within 1 mi, closest first. Change the radius to 0.25 mi (3 requests), then to 3 mi (8 requests), then back to 1 mi.
-3. Post tab: title "Need a cup of rice", category Ingredient, location tagged at Cornell Tech. Tap Post request. My Activity opens and shows it as *Open*.
+3. Post tab: title "Need a cup of rice", location tagged at Cornell Tech. Tap Post request. My Activity opens and shows it as *Open*.
 4. Dev Settings: switch to Bea. Nearby: Alex's rice request is at the top at "< 0.1 mi".
 5. Open it, tap Pick up and confirm. The status becomes *Claimed by Bea*. It leaves Nearby and appears in My Activity under *Picked up by me*.
 6. Dev Settings: switch back to Alex. My Activity shows the rice request as *Claimed by Bea*. Open it and tap Mark completed.

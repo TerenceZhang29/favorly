@@ -97,7 +97,7 @@ struct AppEnvironmentTests {
         }
         await #expect(throws: FavorlyError.notAllowed) {
             try await environment.repository.create(
-                NewRequestDraft(title: "Need rice", details: "", category: .other, location: here),
+                NewRequestDraft(title: "Need rice", details: "", location: here),
                 by: user
             )
         }

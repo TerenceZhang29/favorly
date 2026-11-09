@@ -264,6 +264,8 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 5 | `1a4c779` | docs: full suite results for Phase 5 |
 | 4G | `ce3fcde` | docs(plan): 4G closed after the two-phone check; the beta moves to Phase 6 |
 | 4G | (next commit) | docs: build 1.0.0 (3) uploaded, the first with Grove |
+| 6A | `023731f` | feat(app): new app icon from the Favorly logo |
+| 6A | (next commit) | feat: remove the category from requests |
 
 ## Confirmed decisions
 
@@ -279,6 +281,8 @@ Defaults from the plan's Preparation section. Change here if the team decides ot
 
 Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
+- 2026-11-09 · 6A · Requests have no category any more (owner's request): `RequestCategory` and its display extension are gone, `category` is removed from `HelpRequest` and `NewRequestDraft` (a change to the plan's domain model), Post has no category chips, rows, Request Detail and the claim sheet show no category tile or Category fact, and `CategoryIcon` is renamed `IconTile` for the icons that remain (gift card, welcome, messages). The server is unchanged: `FavorlyRemote` sends `category = 'other'` to `create_request` and ignores the column when reading · no migration or deploy is needed, and builds 1–7 on TestFlight keep working; a later migration can drop the column once no old build is in use
+- 2026-11-09 · 6A · The app icon is the owner's logo (`docs/brand/logo.png`, a lime "f" on white), resized to 1024×1024 by `scripts/make-app-icon.sh`, which replaces the Phase 2 drawing script · owner's request; this also settles the Phase 5 open question about a new icon
 - 2026-11-06 · CI · The core-flow UI test runs on GitHub only when started by hand (owner's choice, over a non-blocking job or a paid larger runner). GitHub's free macOS simulator is the cause of the slowness, not the app: the test took 11–15 minutes there with each part of the Grove look turned off in turn (font, bar styling, background, row cards; shadows earlier), and 12¾ minutes on the code from before Grove (run 42156971343), against 95 seconds on a Mac; on iOS 26.2, 26.4 and 26.5 it failed with "Timed out while evaluating UI query" (runs 42159270503, 42159272699, 42159271183). The experiment switches are removed. Pushes run the package tests only; the full UI suite runs locally before each push to main
 - 2026-11-06 · CI · UI test waits are 60 seconds on CI (`TEST_RUNNER_SLOW_MACHINE=1`) and 20 locally · run 42140258075 failed with "Expected \"7 requests\", found \"7 requests\"": the screen was right, but GitHub's simulator answered the accessibility query after the 20-second wait
 - 2026-11-05 · 6A · Each tab's screens leave room at the bottom for the floating tab bar · on GitHub the bar covered Post request, the core-flow test's tap landed on the bar, and the posted request never showed (run 42119051139); users with the keyboard closed could hit the same. Tests also scroll to Post request before tapping it
@@ -601,7 +605,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 - Phase 5: bundle the Figtree font (OFL)? Default taken: yes, only through `TextStyle`.
 - Phase 5: adopt the mockup's new copy ("Neighbors who could use a hand", "Ask for a favor", "I can help")? Default: no, current strings stay.
 - Phase 5: one olive tint for every category instead of five category colors? Default: yes, as in the mockup.
-- Phase 5: new app icon from the logo concepts? Default: not in this phase.
+- Phase 5: new app icon from the logo concepts? Resolved 2026-11-09: the owner's logo is the app icon.
 
 - Phase 3: the helper can mark a request completed (Phase 1 rule 4), so a helper can award themselves 10 points. Resolved 2026-10-13: only the requester can mark completed, and a claimed request auto-completes 7 days after pick-up; planned as phase 3F.
 - Phase 3F: how is auto-complete shown in a demo, when 7 days never pass? Resolved 2026-10-28: tests only, with a fixed clock, as the plan's default.
@@ -618,6 +622,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-11-09 · 6A (part) · New app icon from the owner's logo; the category removed from requests in the app (server column kept, sent as `other`); 426 package tests pass; SwiftLint and SwiftFormat clean · 6A: the internal round on the next build
 - 2026-11-06 · 6A (part) · Screens leave room for the floating tab bar (build 6 covered the Post button); CI's UI test is now started by hand, since GitHub's simulator is too slow for it; full UI suite passed serially (27 passed, 5 skipped); build 1.0.0 (7) archived and uploaded with the owner's approval · 6A: the internal round on build 7
 - 2026-11-05 · 6A (part) · App matched to the Grove mockup exactly (tab bar, headlines, score pill, I can help, back link, chips, row actions, settings screen, milestone ring and card, chat card, review points), with new view model logic and tests; full UI suite passed serially (27 passed, 5 skipped) and all four screenshot walks checked by eye; build 1.0.0 (6) archived and uploaded with the owner's approval · 6A: the internal round on build 6
 - 2026-11-05 · 6A (part) · Closed the look-only gaps with the Grove mockup and fixed the keyboard staying open after posting (the cause of the CI core-flow failures); full UI suite passed serially (27 passed, 5 skipped); build 1.0.0 (5) archived and uploaded with the owner's approval · 6A: the internal round on build 5

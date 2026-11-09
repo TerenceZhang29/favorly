@@ -89,7 +89,6 @@ public actor MockRequestRepository: RequestRepository {
             id: RequestID(rawValue: UUID()),
             title: draft.title,
             details: draft.details,
-            category: draft.category,
             location: draft.location,
             meetingSpot: draft.meetingSpot,
             requesterID: user,

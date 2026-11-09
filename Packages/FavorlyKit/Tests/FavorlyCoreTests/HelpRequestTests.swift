@@ -8,7 +8,6 @@ struct HelpRequestTests {
             id: RequestID(rawValue: UUID()),
             title: "Borrow a cup of rice",
             details: "",
-            category: .ingredient,
             location: TaggedLocation(point: GeoPoint(latitude: 40.7553, longitude: -73.9562), label: "Cornell Tech"),
             requesterID: .requester,
             createdAt: Date(timeIntervalSince1970: 0)

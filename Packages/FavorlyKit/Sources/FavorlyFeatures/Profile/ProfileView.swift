@@ -147,7 +147,7 @@ struct ProfileView: View {
         Section {
             VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
                 HStack(spacing: Theme.Spacing.large) {
-                    CategoryIcon(systemImage: "gift")
+                    IconTile(systemImage: "gift")
                     VStack(alignment: .leading, spacing: Theme.Spacing.small / 2) {
                         Text("Next milestone")
                             .textStyle(.bodyStrong)

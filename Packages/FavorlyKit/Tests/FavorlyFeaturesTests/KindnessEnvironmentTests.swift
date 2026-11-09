@@ -36,7 +36,6 @@ struct KindnessEnvironmentTests {
             id: RequestID(rawValue: UUID()),
             title: "Need a cup of sugar",
             details: "",
-            category: .ingredient,
             location: TaggedLocation(point: GeoPoint(latitude: 40.7553, longitude: -73.9562), label: "Cornell Tech"),
             requesterID: UserID(rawValue: "preview-alex"),
             helperID: bea,

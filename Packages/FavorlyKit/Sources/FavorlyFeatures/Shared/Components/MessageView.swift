@@ -13,7 +13,7 @@ struct MessageView: View {
 
     var body: some View {
         VStack(spacing: Theme.Spacing.large) {
-            CategoryIcon(systemImage: systemImage, isLarge: true)
+            IconTile(systemImage: systemImage, isLarge: true)
             Text(message)
                 .textStyle(.body)
                 .foregroundStyle(Theme.Colors.inkMuted)

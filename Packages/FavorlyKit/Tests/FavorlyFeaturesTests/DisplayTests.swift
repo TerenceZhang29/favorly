@@ -12,12 +12,6 @@ struct DisplayTests {
         #expect(RadiusOption.oneMile.meters == 1609.344)
     }
 
-    @Test func everyCategoryHasADistinctTitleAndIcon() {
-        let categories = RequestCategory.allCases
-        #expect(categories.map(\.title) == ["Ingredient", "Moving help", "Car help", "Errand", "Other"])
-        #expect(Set(categories.map(\.systemImage)).count == categories.count)
-    }
-
     @Test func statusTitlesAreReadable() {
         let statuses: [RequestStatus] = [.open, .claimed, .completed, .cancelled]
         #expect(statuses.map(\.title) == ["Open", "Claimed", "Completed", "Cancelled"])

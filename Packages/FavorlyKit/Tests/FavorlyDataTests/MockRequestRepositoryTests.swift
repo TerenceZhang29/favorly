@@ -24,7 +24,6 @@ struct MockRequestRepositoryTests {
         NewRequestDraft(
             title: "  Need a cup of rice ",
             details: "",
-            category: .ingredient,
             location: TaggedLocation(point: LocationPresets.cornellTech.location.point, label: "Roosevelt Island")
         )
     }

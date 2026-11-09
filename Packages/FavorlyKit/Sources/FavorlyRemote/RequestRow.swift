@@ -6,7 +6,6 @@ struct RequestRow: Decodable, Sendable {
     let id: UUID
     let title: String
     let details: String
-    let category: String
     let latitude: Double
     let longitude: Double
     let locationLabel: String
@@ -19,7 +18,7 @@ struct RequestRow: Decodable, Sendable {
     let claimedAt: Date?
 
     enum CodingKeys: String, CodingKey {
-        case id, title, details, category, latitude, longitude, status
+        case id, title, details, latitude, longitude, status
         case locationLabel = "location_label"
         case meetingSpot = "meeting_spot"
         case requesterID = "requester_id"
@@ -29,14 +28,13 @@ struct RequestRow: Decodable, Sendable {
     }
 
     func model() throws -> HelpRequest {
-        guard let category = RequestCategory(rawValue: category), let status = RequestStatus(rawValue: status) else {
+        guard let status = RequestStatus(rawValue: status) else {
             throw RemoteMappingError.unknownValue
         }
         return HelpRequest(
             id: RequestID(rawValue: id),
             title: title,
             details: details,
-            category: category,
             location: TaggedLocation(point: GeoPoint(latitude: latitude, longitude: longitude), label: locationLabel),
             meetingSpot: meetingSpot,
             requesterID: requesterID.map(UserID.init(remote:)) ?? .deletedUser,

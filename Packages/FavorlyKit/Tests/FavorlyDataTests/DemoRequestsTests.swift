@@ -28,10 +28,6 @@ struct DemoRequestsTests {
         #expect(requests.allSatisfy { demoUserIDs.contains($0.requesterID) })
     }
 
-    @Test func everyCategoryIsCovered() {
-        #expect(Set(requests.map(\.category)) == Set(RequestCategory.allCases))
-    }
-
     @Test func mostAreOpenWithOneClaimedAndOneCompleted() {
         #expect(phaseOne.count(where: { $0.status == .open }) == 10)
         #expect(phaseOne.count(where: { $0.status == .claimed }) == 1)

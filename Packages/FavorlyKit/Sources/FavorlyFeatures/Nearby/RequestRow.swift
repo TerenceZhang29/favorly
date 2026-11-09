@@ -1,7 +1,7 @@
 import FavorlyCore
 import SwiftUI
 
-/// A request on Nearby, drawn as a card: the category, the distance · name · time line, the title, and
+/// A request on Nearby, drawn as a card: the distance · name · time line, the title, and
 /// "Yours" for the user's own requests.
 struct RequestRow: View {
     let item: NearbyRequest
@@ -11,16 +11,10 @@ struct RequestRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.medium + Theme.Spacing.small / 2) {
-            headerLayout {
-                CategoryIcon(systemImage: item.request.category.systemImage)
-                VStack(alignment: .leading, spacing: Theme.Spacing.small / 2) {
-                    Text(item.request.category.title)
-                        .textStyle(.metaStrong)
-                        .foregroundStyle(Theme.Colors.ink)
-                    Text("\(distanceText) · \(requesterName) · \(postedText)")
-                        .textStyle(.meta)
-                        .foregroundStyle(Theme.Colors.inkMuted)
-                }
+            HStack(spacing: Theme.Spacing.medium + Theme.Spacing.small / 2) {
+                Text("\(distanceText) · \(requesterName) · \(postedText)")
+                    .textStyle(.meta)
+                    .foregroundStyle(Theme.Colors.inkMuted)
                 Spacer(minLength: Theme.Spacing.medium)
                 if !stacksBadge {
                     badge
@@ -52,13 +46,6 @@ struct RequestRow: View {
 
     /// At accessibility text sizes the badge goes under the title, so the text keeps the row's width.
     private var stacksBadge: Bool { dynamicTypeSize.isAccessibilitySize }
-
-    /// The category tile beside its text, or above it at accessibility text sizes so words don't break.
-    private var headerLayout: AnyLayout {
-        stacksBadge
-            ? AnyLayout(VStackLayout(alignment: .leading, spacing: Theme.Spacing.medium))
-            : AnyLayout(HStackLayout(spacing: Theme.Spacing.medium + Theme.Spacing.small / 2))
-    }
 
     /// The meeting spot, or the neighborhood when there is none.
     private var place: some View {
@@ -107,7 +94,6 @@ struct RequestRow: View {
         let distance = DistanceFormatter.spokenMiles(item.distanceMeters)
         let parts = [
             item.request.title,
-            item.request.category.title,
             "\(distance) away",
             "posted \(postedText) by \(requesterName)",
         ]

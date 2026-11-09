@@ -4,7 +4,6 @@ import SwiftUI
 /// within thumb reach. It replaces a confirmation dialog that iOS drew far from the Claim button.
 struct ClaimConfirmationView: View {
     let title: String
-    let categorySymbol: String
     let requesterName: String
     /// "0.1 mi · Lobby of the library": the distance and where to meet, when known.
     let detailLine: String
@@ -62,17 +61,9 @@ struct ClaimConfirmationView: View {
         .background(Theme.Colors.background)
     }
 
-    /// The icon beside the text, or above it at accessibility text sizes so words don't break.
-    private var summaryLayout: AnyLayout {
-        dynamicTypeSize.isAccessibilitySize
-            ? AnyLayout(VStackLayout(alignment: .leading, spacing: Theme.Spacing.medium))
-            : AnyLayout(HStackLayout(spacing: Theme.Spacing.large))
-    }
-
     /// The request being claimed, as a small card.
     private var summary: some View {
-        summaryLayout {
-            CategoryIcon(systemImage: categorySymbol)
+        HStack(spacing: Theme.Spacing.large) {
             VStack(alignment: .leading, spacing: Theme.Spacing.small / 2) {
                 Text(title)
                     .textStyle(.bodyStrong)
@@ -113,7 +104,6 @@ struct ClaimConfirmationView: View {
         .sheet(isPresented: .constant(true)) {
             ClaimConfirmationView(
                 title: "Need a cup of rice",
-                categorySymbol: "carrot",
                 requesterName: "Alex",
                 detailLine: "< 0.1 mi · Lobby of the library"
             ) {}

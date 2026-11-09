@@ -20,7 +20,6 @@ public extension AppEnvironment {
                 id: RequestID(rawValue: UUID()),
                 title: "Need 2 eggs for a cake",
                 details: "Baking tonight and the store is closed.",
-                category: .ingredient,
                 location: TaggedLocation(
                     point: GeoPoint(latitude: 40.7560, longitude: -73.9555),
                     label: "Roosevelt Island"
@@ -32,7 +31,6 @@ public extension AppEnvironment {
                 id: RequestID(rawValue: UUID()),
                 title: "Borrow a cup of rice",
                 details: "",
-                category: .ingredient,
                 location: here,
                 requesterID: alex.id,
                 createdAt: Date().addingTimeInterval(-1200)

@@ -57,7 +57,7 @@ struct FactRow: View {
 
 #Preview {
     LightAndDarkPreview {
-        FactRow(label: "Category", value: "Ingredient", systemImage: "tag")
+        FactRow(label: "Neighborhood", value: "Roosevelt Island", systemImage: "mappin")
         FactRow(label: "Location", value: "Cornell Tech, Roosevelt Island", systemImage: "mappin")
         FactRow(label: "Status", value: "Open")
     }

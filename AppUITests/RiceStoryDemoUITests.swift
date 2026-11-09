@@ -36,7 +36,6 @@ final class RiceStoryDemoUITests: UITestCase {
         element("post.details").tap()
         typeSlowly("Cooking dinner tonight and just ran out. The store is closed. Can anyone spare a cup?")
         dismissKeyboard()
-        scrollToAndTap(app.buttons["post.category.ingredient"])
         hold()
         scrollToAndTap(app.buttons["post.submit"])
         let posted = row("activity.row.", containing: "Need a cup of rice")

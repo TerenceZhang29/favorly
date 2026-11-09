@@ -62,7 +62,6 @@ struct RequestDetailView: View {
             if case let .loaded(request) = viewModel.state {
                 ClaimConfirmationView(
                     title: request.title,
-                    categorySymbol: request.category.systemImage,
                     requesterName: viewModel.requesterName,
                     detailLine: [
                         viewModel.distanceText,
@@ -96,14 +95,14 @@ struct RequestDetailView: View {
     private func summary(of request: HelpRequest) -> some View {
         Section {
             VStack(alignment: .leading, spacing: Theme.Spacing.large) {
-                // The icon, badge and time on one line, or the time under them when the badge is long.
+                // The badge and time on one line, or the time under the badge when it is long.
                 ViewThatFits(in: .horizontal) {
                     HStack(spacing: Theme.Spacing.medium + Theme.Spacing.small / 2) {
-                        iconAndBadge(of: request)
+                        statusBadge(of: request)
                         timeLine(of: request)
                     }
                     VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
-                        HStack(spacing: Theme.Spacing.medium + Theme.Spacing.small / 2) { iconAndBadge(of: request) }
+                        statusBadge(of: request)
                         timeLine(of: request)
                     }
                 }
@@ -128,7 +127,6 @@ struct RequestDetailView: View {
 
     private func facts(of request: HelpRequest) -> some View {
         Section {
-            fact("Category", request.category.title, id: "category", systemImage: "tag")
             fact("Neighborhood", request.location.label, id: "location", systemImage: "mappin")
             if !request.meetingSpot.isEmpty {
                 fact("Meeting spot", request.meetingSpot, id: "meetingSpot", systemImage: "figure.wave")
@@ -297,9 +295,7 @@ private extension RequestDetailView {
 
     /// The status badge and "0.1 mi away · 22 minutes ago". The badge is what VoiceOver and the UI tests
     /// read as the status ("Status, Claimed by Bea").
-    @ViewBuilder
-    func iconAndBadge(of request: HelpRequest) -> some View {
-        CategoryIcon(systemImage: request.category.systemImage)
+    func statusBadge(of request: HelpRequest) -> some View {
         StatusBadge(text: viewModel.statusText, colors: request.status.badgeColors)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("Status")

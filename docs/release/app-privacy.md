@@ -14,7 +14,7 @@ Yes. None of it is used for tracking (no data is linked with other companies' da
 | Identifiers | User ID | Sign in with Apple's user identifier, and the account ID | App Functionality |
 | Identifiers | Device ID | The APNs push token, if notifications are allowed | App Functionality |
 | Location | Precise Location | The position rounded to 3 decimal places (about 100 m), with requests and to find nearby ones | App Functionality |
-| User Content | Other User Content | Requests (title, details, category, neighborhood) and reviews | App Functionality |
+| User Content | Other User Content | Requests (title, details, neighborhood, meeting spot) and reviews | App Functionality |
 | User Content | Other User Content | Reports and blocks | App Functionality (moderation) |
 | User Content | Emails or Text Messages | Chat messages between requester and helper | App Functionality |
 

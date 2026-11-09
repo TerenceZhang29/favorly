@@ -1,8 +1,8 @@
 import SwiftUI
 
-/// A category's symbol on a rounded square in the olive tint. Grows with Dynamic Type, up to
+/// A symbol on a rounded square in the olive tint. Grows with Dynamic Type, up to
 /// `Theme.IconSize.maxScale`, so the text beside it keeps most of the row at the largest text sizes.
-struct CategoryIcon: View {
+struct IconTile: View {
     let systemImage: String
     private let baseSide: CGFloat
     @ScaledMetric private var scaledSide: CGFloat
@@ -29,9 +29,9 @@ struct CategoryIcon: View {
     LightAndDarkPreview {
         HStack(spacing: Theme.Spacing.large) {
             ForEach(["carrot", "shippingbox", "car", "bag", "hand.raised"], id: \.self) { symbol in
-                CategoryIcon(systemImage: symbol)
+                IconTile(systemImage: symbol)
             }
         }
-        CategoryIcon(systemImage: "carrot", isLarge: true)
+        IconTile(systemImage: "carrot", isLarge: true)
     }
 }

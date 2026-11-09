@@ -25,7 +25,7 @@ struct DemoNeighborhoodsTests {
         await #expect(throws: FavorlyError.validation("Choose a neighborhood near you.")) {
             try await repository.create(
                 NewRequestDraft(
-                    title: "Need rice", details: "", category: .other,
+                    title: "Need rice", details: "",
                     location: TaggedLocation(point: island, label: "Seattle")
                 ),
                 by: alex
@@ -33,7 +33,7 @@ struct DemoNeighborhoodsTests {
         }
         let rice = try await repository.create(
             NewRequestDraft(
-                title: "Need rice", details: "", category: .other,
+                title: "Need rice", details: "",
                 location: TaggedLocation(point: island, label: "Roosevelt Island"), meetingSpot: "Cornell Tech lobby"
             ),
             by: alex

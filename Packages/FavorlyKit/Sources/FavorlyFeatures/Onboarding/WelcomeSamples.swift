@@ -24,7 +24,7 @@ struct WelcomeSamples: View {
 
     private func sample(symbol: String, title: String, meta: String) -> some View {
         HStack(spacing: Theme.Spacing.large) {
-            CategoryIcon(systemImage: symbol)
+            IconTile(systemImage: symbol)
             VStack(alignment: .leading, spacing: Theme.Spacing.small / 2) {
                 Text(title)
                     .textStyle(.bodyStrong)

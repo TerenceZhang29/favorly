@@ -32,7 +32,6 @@ final class ContractWorld {
         NewRequestDraft(
             title: title,
             details: "",
-            category: .ingredient,
             location: location ?? here,
             meetingSpot: meetingSpot
         )

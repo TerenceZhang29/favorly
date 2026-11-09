@@ -4,7 +4,6 @@ public struct HelpRequest: Identifiable, Hashable, Codable, Sendable {
     public let id: RequestID
     public var title: String
     public var details: String
-    public var category: RequestCategory
     public var location: TaggedLocation
     /// Where to meet, such as "Cornell Tech lobby"; empty when not given.
     public var meetingSpot: String
@@ -19,7 +18,6 @@ public struct HelpRequest: Identifiable, Hashable, Codable, Sendable {
         id: RequestID,
         title: String,
         details: String,
-        category: RequestCategory,
         location: TaggedLocation,
         meetingSpot: String = "",
         requesterID: UserID,
@@ -31,7 +29,6 @@ public struct HelpRequest: Identifiable, Hashable, Codable, Sendable {
         self.id = id
         self.title = title
         self.details = details
-        self.category = category
         self.location = location
         self.meetingSpot = meetingSpot
         self.requesterID = requesterID

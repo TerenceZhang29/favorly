@@ -54,7 +54,7 @@ struct ProfileActivityRow: View {
 
     /// "Need a pinch of saffron, Ingredient, Helped, Downtown Brooklyn".
     private var spokenLabel: String {
-        let parts = [request.title, request.category.title, roleTitle, request.location.label]
+        let parts = [request.title, roleTitle, request.location.label]
         return (pointsText.map { parts + ["\($0) points"] } ?? parts).joined(separator: ", ")
     }
 }
@@ -66,7 +66,6 @@ struct ProfileActivityRow: View {
                 id: RequestID(rawValue: UUID()),
                 title: "Need a pinch of saffron",
                 details: "",
-                category: .ingredient,
                 location: TaggedLocation(
                     point: GeoPoint(latitude: 40.6929, longitude: -73.9857),
                     label: "Downtown Brooklyn"

@@ -1,9 +1,11 @@
 #!/bin/sh
-# Captures the App Store screenshots on a 6.9-inch iPhone simulator, with a clean status bar and no Dev Settings tab, into docs/release/screenshots.
-# Run from the repo root: sh scripts/make-store-screenshots.sh ["iPhone 18 Pro Max"]
+# Captures the App Store screenshots on an iPhone simulator, with a clean status bar and no Dev Settings tab,
+# into docs/release/screenshots/<size>. Run from the repo root:
+#   sh scripts/make-store-screenshots.sh "iPhone 18 Pro Max" 6.9-inch   # 1320 × 2868
+#   sh scripts/make-store-screenshots.sh "iPhone 17" 6.3-inch           # 1206 × 2622
 set -eu
 device="${1:-iPhone 18 Pro Max}"
-out="$(pwd)/docs/release/screenshots"
+out="$(pwd)/docs/release/screenshots/${2:-6.9-inch}"
 mkdir -p "$out"
 rm -f "$out"/*.png
 xcrun simctl boot "$device" 2>/dev/null || true

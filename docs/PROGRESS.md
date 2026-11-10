@@ -64,7 +64,7 @@ Everything Claude could prepare is in `docs/release/`. These steps need the owne
 
 1. App Store Connect → Favorly → App Information: subtitle, categories, content rights, age rating questionnaire (answers in `docs/release/app-privacy.md`).
 2. App Privacy: the answers in `docs/release/app-privacy.md`.
-3. Version 1.0.0: promotional text, description, keywords, URLs and copyright from `docs/release/app-store-listing.md`; upload the six screenshots in `docs/release/screenshots/` in order; select build 9.
+3. Version 1.0.0: promotional text, description, keywords, URLs and copyright from `docs/release/app-store-listing.md`; upload the screenshots in order, each folder of `docs/release/screenshots/` to the slot of its size (6.9-inch and 6.3-inch); select build 9.
 4. Pricing and Availability: free, United States only.
 5. Record the two-phone flow (post, claim, chat, complete, review) on two TestFlight phones and attach it under App Review Information, with the notes from `docs/release/app-store-listing.md` and a contact phone number.
 6. Keep the Supabase project awake during review: it is on the free tier and pauses after about a week without traffic. Open the app the day you submit, and check the dashboard if review takes longer than a few days (guideline 2.1: "turn on your back-end service").
@@ -283,7 +283,9 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 6A | `e643f72` | docs: record the icon and category changes |
 | 6A | `0d5693c` | chore(release): build 1.0.0 (8) |
 | 6A | `ca6eca5` | feat(app): dark mode app icon; build 1.0.0 (9) |
-| 4H | (next commit) | feat(release): App Store listing, review notes and screenshots |
+| 4H | `19076f5` | feat(release): App Store listing, review notes and screenshots |
+| 4H | `0e8f96c` | docs(release): no demo account; reviewers use Sign in with Apple |
+| 4H | (next commit) | feat(release): 6.3-inch screenshots next to the 6.9-inch set |
 
 ## Confirmed decisions
 

@@ -63,7 +63,14 @@ neighbor,neighborhood,help,favor,borrow,local,community,errand,volunteer,kindnes
 
 ## Screenshots
 
-6.9-inch iPhone (1320 × 2868), made by `sh scripts/make-store-screenshots.sh` into `docs/release/screenshots/`, uploaded in this order:
+Two sets, made by `scripts/make-store-screenshots.sh`, each in its own folder. Upload each set to the slot of its size (App Store Connect refuses a file in the wrong slot with "File dimensions are invalid"):
+
+| Folder | Size | Simulator | App Store Connect slot |
+| --- | --- | --- | --- |
+| `docs/release/screenshots/6.9-inch/` | 1320 × 2868 | iPhone 18 Pro Max | iPhone 6.9" display |
+| `docs/release/screenshots/6.3-inch/` | 1206 × 2622 | iPhone 17 | iPhone 6.1" or 6.3" display |
+
+Upload in this order:
 
 1. `1-nearby.png`: requests from neighbors nearby
 2. `2-request-detail.png`: a neighbor's request
@@ -72,7 +79,7 @@ neighbor,neighborhood,help,favor,borrow,local,community,errand,volunteer,kindnes
 5. `5-profile.png`: Kindness score and reviews
 6. `6-post.png`: asking for a favor
 
-App Store Connect scales the 6.9-inch set down for smaller iPhones, so no other sizes are needed. Favorly is iPhone-only, so no iPad set.
+Favorly is iPhone-only, so there is no iPad set.
 
 ## App Review information
 

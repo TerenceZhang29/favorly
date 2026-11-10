@@ -2,7 +2,7 @@ import XCTest
 
 /// Captures the App Store screenshots: six screens, in light mode, as Alex on Roosevelt Island with demo data.
 /// Skipped unless a destination folder is given. `-noDevSettings` hides the Debug-only Dev Settings tab, as in the
-/// App Store build. Run on a 6.9-inch iPhone with a clean status bar by `scripts/make-store-screenshots.sh`.
+/// App Store build, and `-hideStatusBar` hides the status bar. Run by `scripts/make-store-screenshots.sh`.
 final class AppStoreScreenshotUITests: UITestCase {
     @MainActor private var folder = ""
 
@@ -13,7 +13,7 @@ final class AppStoreScreenshotUITests: UITestCase {
         }
         self.folder = folder
         XCUIDevice.shared.appearance = .light
-        app.launchArguments = ["-uiTesting", "-noDevSettings", "-AppleLocale", "en_US"] + Self.freshDefaults
+        app.launchArguments = ["-uiTesting", "-noDevSettings", "-hideStatusBar", "-AppleLocale", "en_US"] + Self.freshDefaults
         app.launch()
 
         // 1. Requests from neighbors nearby.

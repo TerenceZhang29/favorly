@@ -1,5 +1,5 @@
 #!/bin/sh
-# Captures the App Store screenshots on an iPhone simulator, with a clean status bar and no Dev Settings tab,
+# Captures the App Store screenshots on an iPhone simulator, with no status bar and no Dev Settings tab,
 # into docs/release/screenshots/<size>. Run from the repo root:
 #   sh scripts/make-store-screenshots.sh "iPhone 18 Pro Max" 6.9-inch   # 1320 × 2868
 #   sh scripts/make-store-screenshots.sh "iPhone 17" 6.3-inch           # 1206 × 2622

@@ -11,6 +11,14 @@ struct FavorlyApp: App {
     private static let isDemo = isUITesting || arguments.contains("-demo")
     /// `-signedOut` starts a demo launch at the Welcome screen, for the onboarding UI tests.
     private static let startsSignedOut = arguments.contains("-signedOut")
+    /// `-hideStatusBar` hides the time, signal and battery, for the App Store screenshots. Debug builds only.
+    private static let hidesStatusBar: Bool = {
+        #if DEBUG
+            arguments.contains("-hideStatusBar")
+        #else
+            false
+        #endif
+    }()
 
     @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
     @State private var environment = makeEnvironment()
@@ -19,6 +27,7 @@ struct FavorlyApp: App {
         WindowGroup {
             RootView()
                 .environment(\.appEnvironment, environment)
+                .statusBarHidden(Self.hidesStatusBar)
                 .task {
                     appDelegate.environment = environment
                     await signInAtLaunch()

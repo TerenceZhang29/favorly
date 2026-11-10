@@ -285,7 +285,8 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 6A | `ca6eca5` | feat(app): dark mode app icon; build 1.0.0 (9) |
 | 4H | `19076f5` | feat(release): App Store listing, review notes and screenshots |
 | 4H | `0e8f96c` | docs(release): no demo account; reviewers use Sign in with Apple |
-| 4H | (next commit) | feat(release): 6.3-inch screenshots next to the 6.9-inch set |
+| 4H | `05fdb35` | feat(release): 6.3-inch screenshots next to the 6.9-inch set |
+| 4H | (next commit) | feat(release): App Store screenshots without the status bar |
 
 ## Confirmed decisions
 
@@ -303,7 +304,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 - 2026-11-09 · 6 · The owner closed 6A on build 9 and skipped 6B (external beta) and 6C (triage); build 1.0.0 (9) is the launch candidate · to submit to the App Store sooner. Risk accepted: no testers outside the team
 - 2026-11-09 · 4H · Supabase stays on the free tier at launch (owner's choice over Pro at $25/month) · no cost until real users arrive. Risks accepted: the project pauses after about a week without traffic, which stops the app until it is restored in the dashboard, and there are no backups. Upgrade when real users arrive
-- 2026-11-09 · 4H · App Store screenshots come from `AppStoreScreenshotUITests` on the iPhone 18 Pro Max simulator (6.9-inch, 1320 × 2868) under `-uiTesting`, with a 9:41 status bar; a new Debug-only launch argument, `-noDevSettings`, hides the Dev Settings tab as in the App Store build · the Release configuration can't build the package's `@testable` unit tests, and switching users needs Dev Settings, so the walk stays with Alex
+- 2026-11-09 · 4H · App Store screenshots come from `AppStoreScreenshotUITests` on the iPhone 18 Pro Max simulator (6.9-inch, 1320 × 2868) under `-uiTesting`, with no status bar (Debug-only `-hideStatusBar`, owner's request 2026-11-09); a new Debug-only launch argument, `-noDevSettings`, hides the Dev Settings tab as in the App Store build. A 6.3-inch set (iPhone 17, 1206 × 2622) sits next to the 6.9-inch one · the Release configuration can't build the package's `@testable` unit tests, and switching users needs Dev Settings, so the walk stays with Alex
 - 2026-11-09 · 6A · Requests have no category any more (owner's request): `RequestCategory` and its display extension are gone, `category` is removed from `HelpRequest` and `NewRequestDraft` (a change to the plan's domain model), Post has no category chips, rows, Request Detail and the claim sheet show no category tile or Category fact, and `CategoryIcon` is renamed `IconTile` for the icons that remain (gift card, welcome, messages). The server is unchanged: `FavorlyRemote` sends `category = 'other'` to `create_request` and ignores the column when reading · no migration or deploy is needed, and builds 1–7 on TestFlight keep working; a later migration can drop the column once no old build is in use
 - 2026-11-09 · 6A · The app icon has a dark mode version, the owner's dark logo (`docs/brand/logo-dark.jpg`, the lime "f" on near-black), as the `luminosity: dark` entry of `AppIcon` · owner's request
 - 2026-11-09 · 6A · The app icon is the owner's logo (`docs/brand/logo.png`, a lime "f" on white), resized to 1024×1024 by `scripts/make-app-icon.sh`, which replaces the Phase 2 drawing script · owner's request; this also settles the Phase 5 open question about a new icon

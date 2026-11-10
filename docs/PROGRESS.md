@@ -2,8 +2,8 @@
 
 Updated by every coding session. Read this after `docs/PLAN.md` and `docs/PLAN-PHASE-2.md` through `docs/PLAN-PHASE-6.md`, and continue from the first unchecked item.
 
-**Current phase:** Phase 6 (TestFlight beta). Phases 1–5 and 4A–4G are done: Grove (Phase 5) is merged and ships in 1.0.0, the two-phone check passed, and build 1.0.0 (3) is the first with Grove. 4H (submission) follows Phase 6
-**Next task:** 6A, the internal TestFlight round on build 9 (light and dark app icons, no categories)
+**Current phase:** 4H (App Store submission). Phases 1–6 and 4A–4G are done or closed: the owner closed 6A on build 9 and skipped 6B and 6C on 2026-11-09. Build 1.0.0 (9) is the launch candidate
+**Next task:** 4H, the owner's steps in *4H: the owner's steps to launch* below (enter the listing, record the two-phone video, submit build 9)
 
 ## Phase checklist
 
@@ -40,7 +40,7 @@ Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). T
 - [x] **4E.** Trust and safety: report, block, content filter, moderation, terms
 - [x] **4F.** Push notifications
 - [x] **4G.** Release candidate. Closed 2026-11-04 after the two-phone check; the beta itself moved to Phase 6
-- [ ] **4H.** App Store submission and launch, tag `v1.0.0`. Follows Phase 6
+- [ ] **4H.** App Store submission and launch, tag `v1.0.0`. In progress: listing, review notes and screenshots ready; the owner submits
 
 ### Phase 5 — Grove UI revamp ([plan](PLAN-PHASE-5.md))
 
@@ -54,9 +54,22 @@ Built on `phase/5-grove-ui` (from `phase/4g-beta`) in one session at the owner's
 
 ### Phase 6 — TestFlight beta ([plan](PLAN-PHASE-6.md))
 
-- [ ] **6A.** Internal round on build 3 or later, cold-start requests
-- [ ] **6B.** External beta: Supabase Pro, external TestFlight group, two weeks
-- [ ] **6C.** Triage and the launch candidate, then 4H
+- [x] **6A.** Internal round, closed by the owner on build 9 (2026-11-09)
+- [x] **6B.** External beta. Skipped by the owner (2026-11-09); Supabase stays on the free tier
+- [x] **6C.** Triage and the launch candidate. Skipped by the owner (2026-11-09); build 9 is the launch candidate
+
+## 4H: the owner's steps to launch
+
+Everything Claude could prepare is in `docs/release/`. These steps need the owner's Apple account:
+
+1. App Store Connect → Favorly → App Information: subtitle, categories, content rights, age rating questionnaire (answers in `docs/release/app-privacy.md`).
+2. App Privacy: the answers in `docs/release/app-privacy.md`.
+3. Version 1.0.0: promotional text, description, keywords, URLs and copyright from `docs/release/app-store-listing.md`; upload the six screenshots in `docs/release/screenshots/` in order; select build 9.
+4. Pricing and Availability: free, United States only.
+5. Record the two-phone flow (post, claim, chat, complete, review) on two TestFlight phones and attach it under App Review Information, with the notes from `docs/release/app-store-listing.md` and a contact phone number.
+6. Keep the Supabase project awake during review: it is on the free tier and pauses after about a week without traffic. Open the app the day you submit, and check the dashboard if review takes longer than a few days (guideline 2.1: "turn on your back-end service").
+7. Submit for review, with manual release and phased release on. If rejected, paste the message into a session.
+8. After approval: release, then tag `v1.0.0` on the submitted commit and push the tag.
 
 ## Needs the owner's review
 
@@ -269,7 +282,8 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 6A | `0fe541f` | test(ui): row labels no longer carry a category |
 | 6A | `e643f72` | docs: record the icon and category changes |
 | 6A | `0d5693c` | chore(release): build 1.0.0 (8) |
-| 6A | (next commit) | feat(app): dark mode app icon; build 1.0.0 (9) |
+| 6A | `ca6eca5` | feat(app): dark mode app icon; build 1.0.0 (9) |
+| 4H | (next commit) | feat(release): App Store listing, review notes and screenshots |
 
 ## Confirmed decisions
 
@@ -285,6 +299,9 @@ Defaults from the plan's Preparation section. Change here if the team decides ot
 
 Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
+- 2026-11-09 · 6 · The owner closed 6A on build 9 and skipped 6B (external beta) and 6C (triage); build 1.0.0 (9) is the launch candidate · to submit to the App Store sooner. Risk accepted: no testers outside the team
+- 2026-11-09 · 4H · Supabase stays on the free tier at launch (owner's choice over Pro at $25/month) · no cost until real users arrive. Risks accepted: the project pauses after about a week without traffic, which stops the app until it is restored in the dashboard, and there are no backups. Upgrade when real users arrive
+- 2026-11-09 · 4H · App Store screenshots come from `AppStoreScreenshotUITests` on the iPhone 18 Pro Max simulator (6.9-inch, 1320 × 2868) under `-uiTesting`, with a 9:41 status bar; a new Debug-only launch argument, `-noDevSettings`, hides the Dev Settings tab as in the App Store build · the Release configuration can't build the package's `@testable` unit tests, and switching users needs Dev Settings, so the walk stays with Alex
 - 2026-11-09 · 6A · Requests have no category any more (owner's request): `RequestCategory` and its display extension are gone, `category` is removed from `HelpRequest` and `NewRequestDraft` (a change to the plan's domain model), Post has no category chips, rows, Request Detail and the claim sheet show no category tile or Category fact, and `CategoryIcon` is renamed `IconTile` for the icons that remain (gift card, welcome, messages). The server is unchanged: `FavorlyRemote` sends `category = 'other'` to `create_request` and ignores the column when reading · no migration or deploy is needed, and builds 1–7 on TestFlight keep working; a later migration can drop the column once no old build is in use
 - 2026-11-09 · 6A · The app icon has a dark mode version, the owner's dark logo (`docs/brand/logo-dark.jpg`, the lime "f" on near-black), as the `luminosity: dark` entry of `AppIcon` · owner's request
 - 2026-11-09 · 6A · The app icon is the owner's logo (`docs/brand/logo.png`, a lime "f" on white), resized to 1024×1024 by `scripts/make-app-icon.sh`, which replaces the Phase 2 drawing script · owner's request; this also settles the Phase 5 open question about a new icon
@@ -629,6 +646,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-11-09 · 6 close, 4H (part) · Owner closed 6A on build 9 and skipped 6B and 6C, free tier kept; store listing, review notes and the age rating drafted (`docs/release/app-store-listing.md`); App Review Guidelines re-read; six 6.9-inch screenshots from `AppStoreScreenshotUITests` checked by eye; 426 package tests, `DevSettingsUITests` pass; SwiftLint and SwiftFormat clean · owner: the steps in *4H: the owner's steps to launch*
 - 2026-11-09 · 6A (part) · Dark mode app icon; build 1.0.0 (9) archived and uploaded with the owner's approval, UI tests skipped at the owner's request (icon-only change) · 6A: the internal round on build 9
 - 2026-11-09 · 6A (part) · New app icon from the owner's logo; the category removed from requests in the app (server column kept, sent as `other`); 426 package tests pass; full UI suite serially: 26 passed, 5 skipped, 1 failed (`KeyboardUITests.testDoneKeyClosesTheKeyboardOnPost`, which fails the same way on `main` without these changes); SwiftLint and SwiftFormat clean; build 1.0.0 (8) archived and uploaded with the owner's approval · 6A: the internal round on build 8
 - 2026-11-06 · 6A (part) · Screens leave room for the floating tab bar (build 6 covered the Post button); CI's UI test is now started by hand, since GitHub's simulator is too slow for it; full UI suite passed serially (27 passed, 5 skipped); build 1.0.0 (7) archived and uploaded with the owner's approval · 6A: the internal round on build 7

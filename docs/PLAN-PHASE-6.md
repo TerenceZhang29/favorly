@@ -10,9 +10,11 @@ Phase 6 runs the beta that 4G prepared. The release candidate is version 1.0.0 w
 
 **Guardrails.** Fixes found in the beta keep Phase 4's guardrails and Phase 5's look. Every new build raises `CURRENT_PROJECT_VERSION` in `project.yml` and keeps `MARKETING_VERSION` at `1.0.0` unless the owner decides otherwise. Uploads and anything that costs money need the owner's approval, as `CLAUDE.md` says.
 
+**Outcome (2026-11-09).** The owner closed 6A on build 9 and skipped 6B and 6C to submit sooner. There was no external beta, and Supabase stays on the free tier at launch (see the decision log in `docs/PROGRESS.md`). Build 1.0.0 (9) is the launch candidate for 4H.
+
 ## Phases
 
-### 6A. Internal round
+### 6A. Internal round (closed 2026-11-09 by the owner, on build 9)
 
 - [ ] **Owner:** internal TestFlight group for the team, on build 6 or later (build 6 matches the Grove mockup)
 - [ ] The team uses it for a week on Roosevelt Island
@@ -21,7 +23,7 @@ Phase 6 runs the beta that 4G prepared. The release candidate is version 1.0.0 w
 
 **Done when:** a week of team use with no open crash and no open blocker.
 
-### 6B. External beta
+### 6B. External beta (skipped by the owner, 2026-11-09)
 
 - [ ] **Owner, $25/month:** upgrade Supabase to Pro before external testers join (see *Costs* in [PLAN-PHASE-4.md](PLAN-PHASE-4.md))
 - [ ] **Owner:** external TestFlight group (Beta App Review, about a day), 20–50 neighbors, two weeks
@@ -30,7 +32,7 @@ Phase 6 runs the beta that 4G prepared. The release candidate is version 1.0.0 w
 
 **Done when:** the external beta ran for two weeks.
 
-### 6C. Triage and the launch candidate
+### 6C. Triage and the launch candidate (skipped by the owner, 2026-11-09)
 
 - [ ] Triage list in `docs/PROGRESS.md`: every report gets a severity, and "launch blocker" marks what must be fixed before 4H
 - [ ] Fix everything marked "launch blocker"; upload the build that 4H submits

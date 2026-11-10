@@ -9,10 +9,11 @@ enum RootTab: String, CaseIterable, Identifiable, Sendable {
 
     var id: String { rawValue }
 
-    /// The tabs this build shows: Dev Settings only in Debug builds, never in the App Store build.
+    /// The tabs this build shows: Dev Settings only in Debug builds, never in the App Store build. A Debug launch
+    /// with `-noDevSettings` hides it too, for the App Store screenshots.
     static var visible: [RootTab] {
         #if DEBUG
-            tabs(showingDevSettings: true)
+            tabs(showingDevSettings: !ProcessInfo.processInfo.arguments.contains("-noDevSettings"))
         #else
             tabs(showingDevSettings: false)
         #endif

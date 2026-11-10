@@ -283,10 +283,10 @@ A script, `backend/scripts/neighborhoods.py` (standard library only), downloads 
 
 ### 4H. App Store submission and launch
 
-- [ ] Store listing: name, subtitle, description, keywords, category (Lifestyle or Social Networking), support and privacy URLs, age rating questionnaire (18+)
-- [ ] Screenshots for the required iPhone sizes, captured with `ScreenshotUITests` under `-demo` at the required size, with realistic Roosevelt Island content
-- [ ] Review notes: what the app does; that it needs two people, with a short screen recording of the full two-phone flow; that the reviewer can post a request and see it on Nearby; where report and block are; moderation contact
-- [ ] Re-read the App Review Guidelines and tick every row of *App Store requirements*
+- [x] Store listing (drafted in `docs/release/app-store-listing.md`): name, subtitle, description, keywords, category (Lifestyle or Social Networking), support and privacy URLs, age rating questionnaire (18+)
+- [x] Screenshots for the required iPhone sizes (6.9-inch, `docs/release/screenshots/`, by `scripts/make-store-screenshots.sh` and `AppStoreScreenshotUITests` with `-uiTesting`), captured with `ScreenshotUITests` under `-demo` at the required size, with realistic Roosevelt Island content
+- [x] Review notes (drafted in `docs/release/app-store-listing.md`; the screen recording is the owner's): what the app does; that it needs two people, with a short screen recording of the full two-phone flow; that the reviewer can post a request and see it on Nearby; where report and block are; moderation contact
+- [x] Re-read the App Review Guidelines and tick every row of *App Store requirements* (2026-11-09)
 - [ ] **Owner:** submit for review; answer any rejection, fix, resubmit
 - [ ] **Owner:** release with phased release on; tag `v1.0.0`
 - [ ] Post-launch watch for the first two weeks: crashes, reports queue daily, Supabase usage against plan limits

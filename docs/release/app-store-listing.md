@@ -76,7 +76,7 @@ App Store Connect scales the 6.9-inch set down for smaller iPhones, so no other 
 
 ## App Review information
 
-**Sign-in required:** yes, Sign in with Apple only. No demo account is needed: the reviewer signs in with their own Apple ID and creates a profile.
+**Sign-in required:** leave it unticked, so no user name or password is given. Favorly uses Sign in with Apple only, which has no password to share; the reviewer signs in with their own Apple ID and creates a profile. Never enter the owner's Apple ID. If Apple still asks for a demo account, reply with the SIGN-IN note below; a separate email reviewer login would need a new build and email sign-in turned on in Supabase.
 
 **Contact:** the account holder's name, phone and email. Moderation contact: favorlysupport@gmail.com.
 
@@ -84,7 +84,7 @@ App Store Connect scales the 6.9-inch set down for smaller iPhones, so no other 
 
 > Favorly lets neighbors post small help requests ("Need a cup of rice") and lets people nearby claim them, message each other and leave a review when the favor is done.
 >
-> SIGNING IN: Sign in with Apple, then choose a display name, confirm you are 18 or older and accept the Terms. No demo account is needed.
+> SIGN-IN: Favorly uses Sign in with Apple only. There is no username or password, so no demo account is provided. Please sign in with any Apple ID on the review device, then choose a display name, confirm you are 18 or older and accept the Terms. A new account is created automatically.
 >
 > LOCATION: Favorly shows requests near the device's location. It launches in New York City, so a device elsewhere will see an empty Nearby list at first. That is expected: you can still post a request from the Post tab (outside NYC the neighborhood is the location's own name), and it appears on Nearby and in My Activity right away.
 >

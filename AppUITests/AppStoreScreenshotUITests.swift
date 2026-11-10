@@ -13,7 +13,8 @@ final class AppStoreScreenshotUITests: UITestCase {
         }
         self.folder = folder
         XCUIDevice.shared.appearance = .light
-        app.launchArguments = ["-uiTesting", "-noDevSettings", "-hideStatusBar", "-AppleLocale", "en_US"] + Self.freshDefaults
+        let storeLook = ["-noDevSettings", "-hideStatusBar", "-AppleLocale", "en_US"]
+        app.launchArguments = ["-uiTesting"] + storeLook + Self.freshDefaults
         app.launch()
 
         // 1. Requests from neighbors nearby.

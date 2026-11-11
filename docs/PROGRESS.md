@@ -2,8 +2,8 @@
 
 Updated by every coding session. Read this after `docs/PLAN.md` and `docs/PLAN-PHASE-2.md` through `docs/PLAN-PHASE-6.md`, and continue from the first unchecked item.
 
-**Current phase:** 4H (App Store submission). Phases 1–6 and 4A–4G are done or closed: the owner closed 6A on build 9 and skipped 6B and 6C on 2026-11-09. Build 1.0.0 (9) is the launch candidate
-**Next task:** 4H, the owner's steps in *4H: the owner's steps to launch* below (enter the listing, record the two-phone video, submit build 9)
+**Current phase:** 4H (App Store launch). Favorly 1.0.0 (build 9) was approved by App Review on 2026-11-11 on its first submission; it is not released yet
+**Next task:** 4H, the owner releases 1.0.0 in App Store Connect (phased release); then tag `v1.0.0` on `ca6eca5`, the build 9 commit, push the tag and start the two-week post-launch watch
 
 ## Phase checklist
 
@@ -40,7 +40,7 @@ Phase 4, from prototype to App Store app ([PLAN-PHASE-4.md](PLAN-PHASE-4.md)). T
 - [x] **4E.** Trust and safety: report, block, content filter, moderation, terms
 - [x] **4F.** Push notifications
 - [x] **4G.** Release candidate. Closed 2026-11-04 after the two-phone check; the beta itself moved to Phase 6
-- [ ] **4H.** App Store submission and launch, tag `v1.0.0`. In progress: listing, review notes and screenshots ready; the owner submits
+- [ ] **4H.** App Store submission and launch, tag `v1.0.0`. Build 9 submitted and approved (2026-11-11); left: release, tag, post-launch watch
 
 ### Phase 5 — Grove UI revamp ([plan](PLAN-PHASE-5.md))
 
@@ -60,7 +60,7 @@ Built on `phase/5-grove-ui` (from `phase/4g-beta`) in one session at the owner's
 
 ## 4H: the owner's steps to launch
 
-Everything Claude could prepare is in `docs/release/`. These steps need the owner's Apple account:
+Everything Claude could prepare is in `docs/release/`. These steps need the owner's Apple account. Steps 1–7 were done by 2026-11-11: build 9 was submitted and approved on the first review. Step 8 is left.
 
 1. App Store Connect → Favorly → App Information: subtitle, categories, content rights, age rating questionnaire (answers in `docs/release/app-privacy.md`).
 2. App Privacy: the answers in `docs/release/app-privacy.md`.
@@ -286,7 +286,9 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 4H | `19076f5` | feat(release): App Store listing, review notes and screenshots |
 | 4H | `0e8f96c` | docs(release): no demo account; reviewers use Sign in with Apple |
 | 4H | `05fdb35` | feat(release): 6.3-inch screenshots next to the 6.9-inch set |
-| 4H | (next commit) | feat(release): App Store screenshots without the status bar |
+| 4H | `3f2d642` | feat(release): App Store screenshots without the status bar |
+| 4H | `74b86bf` | style(ui-tests): shorter launch argument line |
+| 4H | (next commit) | docs: 1.0.0 approved by App Review |
 
 ## Confirmed decisions
 
@@ -302,6 +304,7 @@ Defaults from the plan's Preparation section. Change here if the team decides ot
 
 Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
+- 2026-11-11 · 4H · App Store Connect answers as submitted: Sign-in required unticked, with no demo account (Sign in with Apple only; the review notes explain that the reviewer uses their own Apple ID); Age Assurance answered No, since the "I'm 18 or older" switch is a declaration, not a check; the calculated 13+ rating overridden to 18+, as the Terms' age minimum requires; screenshots in the 6.9-inch and 6.3-inch slots, without the status bar · the owner didn't want to share an Apple ID, and Apple asks for honest age-rating answers that match the EULA
 - 2026-11-09 · 6 · The owner closed 6A on build 9 and skipped 6B (external beta) and 6C (triage); build 1.0.0 (9) is the launch candidate · to submit to the App Store sooner. Risk accepted: no testers outside the team
 - 2026-11-09 · 4H · Supabase stays on the free tier at launch (owner's choice over Pro at $25/month) · no cost until real users arrive. Risks accepted: the project pauses after about a week without traffic, which stops the app until it is restored in the dashboard, and there are no backups. Upgrade when real users arrive
 - 2026-11-09 · 4H · App Store screenshots come from `AppStoreScreenshotUITests` on the iPhone 18 Pro Max simulator (6.9-inch, 1320 × 2868) under `-uiTesting`, with no status bar (Debug-only `-hideStatusBar`, owner's request 2026-11-09); a new Debug-only launch argument, `-noDevSettings`, hides the Dev Settings tab as in the App Store build. A 6.3-inch set (iPhone 17, 1206 × 2622) sits next to the 6.9-inch one · the Release configuration can't build the package's `@testable` unit tests, and switching users needs Dev Settings, so the walk stays with Alex
@@ -649,6 +652,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-11-11 · 4H (part) · Owner submitted build 1.0.0 (9) and App Review approved it on the first submission; 6.3-inch screenshot set and status-bar-free screenshots added during submission · owner releases 1.0.0, then tag `v1.0.0` and the post-launch watch
 - 2026-11-09 · 6 close, 4H (part) · Owner closed 6A on build 9 and skipped 6B and 6C, free tier kept; store listing, review notes and the age rating drafted (`docs/release/app-store-listing.md`); App Review Guidelines re-read; six 6.9-inch screenshots from `AppStoreScreenshotUITests` checked by eye; 426 package tests, `DevSettingsUITests` pass; SwiftLint and SwiftFormat clean · owner: the steps in *4H: the owner's steps to launch*
 - 2026-11-09 · 6A (part) · Dark mode app icon; build 1.0.0 (9) archived and uploaded with the owner's approval, UI tests skipped at the owner's request (icon-only change) · 6A: the internal round on build 9
 - 2026-11-09 · 6A (part) · New app icon from the owner's logo; the category removed from requests in the app (server column kept, sent as `other`); 426 package tests pass; full UI suite serially: 26 passed, 5 skipped, 1 failed (`KeyboardUITests.testDoneKeyClosesTheKeyboardOnPost`, which fails the same way on `main` without these changes); SwiftLint and SwiftFormat clean; build 1.0.0 (8) archived and uploaded with the owner's approval · 6A: the internal round on build 8

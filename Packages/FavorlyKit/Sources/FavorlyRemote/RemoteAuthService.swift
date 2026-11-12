@@ -13,10 +13,14 @@ public final class RemoteAuthService: AuthService {
 
     @ObservationIgnored private let client: SupabaseClient
     @ObservationIgnored private let session: RemoteSessionStore
+    @ObservationIgnored private let retryDelay: Duration
 
-    public init(client: SupabaseClient, session: RemoteSessionStore) {
+    /// - Parameter retryDelay: The first wait before loading the profile again when it can't be reached; it doubles
+    ///   on each try, up to 30 seconds.
+    public init(client: SupabaseClient, session: RemoteSessionStore, retryDelay: Duration = .seconds(2)) {
         self.client = client
         self.session = session
+        self.retryDelay = retryDelay
         // Reading the saved session is local and synchronous, so a signed-out user sees Welcome at once, and a
         // signed-in user never sees it flash by while `restore()` loads their profile.
         state = Self.launchState(hasSavedSession: client.auth.currentSession != nil)
@@ -86,28 +90,55 @@ public final class RemoteAuthService: AuthService {
 
     // MARK: Helpers
 
-    /// Signed in: the profile decides between profile setup and the tabs.
+    /// Signed in: the profile decides between profile setup and the tabs. When the profile can't be loaded, the user
+    /// saved on this device opens the tabs; with none saved, the state stays `.restoring` and loading is tried again,
+    /// since an existing user must never be sent to profile setup. A session the server refuses signs out.
     private func loadOwnProfile() async {
-        guard let id = client.auth.currentUser?.id else {
-            state = .signedOut
-            return
-        }
-        do {
-            let rows: [ProfileRow] = try await client.from("profiles")
-                .select("id, display_name, neighborhood")
-                .eq("id", value: id)
-                .limit(1)
-                .execute()
-                .value
-            if let row = rows.first {
-                session.signIn(as: row.model())
-                state = .signedIn
-            } else {
-                state = .needsProfile
+        var delay = retryDelay
+        while true {
+            guard let id = client.auth.currentUser?.id else {
+                state = .signedOut
+                return
             }
-        } catch {
-            // Offline at launch: keep the session, and ask again on the next action.
-            state = .needsProfile
+            do {
+                let rows: [ProfileRow] = try await client.from("profiles")
+                    .select("id, display_name, neighborhood")
+                    .eq("id", value: id)
+                    .limit(1)
+                    // This loop retries; the SDK's own retries would hold an offline launch for seconds.
+                    .retry(enabled: false)
+                    .execute()
+                    .value
+                if let row = rows.first {
+                    session.signIn(as: row.model())
+                    state = .signedIn
+                } else {
+                    state = .needsProfile
+                }
+                return
+            } catch {
+                switch RemoteErrors.favorlyError(from: error) {
+                case is CancellationError:
+                    return
+                case FavorlyError.notSignedIn:
+                    await signOut()
+                    return
+                default:
+                    break
+                }
+            }
+            if let saved = session.savedUser(for: UserID(remote: id)) {
+                session.signIn(as: saved)
+                state = .signedIn
+                return
+            }
+            state = .restoring
+            do {
+                try await Task.sleep(for: delay)
+            } catch {
+                return
+            }
+            delay = min(delay * 2, .seconds(30))
         }
     }
 

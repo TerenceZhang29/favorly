@@ -9,6 +9,14 @@ extension MockRequestRepository: ChatRepository {
         return messages.filter { $0.requestID == request }
     }
 
+    public func messages(inRequests ids: [RequestID], as user: UserID) async throws -> [ChatMessage] {
+        try await beginOperation()
+        let readable = Set(ids.filter { id in
+            requests[id].map { ChatRules.canRead(request: $0, by: user) } ?? false
+        })
+        return messages.filter { readable.contains($0.requestID) }
+    }
+
     public func send(_ text: String, in request: RequestID, by user: UserID) async throws -> ChatMessage {
         try await beginOperation()
         guard let helpRequest = requests[request] else { throw FavorlyError.notFound }

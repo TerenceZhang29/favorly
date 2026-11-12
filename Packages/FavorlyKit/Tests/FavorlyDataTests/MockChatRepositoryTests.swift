@@ -31,6 +31,15 @@ struct MockChatRepositoryTests {
         #expect(try await repository.messages(for: Self.ladderID, as: chen).isEmpty)
     }
 
+    @Test func theInboxGetsEveryReadableThreadAndSkipsTheRest() async throws {
+        _ = try await repository.send("On my way", in: Self.ladderID, by: chen)
+        _ = try await repository.send("Thanks!", in: Self.ladderID, by: dana)
+        let messages = try await repository.messages(inRequests: [Self.ladderID, Self.eggsID], as: dana)
+        #expect(messages.map(\.text) == ["On my way", "Thanks!"])
+        #expect(try await repository.messages(inRequests: [Self.ladderID], as: alex).isEmpty)
+        #expect(try await repository.messages(inRequests: [], as: dana).isEmpty)
+    }
+
     @Test func thereIsNoThreadBeforePickUp() async {
         await #expect(throws: FavorlyError.notAllowed) {
             try await repository.messages(for: Self.eggsID, as: chen)

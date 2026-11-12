@@ -25,6 +25,14 @@ public enum ChatRules {
         (try? validateSend(request: request, by: user)) != nil
     }
 
+    /// How many of a thread's messages `user` hasn't read: the other person's messages sent after `readUpTo`, the
+    /// time of the last message the user saw. With no time saved, every message from the other person counts.
+    public static func unreadCount(in messages: [ChatMessage], for user: UserID, readUpTo: Date?) -> Int {
+        messages.count { message in
+            message.senderID != user && readUpTo.map { message.sentAt > $0 } ?? true
+        }
+    }
+
     /// Checks the length limits and returns the text trimmed.
     @discardableResult
     public static func validateText(_ text: String) throws -> String {

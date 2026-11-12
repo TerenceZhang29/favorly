@@ -126,6 +126,25 @@ struct ContractTests {
         }
     }
 
+    @Test(arguments: ContractBackend.enabled)
+    func theInboxReadsOnlyThreadsTheUserIsIn(backend: ContractBackend) async throws {
+        let world = ContractWorld(backend)
+        let alex = try await world.signUp("Alex")
+        let bea = try await world.signUp("Bea")
+        let chen = try await world.signUp("Chen")
+        let eggs = try await alex.requests.create(world.draft("Need 2 eggs"), by: alex.id)
+        let rice = try await chen.requests.create(world.draft("Need rice"), by: chen.id)
+        _ = try await bea.requests.claim(eggs.id, by: bea.id)
+        _ = try await bea.requests.claim(rice.id, by: bea.id)
+        _ = try await bea.chat.send("On my way", in: eggs.id, by: bea.id)
+        _ = try await bea.chat.send("Coming too", in: rice.id, by: bea.id)
+
+        #expect(try await alex.chat.messages(inRequests: [eggs.id, rice.id], as: alex.id).map(\.text) == ["On my way"])
+        #expect(try await bea.chat.messages(inRequests: [eggs.id, rice.id], as: bea.id).map(\.text)
+            == ["On my way", "Coming too"])
+        #expect(try await alex.chat.messages(inRequests: [], as: alex.id).isEmpty)
+    }
+
     // MARK: Reviews and Kindness
 
     @Test(arguments: ContractBackend.enabled)

@@ -4,6 +4,7 @@ import SwiftUI
 /// The thread between a request's requester and helper, newest message at the bottom.
 struct ChatView: View {
     private let environment: AppEnvironment
+    @Environment(\.inbox) private var inbox
     @State private var viewModel: ChatViewModel
     /// The message being reported, if any.
     @State private var reporting: MessageID?
@@ -73,6 +74,10 @@ struct ChatView: View {
         }
         .task(id: viewModel.reloadKey) { await viewModel.load() }
         .task { await viewModel.observeChanges() }
+        // Tells the Messages tab this thread is on screen: it counts as read, and raises no banner.
+        .onAppear { inbox?.chatOpened(viewModel.requestID) }
+        .onDisappear { inbox?.chatClosed(viewModel.requestID) }
+        .onChange(of: viewModel.messages) { inbox?.chatOpened(viewModel.requestID) }
     }
 
     @ViewBuilder

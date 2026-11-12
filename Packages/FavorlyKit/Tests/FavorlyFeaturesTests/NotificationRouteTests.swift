@@ -22,3 +22,12 @@ struct NotificationRouteTests {
         #expect(NotificationRoute(userInfo: ["request_id": 42]) == nil)
     }
 }
+
+@MainActor
+@Test func eachForegroundMessageNotificationIsCounted() {
+    let router = NotificationRouter()
+    #expect(router.foregroundMessages == 0)
+    router.messageArrivedInForeground()
+    router.messageArrivedInForeground()
+    #expect(router.foregroundMessages == 2)
+}

@@ -4,6 +4,9 @@ import SwiftUI
 struct DevSettingsView: View {
     @Environment(\.appEnvironment) private var environment
     @State private var isResetting = false
+    @State private var isSimulating = false
+    /// What the last "Receive a message" did.
+    @State private var simulatedMessage: String?
 
     var body: some View {
         Form {
@@ -50,6 +53,30 @@ struct DevSettingsView: View {
                     }
                     Toggle("Simulate location error", isOn: simulatesError(in: settings))
                         .accessibilityIdentifier("devSettings.simulateLocationError")
+                }
+                .groveRows()
+            }
+
+            if environment.session is any DemoSessionControls {
+                Section {
+                    Button("Receive a message") {
+                        Task {
+                            isSimulating = true
+                            simulatedMessage = await DevMessageSimulator.receiveMessage(in: environment)
+                            isSimulating = false
+                        }
+                    }
+                    .disabled(isSimulating)
+                    .accessibilityIdentifier("devSettings.receiveMessage")
+                } header: {
+                    Text("Messages")
+                } footer: {
+                    if let simulatedMessage {
+                        Text(simulatedMessage)
+                            .textStyle(.meta)
+                            .foregroundStyle(Theme.Colors.inkMuted)
+                            .accessibilityIdentifier("devSettings.receiveMessage.result")
+                    }
                 }
                 .groveRows()
             }

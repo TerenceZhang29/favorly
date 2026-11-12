@@ -23,7 +23,7 @@ public struct RootView: View {
                     ProfileSetupView(environment: environment)
                 }
             case .signedIn:
-                MainTabView()
+                MainTabView(environment: environment)
             }
         }
         .tint(Theme.Colors.brand)

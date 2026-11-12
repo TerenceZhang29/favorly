@@ -6,6 +6,8 @@ public struct AppEnvironment: Sendable {
     public let kindness: any KindnessRepository
     public let reviews: any ReviewRepository
     public let chat: any ChatRepository
+    /// Where the user has read up to in each thread, for the Messages tab's unread counts.
+    public let chatReads: any ChatReadStore
     public let moderation: any ModerationRepository
     /// The neighborhood names Post offers for the request's location.
     public let neighborhoods: any NeighborhoodDirectory
@@ -33,12 +35,14 @@ public struct AppEnvironment: Sendable {
         push: any PushRegistrar,
         notifications: any NotificationService,
         locationSettings: (any LocationSettings)?,
+        chatReads: any ChatReadStore = InMemoryChatReadStore(),
         router: NotificationRouter = NotificationRouter()
     ) {
         self.repository = repository
         self.kindness = kindness
         self.reviews = reviews
         self.chat = chat
+        self.chatReads = chatReads
         self.moderation = moderation
         self.neighborhoods = neighborhoods
         self.locationProvider = locationProvider

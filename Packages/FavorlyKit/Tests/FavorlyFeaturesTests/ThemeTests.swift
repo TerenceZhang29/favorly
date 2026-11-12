@@ -43,12 +43,24 @@ struct ThemeTests {
         Pair(text: Palette.danger, fill: Palette.dangerTint, name: "danger buttons and banners"),
         Pair(text: Palette.onAvatar, fill: Palette.avatar, name: "avatar initials"),
         Pair(text: Palette.onBubbleMine, fill: Palette.bubbleMine, name: "the user's own chat bubbles"),
+        Pair(text: Palette.onBanner, fill: Palette.banner, name: "the message banner's text and Later"),
+        Pair(text: Palette.bannerAccent, fill: Palette.banner, name: "the favor's name on the message banner"),
+        Pair(text: Palette.bannerMuted, fill: Palette.banner, name: "the time on the message banner"),
+        Pair(text: Palette.onBannerButton, fill: Palette.bannerButton, name: "the banner's Reply button"),
     ]
 
     @Test(arguments: pairs, [ColorScheme.light, .dark])
     func textIsReadableOnItsFill(pair: Pair, colorScheme: ColorScheme) {
         let ratio = pair.text.rgb(for: colorScheme).contrastRatio(with: pair.fill.rgb(for: colorScheme))
         #expect(ratio >= minimumContrast, "\(pair.name) in \(colorScheme): \(ratio)")
+    }
+
+    /// Later on the message banner is only an outline, so it must be visible against the banner (3:1).
+    @Test(arguments: [ColorScheme.light, .dark])
+    func theBannersLaterOutlineIsVisible(colorScheme: ColorScheme) {
+        let ratio = Palette.bannerOutline.rgb(for: colorScheme)
+            .contrastRatio(with: Palette.banner.rgb(for: colorScheme))
+        #expect(ratio >= 3, "\(colorScheme): \(ratio)")
     }
 
     /// The Cancelled badge has no fill of its own, so its outline must be visible against a card (3:1 for

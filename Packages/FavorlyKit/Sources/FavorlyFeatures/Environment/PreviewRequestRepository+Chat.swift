@@ -8,6 +8,10 @@ extension PreviewRequestRepository: ChatRepository {
         return []
     }
 
+    func messages(inRequests _: [RequestID], as _: UserID) async throws -> [ChatMessage] {
+        []
+    }
+
     func send(_: String, in _: RequestID, by _: UserID) async throws -> ChatMessage {
         throw FavorlyError.notAllowed
     }

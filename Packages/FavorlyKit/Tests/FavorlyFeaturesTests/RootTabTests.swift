@@ -1,8 +1,8 @@
 @testable import FavorlyFeatures
 import Testing
 
-@Test func rootHasFiveTabsInDemoOrder() {
-    #expect(RootTab.allCases == [.nearby, .post, .activity, .profile, .devSettings])
+@Test func rootHasSixTabsInDemoOrder() {
+    #expect(RootTab.allCases == [.nearby, .post, .messages, .activity, .profile, .devSettings])
     #expect(RootTab.profile.title == "Profile")
     #expect(RootTab.profile.systemImage == "person.crop.circle")
 }
@@ -13,7 +13,7 @@ import Testing
 }
 
 @Test func devSettingsAreLeftOutOfTheAppStoreBuild() {
-    #expect(RootTab.tabs(showingDevSettings: false) == [.nearby, .post, .activity, .profile])
+    #expect(RootTab.tabs(showingDevSettings: false) == [.nearby, .post, .messages, .activity, .profile])
     #expect(RootTab.tabs(showingDevSettings: true) == RootTab.allCases)
 }
 

@@ -3,6 +3,7 @@ import Foundation
 enum RootTab: String, CaseIterable, Identifiable, Sendable {
     case nearby
     case post
+    case messages
     case activity
     case profile
     case devSettings
@@ -27,6 +28,7 @@ enum RootTab: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .nearby: "Nearby"
         case .post: "Post"
+        case .messages: "Messages"
         case .activity: "My Activity"
         case .profile: "Profile"
         case .devSettings: "Dev Settings"
@@ -38,6 +40,7 @@ enum RootTab: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .nearby: "location.fill"
         case .post: "plus.circle.fill"
+        case .messages: "bubble.left.fill"
         case .activity: "list.bullet"
         case .profile: "person.crop.circle.fill"
         case .devSettings: "gearshape.fill"
@@ -48,6 +51,7 @@ enum RootTab: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .nearby: "location"
         case .post: "plus.circle"
+        case .messages: "bubble.left"
         case .activity: "list.bullet"
         case .profile: "person.crop.circle"
         case .devSettings: "gearshape"

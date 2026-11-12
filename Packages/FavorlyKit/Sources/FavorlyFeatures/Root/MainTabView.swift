@@ -3,17 +3,26 @@ import SwiftUI
 
 /// The app's tabs, for a signed-in user: one navigation stack per tab, and the mockup's floating Grove tab bar
 /// at the bottom in place of the system one. The bar steps aside while the keyboard is up and
-/// while a screen hides it (Chat).
+/// while a screen hides it (Chat). A banner slides down over every tab when a message arrives.
 struct MainTabView: View {
     @Environment(\.appEnvironment) private var environment
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selection: RootTab = .nearby
+    /// The user's conversations: the Messages tab, its badge and the banner.
+    @State private var inbox: InboxModel
     /// The request just posted, highlighted in My Activity until the user leaves that tab.
     @State private var newlyPostedID: RequestID?
     /// My Activity's stack, which opens tapped notifications.
     @State private var activityPath = NavigationPath()
+    /// The Messages tab's stack, which opens a chat from the banner or a message notification.
+    @State private var messagesPath = NavigationPath()
     @State private var otherPaths: [RootTab: NavigationPath] = [:]
     @State private var tabBarVisibility = TabBarVisibility()
     @State private var isKeyboardShown = false
+
+    init(environment: AppEnvironment) {
+        _inbox = State(initialValue: InboxModel(environment: environment))
+    }
 
     var body: some View {
         // The system tab view keeps each tab's place and draws only the selected one; its own bar is hidden,
@@ -37,8 +46,29 @@ struct MainTabView: View {
         }
         .overlay(alignment: .bottom) {
             if showsTabBar {
-                GroveTabBar(tabs: RootTab.visible, selection: $selection)
+                GroveTabBar(tabs: RootTab.visible, selection: $selection, badges: badges)
             }
+        }
+        .overlay(alignment: .top) {
+            if let message = inbox.banner {
+                IncomingMessageBanner(message: message) {
+                    reply(to: message)
+                } onLater: {
+                    inbox.dismissBanner()
+                }
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .task(id: message) {
+                    try? await Task.sleep(for: InboxModel.bannerDuration)
+                    inbox.bannerTimedOut(message)
+                }
+            }
+        }
+        .animation(reduceMotion ? nil : .snappy, value: inbox.banner)
+        .environment(\.inbox, inbox)
+        .task(id: inbox.reloadKey) { await inbox.load() }
+        .task { await inbox.observeChanges() }
+        .onChange(of: environment.router.foregroundMessages) {
+            Task { await inbox.load() }
         }
         .environment(\.tabBarVisibility, tabBarVisibility)
         .environment(\.selectTab, SelectTabAction { tab in selection = tab })
@@ -66,9 +96,15 @@ struct MainTabView: View {
         !isKeyboardShown && !tabBarVisibility.isHidden(for: selection)
     }
 
+    private var badges: [RootTab: String] {
+        inbox.badgeText.map { [.messages: $0] } ?? [:]
+    }
+
     private func path(for tab: RootTab) -> Binding<NavigationPath> {
-        if tab == .activity {
-            return $activityPath
+        switch tab {
+        case .activity: return $activityPath
+        case .messages: return $messagesPath
+        default: break
         }
         return Binding(
             get: { otherPaths[tab] ?? NavigationPath() },
@@ -76,18 +112,26 @@ struct MainTabView: View {
         )
     }
 
-    /// Shows a tapped notification in My Activity: the request, and its chat on top for a message.
+    /// Shows a tapped notification: a request in My Activity, a message's chat in Messages.
     private func open(_ route: NotificationRoute) {
-        var path = NavigationPath()
         switch route {
         case let .request(id):
-            path.append(id)
+            selection = .activity
+            activityPath = NavigationPath([id])
         case let .chat(id):
-            path.append(id)
-            path.append(ChatDestination(requestID: id))
+            openChat(id)
         }
-        selection = .activity
-        activityPath = path
+    }
+
+    /// The banner's Reply: the chat, on the Messages tab.
+    private func reply(to message: IncomingMessage) {
+        inbox.dismissBanner()
+        openChat(message.requestID)
+    }
+
+    private func openChat(_ id: RequestID) {
+        selection = .messages
+        messagesPath = NavigationPath([ChatDestination(requestID: id)])
     }
 
     @ViewBuilder
@@ -100,6 +144,8 @@ struct MainTabView: View {
                 newlyPostedID = request.id
                 selection = .activity
             }
+        case .messages:
+            InboxView(model: inbox)
         case .activity:
             ActivityView(environment: environment, highlightedRequestID: newlyPostedID)
         case .profile:
@@ -111,5 +157,5 @@ struct MainTabView: View {
 }
 
 #Preview {
-    MainTabView()
+    MainTabView(environment: .sharedPreview)
 }

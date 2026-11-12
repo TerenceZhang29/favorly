@@ -47,6 +47,15 @@ enum Theme {
         static let starEmpty = AdaptiveColor(light: 0x9AA283, dark: 0x6E7760)
         /// The dark-mode glow behind the top of a screen. Light mode has none.
         static let glow = AdaptiveColor(light: 0xF8FAE6, dark: 0x2A3510)
+        /// The incoming-message banner: a dark card in light mode and a light one in dark mode, so it stands out
+        /// over any screen. Its text, the favor's name, the time, the Reply button and its label, and Later's outline.
+        static let banner = ink
+        static let onBanner = AdaptiveColor(light: 0xF8FAE6, dark: 0x141A0D)
+        static let bannerAccent = AdaptiveColor(light: 0xD6EF4F, dark: 0x5C5E12)
+        static let bannerMuted = AdaptiveColor(light: 0xC8CFB2, dark: 0x586048)
+        static let bannerButton = AdaptiveColor(light: 0xD6EF4F, dark: 0x141A0D)
+        static let onBannerButton = AdaptiveColor(light: 0x1D2B12, dark: 0xD6EF4F)
+        static let bannerOutline = bannerMuted
         /// The chat bubble of the signed-in user, and its text.
         static let bubbleMine = ink
         static let onBubbleMine = AdaptiveColor(light: 0xF8FAE6, dark: 0x141A0D)
@@ -87,6 +96,8 @@ enum Theme {
         static let sheet: CGFloat = 28
         /// The floating tab bar.
         static let tabBar: CGFloat = 24
+        /// The incoming-message banner.
+        static let banner: CGFloat = 22
     }
 
     enum IconSize {
@@ -111,6 +122,12 @@ enum Theme {
         static let tabSymbol: CGFloat = 20
         /// Size of the dark-mode glow.
         static let glow: CGFloat = 360
+        /// Height of the unread badge on a tab and on an inbox row; it widens for two digits.
+        static let badge: CGFloat = 18
+        static let rowBadge: CGFloat = 22
+        /// The avatar on an inbox row and in the banner.
+        static let inboxAvatar: CGFloat = 44
+        static let bannerAvatar: CGFloat = 40
     }
 
     enum Shadow {
@@ -123,6 +140,14 @@ enum Theme {
             darkOpacity: 0.22,
             radius: 26,
             offsetY: 10
+        )
+        /// Under the incoming-message banner, in both modes.
+        static let banner = GroveShadow(
+            color: AdaptiveColor(light: 0x000000, dark: 0x000000),
+            lightOpacity: 0.28,
+            darkOpacity: 0.5,
+            radius: 40,
+            offsetY: 16
         )
         static let none = GroveShadow(color: Colors.ink, lightOpacity: 0, darkOpacity: 0, radius: 0, offsetY: 0)
     }

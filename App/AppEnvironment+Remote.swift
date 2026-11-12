@@ -25,6 +25,7 @@ extension AppEnvironment {
             push: RemotePushRegistrar(client: client),
             notifications: SystemNotificationService(),
             locationSettings: nil,
+            chatReads: DeviceChatReadStore(),
             router: AppDelegate.router
         )
     }

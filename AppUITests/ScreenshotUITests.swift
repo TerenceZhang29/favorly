@@ -64,6 +64,7 @@ final class ScreenshotUITests: UITestCase {
         try alexPostsARequest()
         try beaPicksItUp()
         try alexSeesItClaimed()
+        try alexReadsHisMessages()
         try farAwayAndLocationError()
         try danaReviewsBea()
     }
@@ -163,6 +164,19 @@ final class ScreenshotUITests: UITestCase {
         openTab("My Activity")
         XCTAssertTrue(row("activity.row.", containing: "Claimed by Bea").waitForExistence(timeout: Self.waitTimeout))
         try capture("my-activity")
+    }
+
+    /// The inbox with Bea's unread message, then the banner for a second one from Dev Settings.
+    @MainActor
+    private func alexReadsHisMessages() throws {
+        openTab("Messages")
+        XCTAssertTrue(row("inbox.row.", containing: "On my way").waitForExistence(timeout: Self.waitTimeout))
+        try capture("messages")
+        openTab("Dev Settings")
+        scrollToAndTap(app.buttons["devSettings.receiveMessage"])
+        XCTAssertTrue(element("banner").waitForExistence(timeout: Self.waitTimeout))
+        try capture("message-banner")
+        app.buttons["banner.later"].tap()
     }
 
     @MainActor

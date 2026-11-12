@@ -47,13 +47,21 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
     // These two use the completion-handler forms on purpose. The `async` forms return on a background thread,
     // and UIKit then aborts the app for calling it off the main thread (seen on an iPhone with iOS 18.7).
 
-    /// Shows notifications as banners while the app is open too.
+    /// Shows notifications as banners while the app is open too, except messages: the app shows those in its own
+    /// banner, with Reply and Later, so the system's is left out.
     nonisolated func userNotificationCenter(
         _: UNUserNotificationCenter,
-        willPresent _: UNNotification,
+        willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        completionHandler([.banner, .list, .sound])
+        guard case .chat = NotificationRoute(userInfo: notification.request.content.userInfo) else {
+            completionHandler([.banner, .list, .sound])
+            return
+        }
+        Task { @MainActor in
+            Self.router.messageArrivedInForeground()
+        }
+        completionHandler([.list])
     }
 
     /// A tapped notification opens its request, or its chat for a message.

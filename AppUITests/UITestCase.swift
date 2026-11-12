@@ -54,7 +54,7 @@ class UITestCase: XCTestCase {
     @MainActor
     func tabButton(_ title: String) -> XCUIElement {
         let ids = [
-            "Nearby": "nearby", "Post": "post", "My Activity": "activity", "Profile": "profile",
+            "Nearby": "nearby", "Post": "post", "Messages": "messages", "My Activity": "activity", "Profile": "profile",
             "Dev Settings": "devSettings",
         ]
         return app.buttons["tab.\(ids[title] ?? title)"]

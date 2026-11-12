@@ -8,7 +8,7 @@ import Supabase
 @MainActor
 @Observable
 public final class RemoteAuthService: AuthService {
-    public private(set) var state = AuthState.signedOut
+    public private(set) var state: AuthState
     public let usesAppleSignIn = true
 
     @ObservationIgnored private let client: SupabaseClient
@@ -17,6 +17,14 @@ public final class RemoteAuthService: AuthService {
     public init(client: SupabaseClient, session: RemoteSessionStore) {
         self.client = client
         self.session = session
+        // Reading the saved session is local and synchronous, so a signed-out user sees Welcome at once, and a
+        // signed-in user never sees it flash by while `restore()` loads their profile.
+        state = Self.launchState(hasSavedSession: client.auth.currentSession != nil)
+    }
+
+    /// The state before `restore()` finishes: restoring when an earlier launch saved a session.
+    static func launchState(hasSavedSession: Bool) -> AuthState {
+        hasSavedSession ? .restoring : .signedOut
     }
 
     /// Picks up a session saved by an earlier launch.

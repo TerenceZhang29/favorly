@@ -304,6 +304,7 @@ Defaults from the plan's Preparation section. Change here if the team decides ot
 
 Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
+- 2026-11-11 · post-1.0 fix · `AuthState` gains `.restoring`, a change to the plan's domain model: `RemoteAuthService` starts in it when the keychain holds a saved session, and `RootView` shows the plain Grove background until `restore()` settles on signed in or profile setup · it used to start `.signedOut`, so every signed-in launch showed Welcome with the Sign in with Apple button while the profile loaded over the network. With no saved session it still starts `.signedOut`, so Welcome shows at once
 - 2026-11-11 · 4H · App Store Connect answers as submitted: Sign-in required unticked, with no demo account (Sign in with Apple only; the review notes explain that the reviewer uses their own Apple ID); Age Assurance answered No, since the "I'm 18 or older" switch is a declaration, not a check; the calculated 13+ rating overridden to 18+, as the Terms' age minimum requires; screenshots in the 6.9-inch and 6.3-inch slots, without the status bar · the owner didn't want to share an Apple ID, and Apple asks for honest age-rating answers that match the EULA
 - 2026-11-09 · 6 · The owner closed 6A on build 9 and skipped 6B (external beta) and 6C (triage); build 1.0.0 (9) is the launch candidate · to submit to the App Store sooner. Risk accepted: no testers outside the team
 - 2026-11-09 · 4H · Supabase stays on the free tier at launch (owner's choice over Pro at $25/month) · no cost until real users arrive. Risks accepted: the project pauses after about a week without traffic, which stops the app until it is restored in the dashboard, and there are no backups. Upgrade when real users arrive
@@ -652,6 +653,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-11-11 · post-1.0 fix · Fixed Welcome flashing at every signed-in launch (`AuthState.restoring`); package tests pass with three new `RemoteAuthServiceLaunchTests`; the app builds with no warnings; SwiftLint and SwiftFormat clean · check on a phone, then ship in 1.0.1
 - 2026-11-11 · 4H (part) · Owner submitted build 1.0.0 (9) and App Review approved it on the first submission; 6.3-inch screenshot set and status-bar-free screenshots added during submission · owner releases 1.0.0, then tag `v1.0.0` and the post-launch watch
 - 2026-11-09 · 6 close, 4H (part) · Owner closed 6A on build 9 and skipped 6B and 6C, free tier kept; store listing, review notes and the age rating drafted (`docs/release/app-store-listing.md`); App Review Guidelines re-read; six 6.9-inch screenshots from `AppStoreScreenshotUITests` checked by eye; 426 package tests, `DevSettingsUITests` pass; SwiftLint and SwiftFormat clean · owner: the steps in *4H: the owner's steps to launch*
 - 2026-11-09 · 6A (part) · Dark mode app icon; build 1.0.0 (9) archived and uploaded with the owner's approval, UI tests skipped at the owner's request (icon-only change) · 6A: the internal round on build 9

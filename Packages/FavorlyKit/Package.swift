@@ -25,8 +25,8 @@ let package = Package(
         .target(
             name: "FavorlyFeatures",
             dependencies: ["FavorlyCore"],
-            // Figtree, the Grove typeface (SIL Open Font License 1.1, license file beside the fonts).
-            resources: [.copy("Resources/Fonts")]
+            // Figtree, the Grove typeface (SIL Open Font License 1.1, license file beside the fonts), and the logo.
+            resources: [.copy("Resources/Fonts"), .process("Resources/Images")]
         ),
         .target(
             name: "FavorlyRemote",

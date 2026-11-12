@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Restoring a saved session: the plain background, like the launch screen. Signed out: Welcome.
+/// Restoring a saved session: the logo and a progress bar. Signed out: Welcome.
 /// Signed in but new: profile setup. Otherwise the tabs.
 public struct RootView: View {
     @Environment(\.appEnvironment) private var environment
@@ -15,9 +15,7 @@ public struct RootView: View {
         Group {
             switch environment.auth.state {
             case .restoring:
-                GroveBackground()
-                    .ignoresSafeArea()
-                    .accessibilityIdentifier("root.restoring")
+                LaunchLoadingView()
             case .signedOut:
                 WelcomeView(environment: environment)
             case .needsProfile:

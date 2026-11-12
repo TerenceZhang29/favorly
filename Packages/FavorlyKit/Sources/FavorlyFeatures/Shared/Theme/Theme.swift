@@ -127,6 +127,21 @@ enum Theme {
         static let none = GroveShadow(color: Colors.ink, lightOpacity: 0, darkOpacity: 0, radius: 0, offsetY: 0)
     }
 
+    /// The loading screen shown while a saved session is restored.
+    enum Launch {
+        /// Width of the full-name logo.
+        static let logoWidth: CGFloat = 216
+        /// The progress track under the logo, and the bar that slides along it.
+        static let trackWidth: CGFloat = 120
+        static let trackHeight: CGFloat = 4
+        static let barShare: CGFloat = 0.4
+        /// Seconds for one sweep of the bar.
+        static let sweep: Double = 1.4
+        /// Space between the logo and the progress track, and between the track and its caption.
+        static let logoGap: CGFloat = 28
+        static let captionGap: CGFloat = 14
+    }
+
     /// The largest text size the tab bar follows, as the system tab bar does.
     static let tabBarMaxTypeSize = DynamicTypeSize.xxxLarge
     /// The largest text size a section header follows.

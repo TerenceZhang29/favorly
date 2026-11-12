@@ -288,7 +288,14 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | 4H | `05fdb35` | feat(release): 6.3-inch screenshots next to the 6.9-inch set |
 | 4H | `3f2d642` | feat(release): App Store screenshots without the status bar |
 | 4H | `74b86bf` | style(ui-tests): shorter launch argument line |
-| 4H | (next commit) | docs: 1.0.0 approved by App Review |
+| 4H | `9a2ecf3` | docs: 1.0.0 approved by App Review |
+| post-1.0 | `ce3924e` | fix(auth): no Welcome flash while a saved session is restored |
+| post-1.0 | `be19e0f` | fix(auth): open the tabs offline instead of profile setup |
+| post-1.0 | `5f3b813` | feat(launch): logo and progress bar while a saved session is restored |
+| post-1.0 | `78a7090` | feat(chat): read positions, unread counts and one query for the inbox |
+| post-1.0 | `410bff8` | feat(messages): Messages tab, unread badge and incoming-message banner |
+| post-1.0 | `dd96784` | feat(app): message notifications use the in-app banner; Messages UI tests |
+| post-1.0 | (next commit) | docs: record the Messages tab |
 
 ## Confirmed decisions
 
@@ -304,6 +311,14 @@ Defaults from the plan's Preparation section. Change here if the team decides ot
 
 Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
+- 2026-11-12 · post-1.0 messages · A Messages tab between Post and My Activity (Nearby · Post · Messages · My Activity · Profile), built from the Grove canvas's "Messages — inbox tab + banner" (owner's pick, A + D of four options). This reverses Phase 5's "leave out the Messages tab" · the owner found messages hard to reach: only through My Activity and the exact request
+- 2026-11-12 · post-1.0 messages · Unread counts come from read positions saved on the device (`ChatReadStore` in Core; `DeviceChatReadStore` in `FavorlyDevice` on `UserDefaults`, keyed by user and request; `InMemoryChatReadStore` for demo, tests and previews), set to the send time of the latest message seen, never the device clock. No read receipts on the server, no migration · no deploy or cost, and "Seen" stays out as decided on 2026-11-05. A user on two phones reads each thread twice
+- 2026-11-12 · post-1.0 messages · `ChatRepository` gains `messages(inRequests:as:)`, one query for every thread in the inbox, skipping threads the user can't read; `AppEnvironment` gains `chatReads`, defaulting to the in-memory store; `ChatRules.unreadCount(in:for:readUpTo:)`. Changes to the plan's domain model · the inbox would otherwise make one request per thread on every refresh
+- 2026-11-12 · post-1.0 messages · The inbox lists every request the user posted or helps with that has a helper, once it has messages or while it is claimed; newest activity first; All / My requests / Helping. A completed or cancelled request with no messages is left out · nothing to read there, and the chat can no longer start
+- 2026-11-12 · post-1.0 messages · The banner (`IncomingMessageBanner`) shows the newest message from someone else that arrived since the last load, unless its chat is open; never for messages already there at launch or after switching users. Reply opens the chat on the Messages tab; Later dismisses it; it also slides away after 8 seconds, which the mockup doesn't show · a banner that stays until tapped covers the screen's top controls
+- 2026-11-12 · post-1.0 messages · While the app is open, a message notification no longer shows the system banner (`willPresent` returns `.list` only) and makes the inbox reload, so the in-app banner shows instead; a tapped message notification now opens the chat on the Messages tab, not under the request in My Activity · one banner, not two
+- 2026-11-12 · post-1.0 messages · The tab badge uses `spark` with `onSpark` text, not the mockup's white, which is about 3:1 on the light `spark`; the banner's colors are new `Theme` tokens with contrast tests · the Phase 5 contrast rule
+- 2026-11-12 · post-1.0 messages · Dev Settings (Debug only, demo launches) has "Receive a message": the other person in the user's newest claimed request writes to them, so the banner and badge can be tried on one phone · nobody else can send a message in a demo
 - 2026-11-12 · post-1.0 fix · While `.restoring`, `RootView` shows `LaunchLoadingView`: the full-name logo, a lime bar sliding along a track (still with Reduce Motion) and "Loading your neighborhood…", option A of three on the Grove canvas (owner's pick, light and dark). The logo is `FavorlyLogo`, loose PNGs at @2x and @3x in `FavorlyFeatures/Resources/Images` (`.process`), with white lettering in dark mode; the backgrounds were removed from the owner's `logo-long.png` by un-mixing the white · SwiftPM can't build an asset catalog from the command line, and the owner's files had solid backgrounds
 - 2026-11-11 · post-1.0 fix · When a saved session's profile can't be loaded at launch, `RemoteAuthService` opens the tabs as the user saved on the device by the last sign-in (`RemoteSessionStore` keeps it in `UserDefaults`, cleared at sign-out); with none saved it stays `.restoring` and tries again after 2, 4, 8 … up to 30 seconds; a session the server refuses (`notSignedIn`) signs out. The SDK's own retries are off for that one request · it used to fall back to `.needsProfile`, which sent an existing user offline at launch to profile setup; the SDK's three retries held an offline launch for about 7 seconds
 - 2026-11-11 · post-1.0 fix · `AuthState` gains `.restoring`, a change to the plan's domain model: `RemoteAuthService` starts in it when the keychain holds a saved session, and `RootView` shows the plain Grove background until `restore()` settles on signed in or profile setup · it used to start `.signedOut`, so every signed-in launch showed Welcome with the Sign in with Apple button while the profile loaded over the network. With no saved session it still starts `.signedOut`, so Welcome shows at once
@@ -591,6 +606,9 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 ## Known issues
 
+- 2026-11-12 · `ScreenshotUITests.testCaptureScreenshotsAtLargestText` fails on the iPhone 17 simulator, on `main` as well: after typing the Post title at the largest text size, `post.submit` is not found. Likely the same simulator keyboard change as `KeyboardUITests` below; the light and dark walks, which include the new Messages screens, pass
+- 2026-11-12 · The App Store screenshots (1.0.0) show four tabs; take them again for the release with the Messages tab
+- 2026-11-12 · The contract test `theInboxReadsOnlyThreadsTheUserIsIn` has not run against the local backend yet (it needs Docker and the local Supabase stack); it runs on the mock
 - 2026-11-09 · `KeyboardUITests.testDoneKeyClosesTheKeyboardOnPost` fails on the iPhone 17 simulator, on `main` as well: XCTest can't scroll to the keyboard's Done key ("Failed to scroll to visible … identifier: 'Done'", frame y 1087, below the screen). It passed on 2026-11-06, so the simulator or its keyboard changed, not the app; look at it in 6A
 
 - 2026-11-05 · CI · On GitHub's simulator a tab tap is sometimes dropped: the core-flow test stayed on Dev Settings after tapping Nearby (runs 41954096116 and 42056233215). `UITestCase.openTab` now taps again, up to three times, until the tab is selected
@@ -655,6 +673,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-11-12 · post-1.0 messages · Messages tab with All / My requests / Helping, unread counts and a tab badge, the incoming-message banner with Reply and Later, Dev Settings "Receive a message", on `feat/messages-tab` (on top of `fix/launch-welcome-flash`); 455 package tests; `MessagesUITests` (3), `ChatUITests` and `DevSettingsUITests` pass; screenshots of the inbox and banner in light and dark checked by eye; SwiftLint and SwiftFormat clean · owner checks on a phone; full UI suite; then 1.1.0 with new App Store screenshots
 - 2026-11-11 · post-1.0 fix · Fixed Welcome flashing at every signed-in launch (`AuthState.restoring`) and profile setup showing for an existing user offline at launch (saved user, retry); loading-screen mockup on the Grove canvas, option A built as `LaunchLoadingView` with a transparent logo, checked in the simulator in light and dark; package tests pass with six new `RemoteAuthServiceLaunchTests`; the app builds with no warnings; SwiftLint and SwiftFormat clean · check on a phone, then ship in 1.0.1; the Grove canvas's Messages tab and incoming banner are designed but not built
 - 2026-11-11 · 4H (part) · Owner submitted build 1.0.0 (9) and App Review approved it on the first submission; 6.3-inch screenshot set and status-bar-free screenshots added during submission · owner releases 1.0.0, then tag `v1.0.0` and the post-launch watch
 - 2026-11-09 · 6 close, 4H (part) · Owner closed 6A on build 9 and skipped 6B and 6C, free tier kept; store listing, review notes and the age rating drafted (`docs/release/app-store-listing.md`); App Review Guidelines re-read; six 6.9-inch screenshots from `AppStoreScreenshotUITests` checked by eye; 426 package tests, `DevSettingsUITests` pass; SwiftLint and SwiftFormat clean · owner: the steps in *4H: the owner's steps to launch*

@@ -71,6 +71,15 @@ Everything Claude could prepare is in `docs/release/`. These steps need the owne
 7. Submit for review, with manual release and phased release on. If rejected, paste the message into a session.
 8. After approval: release, then tag `v1.0.0` on the submitted commit and push the tag.
 
+## 1.1.0: the owner's steps
+
+Build 1.1.0 (10) holds the launch fixes and the Messages tab. Pushed to `main` on 2026-11-12 with the full UI suite skipped at the owner's request.
+
+1. App Store Connect → Favorly → add version 1.1.0; paste "What's New" from `docs/release/app-store-listing.md`; select build 10 once it has processed.
+2. Optional: new screenshots with the Messages tab (see the listing).
+3. Submit for review, with manual release and phased release on, as for 1.0.0.
+4. After approval: release, then tag `v1.1.0` on the submitted commit. Tag `v1.0.0` on `9a2ecf3` if 1.0.0's step 8 isn't done yet.
+
 ## Needs the owner's review
 
 - **Grove screens (Phase 5).** Compare `docs/screenshots/phase-5/` with the mockup (https://claude.ai/artifact/MepsaKmAH4rhe43aqw4D4w) and with `docs/screenshots/phase-4/`. This stands in for the 5B review gate. Changes asked for now are edits to `Theme` and the shared components.
@@ -295,7 +304,8 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | post-1.0 | `78a7090` | feat(chat): read positions, unread counts and one query for the inbox |
 | post-1.0 | `410bff8` | feat(messages): Messages tab, unread badge and incoming-message banner |
 | post-1.0 | `dd96784` | feat(app): message notifications use the in-app banner; Messages UI tests |
-| post-1.0 | (next commit) | docs: record the Messages tab |
+| post-1.0 | `8e2c4c6` | docs: record the Messages tab |
+| 1.1.0 | (next commit) | chore(release): version 1.1.0 (10) |
 
 ## Confirmed decisions
 
@@ -673,6 +683,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-11-12 · 1.1.0 · Version 1.1.0 (10); `main` fast-forwarded and pushed without the full UI suite (owner's request); "What's New" drafted; build 1.1.0 (10) archived and uploaded · owner: the 1.1.0 steps above
 - 2026-11-12 · post-1.0 messages · Messages tab with All / My requests / Helping, unread counts and a tab badge, the incoming-message banner with Reply and Later, Dev Settings "Receive a message", on `feat/messages-tab` (on top of `fix/launch-welcome-flash`); 455 package tests; `MessagesUITests` (3), `ChatUITests` and `DevSettingsUITests` pass; screenshots of the inbox and banner in light and dark checked by eye; SwiftLint and SwiftFormat clean · owner checks on a phone; full UI suite; then 1.1.0 with new App Store screenshots
 - 2026-11-11 · post-1.0 fix · Fixed Welcome flashing at every signed-in launch (`AuthState.restoring`) and profile setup showing for an existing user offline at launch (saved user, retry); loading-screen mockup on the Grove canvas, option A built as `LaunchLoadingView` with a transparent logo, checked in the simulator in light and dark; package tests pass with six new `RemoteAuthServiceLaunchTests`; the app builds with no warnings; SwiftLint and SwiftFormat clean · check on a phone, then ship in 1.0.1; the Grove canvas's Messages tab and incoming banner are designed but not built
 - 2026-11-11 · 4H (part) · Owner submitted build 1.0.0 (9) and App Review approved it on the first submission; 6.3-inch screenshot set and status-bar-free screenshots added during submission · owner releases 1.0.0, then tag `v1.0.0` and the post-launch watch

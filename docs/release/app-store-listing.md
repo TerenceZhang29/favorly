@@ -15,6 +15,17 @@ What to enter in App Store Connect for Favorly 1.0.0. The App Privacy answers ar
 | Price | Free, no in-app purchases |
 | Availability | United States only |
 
+## Version 1.1.0
+
+**What's New in This Version (4000)**
+
+> - New Messages tab: every conversation in one place, with unread counts. Filter by your requests or the ones you're helping with.
+> - A banner lets you know when a neighbor writes, with Reply and Later.
+> - Favorly now opens straight to your neighborhood, with a short loading screen, instead of flashing the sign-in screen.
+> - Opening Favorly without a connection no longer asks you to set up your profile again.
+
+The other fields stay as in 1.0.0. The 1.0.0 screenshots show four tabs; they can stay for this update (Apple doesn't require new ones), or be retaken with `AppStoreScreenshotUITests` to show the Messages tab.
+
 ## Version 1.0.0
 
 | Field | Value |

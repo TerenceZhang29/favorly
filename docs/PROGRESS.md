@@ -76,7 +76,7 @@ Everything Claude could prepare is in `docs/release/`. These steps need the owne
 Build 1.1.0 (10) holds the launch fixes and the Messages tab. Pushed to `main` on 2026-11-12 with the full UI suite skipped at the owner's request.
 
 1. App Store Connect → Favorly → add version 1.1.0; paste "What's New" from `docs/release/app-store-listing.md`; select build 10 once it has processed.
-2. Optional: new screenshots with the Messages tab (see the listing).
+2. Replace the screenshots with the eight new ones in each size, in the order in the listing's *Screenshots* section.
 3. Submit for review, with manual release and phased release on, as for 1.0.0.
 4. After approval: release, then tag `v1.1.0` on the submitted commit. Tag `v1.0.0` on `9a2ecf3` if 1.0.0's step 8 isn't done yet.
 
@@ -305,7 +305,8 @@ One row per commit, oldest first, grouped by phase. Every session adds its commi
 | post-1.0 | `410bff8` | feat(messages): Messages tab, unread badge and incoming-message banner |
 | post-1.0 | `dd96784` | feat(app): message notifications use the in-app banner; Messages UI tests |
 | post-1.0 | `8e2c4c6` | docs: record the Messages tab |
-| 1.1.0 | (next commit) | chore(release): version 1.1.0 (10) |
+| 1.1.0 | `0ec01db` | chore(release): version 1.1.0 (10) |
+| 1.1.0 | (next commit) | feat(release): App Store screenshots with the Messages tab |
 
 ## Confirmed decisions
 
@@ -321,6 +322,7 @@ Defaults from the plan's Preparation section. Change here if the team decides ot
 
 Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
+- 2026-11-12 · 1.1.0 · App Store screenshots: eight per size, adding the message banner and the Messages tab. A Debug-only launch argument, `-demoReplies` (`App/DemoReplier.swift`), has the other person answer the user's message 15 seconds later; the walk leaves and reopens the chat instead of dragging the keyboard away, which the iPhone 17 simulator no longer does · nobody else can write in a one-phone demo, and the old drag left the keyboard in the 6.3-inch chat screenshot
 - 2026-11-12 · post-1.0 messages · A Messages tab between Post and My Activity (Nearby · Post · Messages · My Activity · Profile), built from the Grove canvas's "Messages — inbox tab + banner" (owner's pick, A + D of four options). This reverses Phase 5's "leave out the Messages tab" · the owner found messages hard to reach: only through My Activity and the exact request
 - 2026-11-12 · post-1.0 messages · Unread counts come from read positions saved on the device (`ChatReadStore` in Core; `DeviceChatReadStore` in `FavorlyDevice` on `UserDefaults`, keyed by user and request; `InMemoryChatReadStore` for demo, tests and previews), set to the send time of the latest message seen, never the device clock. No read receipts on the server, no migration · no deploy or cost, and "Seen" stays out as decided on 2026-11-05. A user on two phones reads each thread twice
 - 2026-11-12 · post-1.0 messages · `ChatRepository` gains `messages(inRequests:as:)`, one query for every thread in the inbox, skipping threads the user can't read; `AppEnvironment` gains `chatReads`, defaulting to the in-memory store; `ChatRules.unreadCount(in:for:readUpTo:)`. Changes to the plan's domain model · the inbox would otherwise make one request per thread on every refresh
@@ -617,7 +619,6 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 ## Known issues
 
 - 2026-11-12 · `ScreenshotUITests.testCaptureScreenshotsAtLargestText` fails on the iPhone 17 simulator, on `main` as well: after typing the Post title at the largest text size, `post.submit` is not found. Likely the same simulator keyboard change as `KeyboardUITests` below; the light and dark walks, which include the new Messages screens, pass
-- 2026-11-12 · The App Store screenshots (1.0.0) show four tabs; take them again for the release with the Messages tab
 - 2026-11-12 · The contract test `theInboxReadsOnlyThreadsTheUserIsIn` has not run against the local backend yet (it needs Docker and the local Supabase stack); it runs on the mock
 - 2026-11-09 · `KeyboardUITests.testDoneKeyClosesTheKeyboardOnPost` fails on the iPhone 17 simulator, on `main` as well: XCTest can't scroll to the keyboard's Done key ("Failed to scroll to visible … identifier: 'Done'", frame y 1087, below the screen). It passed on 2026-11-06, so the simulator or its keyboard changed, not the app; look at it in 6A
 
@@ -683,6 +684,7 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
 
+- 2026-11-12 · 1.1.0 · Eight App Store screenshots per size with the banner and the Messages tab (`-demoReplies`), checked by eye · owner: the 1.1.0 steps above
 - 2026-11-12 · 1.1.0 · Version 1.1.0 (10); `main` fast-forwarded and pushed without the full UI suite (owner's request); "What's New" drafted; build 1.1.0 (10) archived and uploaded · owner: the 1.1.0 steps above
 - 2026-11-12 · post-1.0 messages · Messages tab with All / My requests / Helping, unread counts and a tab badge, the incoming-message banner with Reply and Later, Dev Settings "Receive a message", on `feat/messages-tab` (on top of `fix/launch-welcome-flash`); 455 package tests; `MessagesUITests` (3), `ChatUITests` and `DevSettingsUITests` pass; screenshots of the inbox and banner in light and dark checked by eye; SwiftLint and SwiftFormat clean · owner checks on a phone; full UI suite; then 1.1.0 with new App Store screenshots
 - 2026-11-11 · post-1.0 fix · Fixed Welcome flashing at every signed-in launch (`AuthState.restoring`) and profile setup showing for an existing user offline at launch (saved user, retry); loading-screen mockup on the Grove canvas, option A built as `LaunchLoadingView` with a transparent logo, checked in the simulator in light and dark; package tests pass with six new `RemoteAuthServiceLaunchTests`; the app builds with no warnings; SwiftLint and SwiftFormat clean · check on a phone, then ship in 1.0.1; the Grove canvas's Messages tab and incoming banner are designed but not built

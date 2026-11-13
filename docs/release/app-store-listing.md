@@ -24,7 +24,7 @@ What to enter in App Store Connect for Favorly 1.0.0. The App Privacy answers ar
 > - Favorly now opens straight to your neighborhood, with a short loading screen, instead of flashing the sign-in screen.
 > - Opening Favorly without a connection no longer asks you to set up your profile again.
 
-The other fields stay as in 1.0.0. The 1.0.0 screenshots show four tabs; they can stay for this update (Apple doesn't require new ones), or be retaken with `AppStoreScreenshotUITests` to show the Messages tab.
+The other fields stay as in 1.0.0. The screenshots are new, with the Messages tab: see *Screenshots* below.
 
 ## Version 1.0.0
 
@@ -87,8 +87,12 @@ Upload in this order:
 2. `2-request-detail.png`: a neighbor's request
 3. `3-claim.png`: claiming it
 4. `4-chat.png`: messaging the neighbor
-5. `5-profile.png`: Kindness score and reviews
-6. `6-post.png`: asking for a favor
+5. `5-message-banner.png`: the neighbor answers (new in 1.1.0)
+6. `6-messages.png`: the Messages tab (new in 1.1.0)
+7. `7-profile.png`: Kindness score and reviews
+8. `8-post.png`: asking for a favor
+
+For 1.1.0, delete the six 1.0.0 screenshots in each slot and upload these eight.
 
 Favorly is iPhone-only, so there is no iPad set.
 

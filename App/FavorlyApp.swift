@@ -11,6 +11,16 @@ struct FavorlyApp: App {
     private static let isDemo = isUITesting || arguments.contains("-demo")
     /// `-signedOut` starts a demo launch at the Welcome screen, for the onboarding UI tests.
     private static let startsSignedOut = arguments.contains("-signedOut")
+    /// `-demoReplies` makes the other person in a thread answer the user's messages, for the App Store screenshots.
+    /// Debug demo launches only.
+    private static let repliesInDemo: Bool = {
+        #if DEBUG
+            isDemo && arguments.contains("-demoReplies")
+        #else
+            false
+        #endif
+    }()
+
     /// `-hideStatusBar` hides the time, signal and battery, for the App Store screenshots. Debug builds only.
     private static let hidesStatusBar: Bool = {
         #if DEBUG
@@ -31,6 +41,13 @@ struct FavorlyApp: App {
                 .task {
                     appDelegate.environment = environment
                     await signInAtLaunch()
+                }
+                .task {
+                    #if DEBUG
+                        if Self.repliesInDemo {
+                            await DemoReplier(environment: environment).run()
+                        }
+                    #endif
                 }
                 .task(id: environment.auth.state) {
                     // A signed-in user's device token can change; registering again keeps the server's copy fresh.

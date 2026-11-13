@@ -1,8 +1,9 @@
 import XCTest
 
-/// Captures the App Store screenshots: six screens, in light mode, as Alex on Roosevelt Island with demo data.
+/// Captures the App Store screenshots: eight screens, in light mode, as Alex on Roosevelt Island with demo data.
 /// Skipped unless a destination folder is given. `-noDevSettings` hides the Debug-only Dev Settings tab, as in the
-/// App Store build, and `-hideStatusBar` hides the status bar. Run by `scripts/make-store-screenshots.sh`.
+/// App Store build, `-hideStatusBar` hides the status bar, and `-demoReplies` has Bea answer Alex's message, for the
+/// banner and the Messages tab. Run by `scripts/make-store-screenshots.sh`.
 final class AppStoreScreenshotUITests: UITestCase {
     @MainActor private var folder = ""
 
@@ -13,7 +14,7 @@ final class AppStoreScreenshotUITests: UITestCase {
         }
         self.folder = folder
         XCUIDevice.shared.appearance = .light
-        let storeLook = ["-noDevSettings", "-hideStatusBar", "-AppleLocale", "en_US"]
+        let storeLook = ["-noDevSettings", "-hideStatusBar", "-demoReplies", "-AppleLocale", "en_US"]
         app.launchArguments = ["-uiTesting"] + storeLook + Self.freshDefaults
         app.launch()
 
@@ -41,17 +42,24 @@ final class AppStoreScreenshotUITests: UITestCase {
         app.typeText("Hi Bea! I have rice. Lobby in 10 minutes?")
         app.buttons["chat.send"].tap()
         _ = element("chat.empty").waitForNonExistence(timeout: Self.waitTimeout)
-        dragKeyboardAway()
+        // Leave and reopen the chat: it opens without the keyboard, which some simulators won't drag away.
+        goBack()
+        scrollToAndTap(app.buttons["detail.message"])
+        XCTAssertTrue(element("chat.input").waitForExistence(timeout: Self.waitTimeout))
+        XCTAssertFalse(app.keyboards.firstMatch.exists)
         try capture("4-chat")
         goBack()
 
-        // 5. The requester's profile: Kindness score and reviews.
+        // 5. Bea answers while Alex is on the request: the banner, and 6. her reply on the Messages tab.
+        try captureMessages()
+
+        // 7. The requester's profile: Kindness score and reviews.
         scrollToAndTap(element("detail.requester"))
         waitFor(element("profile.name"), toRead: "Bea")
-        try capture("5-profile")
+        try capture("7-profile")
         goBack()
 
-        // 6. Asking for a favor.
+        // 8. Asking for a favor.
         openTab("Post")
         // Details first: return in the title field then closes the keyboard.
         element("post.details").tap()
@@ -62,16 +70,35 @@ final class AppStoreScreenshotUITests: UITestCase {
             dragKeyboardAway()
         }
         XCTAssertTrue(app.buttons["post.submit"].waitForExistence(timeout: Self.waitTimeout))
-        try capture("6-post")
+        try capture("8-post")
     }
 
-    /// Drags the content down, which closes the keyboard on scroll views that dismiss it interactively.
+    @MainActor
+    private func captureMessages() throws {
+        XCTAssertTrue(element("banner").waitForExistence(timeout: Self.waitTimeout))
+        // Let the banner finish sliding in.
+        Thread.sleep(forTimeInterval: 1.5)
+        try capture("5-message-banner")
+        app.buttons["banner.later"].tap()
+        XCTAssertTrue(element("banner").waitForNonExistence(timeout: Self.waitTimeout))
+        openTab("Messages")
+        XCTAssertTrue(row("inbox.row.", containing: "1 unread").waitForExistence(timeout: Self.waitTimeout))
+        try capture("6-messages")
+        openTab("Nearby")
+    }
+
+    /// Drags the content down, which closes the keyboard on scroll views that dismiss it interactively. A slow
+    /// simulator can miss a drag, so it tries a few times.
     @MainActor
     private func dragKeyboardAway() {
         let top = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.25))
         let bottom = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.95))
-        top.press(forDuration: 0.1, thenDragTo: bottom)
-        _ = app.keyboards.firstMatch.waitForNonExistence(timeout: Self.waitTimeout)
+        for _ in 0 ..< 3 {
+            top.press(forDuration: 0.1, thenDragTo: bottom)
+            if app.keyboards.firstMatch.waitForNonExistence(timeout: 3) {
+                return
+            }
+        }
     }
 
     @MainActor

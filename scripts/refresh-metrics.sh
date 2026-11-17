@@ -48,7 +48,14 @@ for sql in "$work"/*.sql; do
     if (cd backend && supabase db query "$target" --output-format json -f "$sql") >"$work/$name.json" 2>"$work/$name.err"; then
         echo "ok      $name" >&2
     else
-        echo "FAILED  $name: $(grep -v -E 'new version|recommend updating|Initialising' "$work/$name.err" | head -n 3)" >&2
+        # The CLI prints a query's error as JSON on standard output.
+        reason=$(python3 -I -c 'import json, sys
+try:
+    message = json.load(open(sys.argv[1]))["error"]["message"]
+    print(json.loads(message.split(": ", 1)[1])["message"].splitlines()[0].split("ERROR:", 1)[-1].strip())
+except Exception:
+    pass' "$work/$name.json" 2>/dev/null || true)
+        echo "FAILED  $name: ${reason:-$(grep -v -E 'new version|recommend updating|Initialising' "$work/$name.err" | head -n 1)}" >&2
         rm -f "$work/$name.json"
         failed=$((failed + 1))
     fi

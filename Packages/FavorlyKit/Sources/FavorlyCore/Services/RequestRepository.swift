@@ -9,6 +9,10 @@ public protocol RequestRepository: Sendable {
     func claim(_ id: RequestID, by user: UserID) async throws -> HelpRequest
     func cancel(_ id: RequestID, by user: UserID) async throws -> HelpRequest
     func complete(_ id: RequestID, by user: UserID) async throws -> HelpRequest
+    /// Records that `user` opened the request, for usage metrics; counted once per person and request.
+    /// The requester's own views, cancelled requests and requests between blocked people are skipped
+    /// without an error. Nobody can read the views back through the app.
+    func recordView(of id: RequestID, by user: UserID) async throws
     /// Emits after any write, so open screens refresh.
     func changes() -> AsyncStream<Void>
     /// Restores the seed data (dev settings).

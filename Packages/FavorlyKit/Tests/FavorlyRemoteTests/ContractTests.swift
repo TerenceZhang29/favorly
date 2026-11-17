@@ -193,6 +193,30 @@ struct ContractTests {
         #expect(await changes.next() != nil)
     }
 
+    // MARK: Views
+
+    /// Views can't be read back through the app, so the contract is that recording never fails a screen:
+    /// a repeat, the requester's own view, a blocked pair, a cancelled or unknown request are all accepted.
+    @Test(arguments: ContractBackend.enabled)
+    func recordingAViewNeverFails(backend: ContractBackend) async throws {
+        let world = ContractWorld(backend)
+        let alex = try await world.signUp("Alex")
+        let bea = try await world.signUp("Bea")
+        let chen = try await world.signUp("Chen")
+        let eggs = try await alex.requests.create(world.draft("Need 2 eggs"), by: alex.id)
+
+        try await bea.requests.recordView(of: eggs.id, by: bea.id)
+        try await bea.requests.recordView(of: eggs.id, by: bea.id)
+        try await alex.requests.recordView(of: eggs.id, by: alex.id)
+        try await bea.requests.recordView(of: RequestID(rawValue: UUID()), by: bea.id)
+
+        try await alex.moderation.block(chen.id, by: alex.id)
+        try await chen.requests.recordView(of: eggs.id, by: chen.id)
+
+        _ = try await alex.requests.cancel(eggs.id, by: alex.id)
+        try await bea.requests.recordView(of: eggs.id, by: bea.id)
+    }
+
     // MARK: Safety
 
     @Test(arguments: ContractBackend.enabled)

@@ -19,6 +19,8 @@ public actor MockRequestRepository: RequestRepository {
     var reports: [MockReport] = []
     /// Who each person blocked, newest first.
     var blocks: [UserID: [UserID]] = [:]
+    /// Who opened each request, the requester excluded.
+    var viewers: [RequestID: Set<UserID>] = [:]
 
     /// - Parameters:
     ///   - seed: Builds the starting requests, and again on every `reset()`.
@@ -128,7 +130,7 @@ public actor MockRequestRepository: RequestRepository {
         broadcaster.stream()
     }
 
-    /// Restores requests and reviews to the seed and removes every redemption, message, report and block.
+    /// Restores requests and reviews to the seed and removes every redemption, message, report, block and view.
     public func reset() async {
         requests = Self.indexed(seed())
         reviews = reviewSeed()
@@ -136,6 +138,7 @@ public actor MockRequestRepository: RequestRepository {
         messages = []
         reports = []
         blocks = [:]
+        viewers = [:]
         broadcaster.send()
     }
 

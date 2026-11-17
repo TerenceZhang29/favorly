@@ -42,6 +42,8 @@ struct PreviewRequestRepository: RequestRepository {
         throw FavorlyError.notAllowed
     }
 
+    func recordView(of _: RequestID, by _: UserID) async throws {}
+
     func changes() -> AsyncStream<Void> {
         AsyncStream { $0.finish() }
     }

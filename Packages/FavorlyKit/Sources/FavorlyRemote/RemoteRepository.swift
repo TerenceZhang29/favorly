@@ -83,6 +83,12 @@ public actor RemoteRepository: RequestRepository {
         try await move(id, by: "complete_request", to: .completed)
     }
 
+    /// Not announced as a change: nothing on screen depends on it.
+    public func recordView(of id: RequestID, by _: UserID) async throws {
+        let params: [String: AnyJSON] = ["request_id": .string(id.rawValue.uuidString)]
+        try await call { try await client.rpc("record_request_view", params: params).execute() }
+    }
+
     /// Emits after this app's writes at once, and after anyone's through realtime.
     public nonisolated func changes() -> AsyncStream<Void> {
         let stream = broadcaster.stream()

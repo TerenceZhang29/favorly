@@ -44,6 +44,18 @@ struct RequestDetailViewModelTests {
         #expect(viewModel.distanceText == nil)
     }
 
+    @Test func openingSomeoneElsesRequestRecordsOneView() async {
+        let viewModel = await loaded(as: DemoUsers.bea)
+        await viewModel.load()
+        _ = await loaded(as: DemoUsers.alex)
+        #expect(await world.repository.viewerCount(of: TestWorld.eggsID) == 2)
+    }
+
+    @Test func openingYourOwnRequestRecordsNoView() async {
+        _ = await loaded(as: DemoUsers.chen)
+        #expect(await world.repository.viewerCount(of: TestWorld.eggsID) == 0)
+    }
+
     @Test func missingRequestShowsAnError() async {
         let viewModel = makeViewModel(RequestID(rawValue: UUID()))
         await viewModel.load()

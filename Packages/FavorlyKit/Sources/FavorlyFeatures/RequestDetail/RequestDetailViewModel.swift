@@ -25,6 +25,8 @@ final class RequestDetailViewModel {
     private(set) var review: Review?
 
     @ObservationIgnored private let environment: AppEnvironment
+    /// The view is recorded on the first load only, not on each reload after a change.
+    @ObservationIgnored private var hasRecordedView = false
 
     init(requestID: RequestID, environment: AppEnvironment) {
         self.requestID = requestID
@@ -124,6 +126,7 @@ final class RequestDetailViewModel {
             }
             await loadExtras(of: request)
             state = .loaded(request)
+            await recordViewOnce(of: request)
         } catch is CancellationError {
             // The screen went away.
         } catch {
@@ -186,6 +189,14 @@ final class RequestDetailViewModel {
         } else {
             nil
         }
+    }
+
+    /// Records the view for usage metrics, after the request is on screen. A failure is ignored: the person
+    /// sees the request either way, and the metric is allowed to miss a view.
+    private func recordViewOnce(of request: HelpRequest) async {
+        guard !hasRecordedView, request.requesterID != currentUserID else { return }
+        hasRecordedView = true
+        try? await environment.repository.recordView(of: request.id, by: currentUserID)
     }
 
     private func score(of user: UserID) async -> Int? {

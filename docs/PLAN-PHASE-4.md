@@ -290,6 +290,7 @@ A script, `backend/scripts/neighborhoods.py` (standard library only), downloads 
 - [x] **Owner:** submit for review; answer any rejection, fix, resubmit. Build 1.0.0 (9) submitted and approved on the first review (2026-11-11)
 - [ ] **Owner:** release with phased release on; tag `v1.0.0`
 - [ ] Post-launch watch for the first two weeks: crashes, reports queue daily, Supabase usage against plan limits
+- [ ] Usage metrics, weekly from launch: run the read-only queries in `docs/METRICS.md` on the hosted project (`supabase db query --linked`, free) and refresh the private **Favorly Metrics** dashboard (a Claude Artifact, https://claude.ai/artifact/M9ssJ1ysAZ11EraV3a7FPg). It holds aggregate counts only, as a snapshot file, and never connects to the database. A live BI tool (Looker Studio or Grafana with a read-only role) waits until the snapshot isn't enough, and needs the owner's approval
 
 **Done when:** Favorly 1.0.0 is live in the US App Store and tagged `v1.0.0`.
 

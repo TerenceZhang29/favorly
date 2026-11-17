@@ -80,6 +80,16 @@ Build 1.1.0 (10) holds the launch fixes and the Messages tab. Pushed to `main` o
 3. Submit for review, with manual release and phased release on, as for 1.0.0.
 4. After approval: release, then tag `v1.1.0` on the submitted commit. Tag `v1.0.0` on `9a2ecf3` if 1.0.0's step 8 isn't done yet.
 
+## Request views: the owner's steps
+
+Built on `feat/request-views` (2026-11-16), not in build 1.1.0 (10). Views are recorded only by an app version that has this code, so they ship in the release after 1.1.0. In this order:
+
+1. Approve the hosted deploy of migration `20261116000012_request_views.sql` (`supabase db push --linked`; free). It's safe before the app ships: older versions never call it.
+2. Decide whether the privacy policy change needs an in-app notice. The policy's *Changes* section promises one for a change "in a way that matters".
+3. Approve publishing `site/privacy.html` to Vercel (free Hobby plan) before the new version is submitted.
+4. Raise the version and build in `project.yml`, archive and upload.
+5. App Store Connect → App Privacy: add Usage Data → Product Interaction, linked to the user, purpose Analytics, not tracking (`docs/release/app-privacy.md`). Then submit.
+
 ## Needs the owner's review
 
 - **Grove screens (Phase 5).** Compare `docs/screenshots/phase-5/` with the mockup (https://claude.ai/artifact/MepsaKmAH4rhe43aqw4D4w) and with `docs/screenshots/phase-4/`. This stands in for the 5B review gate. Changes asked for now are edits to `Theme` and the shared components.
@@ -321,6 +331,11 @@ Defaults from the plan's Preparation section. Change here if the team decides ot
 ## Decisions made during implementation
 
 Add entries as `YYYY-MM-DD · phase · decision · reason`.
+
+- 2026-11-16 · post-1.0 views · Request views are recorded, never shown: `request_views` (one row per request and viewer, first time only) written by `record_request_view`, which skips the requester, cancelled requests and blocked pairs without an error; clients can't read the table. Domain change: `RequestRepository.recordView(of:by:)`, called by `RequestDetailViewModel` once per screen after the first load, with failures ignored · owner's choice ("record only"); views tell an unseen request from one people passed on. Linked to the user so a person counts once, which makes it Product Interaction (Analytics) in the App Privacy answers, the privacy manifest and the privacy policy
+- 2026-11-16 · post-1.0 views · The metrics dashboard refreshes through `scripts/refresh-metrics.sh` plus a request to Claude, not a button · owner's choice: the dashboard can't reach Supabase, so a button could only reload the old snapshot
+
+- 2026-11-16 · 4H · Usage metrics are the SQL queries in `docs/METRICS.md`, run on the hosted project with `supabase db query --linked`; the results go to the private Favorly Metrics dashboard (Claude Artifact, Data type) as one snapshot file of aggregate counts, refreshed on request, weekly after launch · owner's choice (option 2 of six): free, no analytics SDK, no new data collected, so the App Privacy answers and the privacy manifest stay as they are; the dashboard never holds database credentials or rows about single people
 
 - 2026-11-12 · 1.1.0 · App Store screenshots: eight per size, adding the message banner and the Messages tab. A Debug-only launch argument, `-demoReplies` (`App/DemoReplier.swift`), has the other person answer the user's message 15 seconds later; the walk leaves and reopens the chat instead of dragging the keyboard away, which the iPhone 17 simulator no longer does · nobody else can write in a one-phone demo, and the old drag left the keyboard in the 6.3-inch chat screenshot
 - 2026-11-12 · post-1.0 messages · A Messages tab between Post and My Activity (Nearby · Post · Messages · My Activity · Profile), built from the Grove canvas's "Messages — inbox tab + banner" (owner's pick, A + D of four options). This reverses Phase 5's "leave out the Messages tab" · the owner found messages hard to reach: only through My Activity and the exact request
@@ -683,6 +698,8 @@ Add entries as `YYYY-MM-DD · phase · decision · reason`.
 ## Session log
 
 Newest first, one line per session: `YYYY-MM-DD · phase · what was done · next step`.
+
+- 2026-11-16 · 4H metrics + views · `docs/METRICS.md` (15 metrics with SQL) and `scripts/refresh-metrics.sh`; Favorly Metrics dashboard from a hosted snapshot; request views on `feat/request-views` (migration, 13 pgTAP checks, mock, remote, view model, contract test; 462 package tests and 193 database tests pass; app builds with no warnings; lint clean); privacy policy, manifest and App Privacy answers updated · owner: the request views steps above
 
 - 2026-11-12 · 1.1.0 · Eight App Store screenshots per size with the banner and the Messages tab (`-demoReplies`), checked by eye · owner: the 1.1.0 steps above
 - 2026-11-12 · 1.1.0 · Version 1.1.0 (10); `main` fast-forwarded and pushed without the full UI suite (owner's request); "What's New" drafted; build 1.1.0 (10) archived and uploaded · owner: the 1.1.0 steps above

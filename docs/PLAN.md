@@ -228,6 +228,7 @@ public protocol RequestRepository: Sendable {
     func claim(_ id: RequestID, by user: UserID) async throws -> HelpRequest
     func cancel(_ id: RequestID, by user: UserID) async throws -> HelpRequest
     func complete(_ id: RequestID, by user: UserID) async throws -> HelpRequest
+    func recordView(of id: RequestID, by user: UserID) async throws  // usage metrics only (post-1.0)
     func changes() -> AsyncStream<Void>      // emits after any write, so open screens refresh
     func reset() async                       // restore seed data (dev settings)
 }

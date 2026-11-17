@@ -17,10 +17,13 @@ Yes. None of it is used for tracking (no data is linked with other companies' da
 | User Content | Other User Content | Requests (title, details, neighborhood, meeting spot) and reviews | App Functionality |
 | User Content | Other User Content | Reports and blocks | App Functionality (moderation) |
 | User Content | Emails or Text Messages | Chat messages between requester and helper | App Functionality |
+| Usage Data | Product Interaction | Which requests a user opened, once per request (from the first release after 1.1.0; table `request_views`) | Analytics |
 
-Not collected: email address, phone number, contacts, photos, health, financial info, browsing or search history, purchases, usage data, diagnostics, advertising data.
+Not collected: email address, phone number, contacts, photos, health, financial info, browsing or search history, purchases, other usage data, diagnostics, advertising data.
 
 Notes for the questionnaire:
+
+- **Product Interaction.** Linked to the user, because each view row holds the viewer's account ID (so one person counts once). Purpose is Analytics only: nobody sees views in the app. Not used for tracking. Answer this from the first release that records views, and not before.
 
 - **Precise, not coarse, location.** Apple's definitions call a location precise when it has three or more decimal places of latitude and longitude. Favorly keeps exactly three (about 100 m), so it declares **Precise Location**. Declaring Coarse Location would need rounding to two places (about 1 km), which would make the 0.25-mile radius on Nearby meaningless. The Privacy Policy still describes it as rounded to about 100 m.
 - **Diagnostics.** Favorly includes no crash reporting SDK. Crash logs Apple shares with developers through Xcode Organizer are covered by Apple's own disclosure, not the app's.

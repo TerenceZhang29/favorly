@@ -15,6 +15,14 @@ What to enter in App Store Connect for Favorly 1.0.0. The App Privacy answers ar
 | Price | Free, no in-app purchases |
 | Availability | United States only |
 
+## Version 1.1.1
+
+**What's New in This Version (4000)**
+
+> - Favorly now counts how many neighbors open each request, so we can learn whether requests reach enough people. Nobody can see who opened a request, including the person who posted it. Details are in the updated Privacy Policy.
+
+The other fields and the screenshots stay as in 1.1.0. Before submitting, update App Privacy with the Product Interaction entry in [app-privacy.md](app-privacy.md).
+
 ## Version 1.1.0
 
 **What's New in This Version (4000)**

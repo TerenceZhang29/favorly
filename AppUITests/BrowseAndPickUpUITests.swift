@@ -65,7 +65,12 @@ final class BrowseAndPickUpUITests: UITestCase {
         waitFor(element("nearby.empty"), toRead: "No requests within 1 mi")
 
         openTab("Dev Settings")
-        app.switches["devSettings.simulateLocationError"].switches.firstMatch.tap()
+        // Below the fold since Dev Settings gained Messages; the form makes the row only once it scrolls in.
+        let locationError = app.switches["devSettings.simulateLocationError"]
+        for _ in 0 ..< 4 where !(locationError.exists && locationError.isHittable) {
+            app.swipeUp()
+        }
+        locationError.switches.firstMatch.tap()
         openTab("Nearby")
         waitFor(element("nearby.error"), toRead: "Your location isn't available right now.")
         XCTAssertTrue(app.buttons["nearby.retry"].exists)

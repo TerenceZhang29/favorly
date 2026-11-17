@@ -42,6 +42,7 @@ The script finds each query by the `<!-- dataset: <id> -->` line above its SQL b
 | 13 | Notifications | Can we reach people, and does push delivery work? | Opt-in under half; stuck notifications |
 | 14 | App health | Does the app crash? | Any crash affecting more than one tester |
 | 15 | Views | Do requests reach people, and do people who see them help? | Many requests with no viewers; many viewers and no pick-up |
+| 16 | Accounts | How many people have installed the app and signed in? | Sign-ups flat while invites go out |
 
 Definitions used throughout:
 
@@ -454,6 +455,20 @@ select
 from per_request
 group by 1
 order by min(viewers);
+```
+
+## 16. Accounts
+
+How many people have installed the app and signed in with Apple, which creates an account. This is the closest the database gets to downloads: someone who installs Favorly and never signs in leaves no trace, and a deleted account is no longer counted. App Store downloads ("First-time downloads", and installs for TestFlight) are in App Store Connect → Analytics and TestFlight, not here. `accounts` counts sign-ins; `with_profile` counts those who finished setting up a profile.
+
+<!-- dataset: accounts -->
+```sql
+select
+    (select count(*) from auth.users) as accounts,
+    (select count(*) from public.profiles) as with_profile,
+    (select count(*) from auth.users where created_at >= now() - interval '7 days') as new_7d,
+    (select min(created_at) from auth.users)::date as first_signup
+;
 ```
 
 ## Gaps
